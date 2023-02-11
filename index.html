@@ -1072,16 +1072,28 @@ function made(X,result, contractor, honors) {
 	else
 		ot = (result -((level-0)+6)) * 400;
 
-	if (level == 6 && vul=="0")
-		slambonus = 500;
-	else if (level == 6 && vul=="1")
-		slambonus = 750;
-	else if (level == 7 && vul=="0")
-		slambonus = 1000;
-	else if (level == 7 && vul=="1")
-		slambonus = 1500;
-	else
-		slambonus = 0;
+        if (level == 6 && vul=="0") 
+        {
+            slambonus = 500;
+            slamsize = "small" 
+        }
+        else if (level == 6 && vul=="1")
+        {
+            slambonus = 750;
+            slamsize = "small" 
+        }
+        else if (level == 7 && vul=="0")
+        {
+            slambonus = 1000;
+            slamsize = "grand" 
+        }
+        else if (level == 7 && vul=="1")
+        {
+            slambonus = 1500;
+            slamsize = "grand" 
+        }
+        else
+            slambonus = 0;
 
 	madescore = (base);
 
@@ -1123,7 +1135,7 @@ function made(X,result, contractor, honors) {
 	else { var otplural = 's' }
 
 	var abovescore = new Object();
-	abovescore["slam"] =slambonus;
+	abovescore[slamsize + " slam"] =slambonus;
 	abovescore["insult"]=xbonus;
 	abovescore[otnum + " overtrick" + otplural]=ot;
 	abovescore["honors"]=honors;
