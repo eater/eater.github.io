@@ -1092,13 +1092,23 @@ function made(X,result, contractor, honors) {
             slambonus = 1500;
             slamsize = "grand" 
         }
-        else
+        else {
             slambonus = 0;
+            slamsize = '';
+        }
 
 	madescore = (base);
 
-	if (contractor == "we" ) { side = "wbelowdiv"; aboveside = "wabovediv"; wcurscore.push(madescore + wcurscore[wcurscore.length - 1]); }
-	else { side = "tbelowdiv"; aboveside = "tabovediv"; tcurscore.push(madescore + tcurscore[tcurscore.length - 1]) }
+    if (contractor == "we" ) {
+        side = "wbelowdiv"; 
+        aboveside = "wabovediv"; 
+        wcurscore.push(madescore + wcurscore[wcurscore.length - 1]); 
+    }
+    else { 
+        side = "tbelowdiv"; 
+        aboveside = "tabovediv"; 
+        tcurscore.push(madescore + tcurscore[tcurscore.length - 1]) 
+    }
 
 	games = (wgames[wgames.length - 1] + tgames[tgames.length - 1]);
 	side += games;
@@ -1128,17 +1138,24 @@ function made(X,result, contractor, honors) {
 	document.getElementById(side).innerHTML = contents;
 	document.getElementById(annoside).innerHTML = annobelowcontents;
 
+
 	var abovecontents = '';
 	var annoabovecontents = '';
-	var otnum = (result -((level-0)+6));
-	if (otnum == 1) {var otplural = '' }
-	else { var otplural = 's' }
+	otnum = (result - ((level - 0)+6));
+    if (otnum == 1) 
+    {
+        otplural = ''; 
+    }
+    else {
+        otplural = 's';
+    }
 
 	var abovescore = new Object();
-	abovescore[slamsize + " slam"] =slambonus;
-	abovescore["insult"]=xbonus;
-	abovescore[otnum + " overtrick" + otplural]=ot;
-	abovescore["honors"]=honors;
+	abovescore[slamsize + " slam"] = slambonus;
+	abovescore["insult"] = xbonus;
+	abovescore[otnum + " overtrick" + otplural] = ot;
+	abovescore["honors"] = honors;
+
 
 	for (i in abovescore) {
 		bonus = abovescore[i];
@@ -1154,7 +1171,8 @@ function made(X,result, contractor, honors) {
 	document.getElementById(aboveside).innerHTML = abovecontents;
 	document.getElementById(annoaboveside).innerHTML = annoabovecontents;
 
-	if (tcurscore[tcurscore.length - 1] >= 100) {
+    if (tcurscore[tcurscore.length - 1] >= 100) 
+    {
 		document.getElementById(side).className="tbelowwon";
 		tgames.push(tgames[tgames.length - 1] + 1);
 		tvul.push(1);
@@ -1164,7 +1182,7 @@ function made(X,result, contractor, honors) {
 		line = "game" + games;
 		document.getElementById(line).className = "gameline"
 
-			if (tgames[tgames.length - 1] == 2) { rubber('THEY'); }
+        if (tgames[tgames.length - 1] == 2) { rubber('THEY'); }
 		tcurscore[tcurscore.length - 1] = 0;
 		wcurscore[wcurscore.length - 1] = 0;
 	}
