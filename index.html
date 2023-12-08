@@ -537,22 +537,28 @@
 			// scoring code by Andrew Purvis, author of BridgeKeeper, http://www.geocities.com/tlon_uqbar/bk.html
 
 
-			// drag and drop function from http://nofunc.org
-		function $(v) { return(document.getElementById(v)); }
-		function agent(v) { return(Math.max(navigator.userAgent.toLowerCase().indexOf(v),0)); }
-		function xy(e,v) { return(v?(agent('msie')?event.clientY+document.body.scrollTop:e.pageY):(agent('msie')?event.clientX+document.body.scrollTop:e.pageX)); }
-		function dragOBJ(d,e) {
-			function drag(e) { if(!stop) { d.style.top=(tX=xy(e,1)+oY-eY+'px'); d.style.left=(tY=xy(e)+oX-eX+'px'); } }
-			var oX=parseInt(d.style.left),oY=parseInt(d.style.top),eX=xy(e),eY=xy(e,1),tX,tY,stop;
-			document.onmousemove=drag; document.onmouseup=function(){ stop=1; document.onmousemove=''; document.onmouseup=''; };
-		}
+                if (window.orientation > -1) {
+                    // don't drag if mobile
+                    Function.prototype();
+                } else {
+                    // drag and drop function from http://nofunc.org
+                    function $(v) { return(document.getElementById(v)); }
+                    function agent(v) { return(Math.max(navigator.userAgent.toLowerCase().indexOf(v),0)); }
+                    function xy(e,v) { return(v?(agent('msie')?event.clientY+document.body.scrollTop:e.pageY):(agent('msie')?event.clientX+document.body.scrollTop:e.pageX)); }
+                    function dragOBJ(d,e) {
+                        function drag(e) { if(!stop) { d.style.top=(tX=xy(e,1)+oY-eY+'px'); d.style.left=(tY=xy(e)+oX-eX+'px'); } }
+                        var oX=parseInt(d.style.left),oY=parseInt(d.style.top),eX=xy(e),eY=xy(e,1),tX,tY,stop;
+                        document.onmousemove=drag; document.onmouseup=function(){ stop=1; document.onmousemove=''; document.onmouseup=''; };
+                    }
 
-function CancelDrag(A)
-{
-	A.cancelBubble=true;
-	if (A.stopPropagation) A.stopPropagation();
-	return true;
-}
+                    function CancelDrag(A)
+                    {
+                        A.cancelBubble=true;
+                        if (A.stopPropagation) A.stopPropagation();
+                        return true;
+                    }
+
+                }
 
 var nv0 = new Array(50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650);
 var v0 = new Array(100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300);
