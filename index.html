@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <!-- Rubber Soul, by Paul Adams. v26.03 -->
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
@@ -351,7 +350,7 @@
     <script type="text/javascript">
         /* --- CENTRALIZED CONFIG --- */
         const CONFIG = {
-            storageKey: 'RubberSoul_v26.03.1', 
+            storageKey: 'RubberSoul_v26.03', 
             suits: ['♣', '♦', '♥', '♠', 'NT'],
             points: { game: 100, rubFast: 700, rubSlow: 500, baseBook: 6 },
             penalties: {
@@ -604,7 +603,9 @@
                 UI.hideAllPopups(); UI.hide("bidgrid"); UI.show("aboutpopup");
             },
             closeAbout: () => {
-                UI.hide("aboutpopup"); UI.show("bidgrid");
+                UI.hide("aboutpopup"); 
+                if (STATE.names.we1) UI.show("bidgrid");
+                else UI.show("playerpopup");
             },
             showShare: (url) => {
                 const popup = UI.get("sharepopup");
@@ -617,7 +618,9 @@
                 UI.show("sharepopup");
             },
             closeShare: () => {
-                UI.hide("sharepopup"); UI.show("bidgrid");
+                UI.hide("sharepopup"); 
+                if (STATE.names.we1) UI.show("bidgrid");
+                else UI.show("playerpopup");
             },
             copyShareLink: () => {
                 const input = UI.get("share-url-input");
