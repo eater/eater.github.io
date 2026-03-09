@@ -1,1402 +1,944 @@
-<html>
-	<head>
-		<title>Rubber Soul: the rubber bridge scorer</title>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Rubber Soul, by Paul Adams. v26.03 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
-		<!-- Last modified: 2009-10-25: added checking for duplicate players -->
+    <script>
+        window.goatcounter = {
+            path: function(p) { return location.host + p }
+        }
+    </script>
+    <script data-goatcounter="https://rubbersoul.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    
+    <title>Rubber Soul: the rubber bridge scorer</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'><text x='40' y='68' font-size='80' text-anchor='middle' fill='%230a0'>♠</text></svg>">
+    <style>
+        /* =========================================
+           1. VARIABLES & GLOBAL
+           ========================================= */
+        :root { 
+            --bg: #1b5e20; /* Hunter Green */
+            --green: #0a0; 
+            --gold: #ffe082; /* Pale Gold */
+            --black: #000; 
+            --font: 16px; 
+            --score-font: 20px; 
+            --player-font: 14px;
+            --anno-font: 15px; 
+            --card-width: 28em;
+            --navbar-height: 50px; 
+            --frutiger: "Frutiger", "Frutiger Linotype", "Segoe UI", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body, button, input, select, .tool-link, .anno-text, textarea { 
+            font-family: "Times New Roman", Times, serif; 
+        }
+        
+        input[type="text"] {
+            font-size: 16px;
+            padding: 4px;
+        }
 
-		<meta name="description" content="Rubber Soul: the rubber bridge scorer">
-		<meta name="keywords" content="bridge, rubber bridge, rubber, score, scorer, scoring, bonus, tricks, overtricks, penalty, double, honors">
+        body { 
+            background-color: var(--bg); 
+            margin: 0 auto; padding: 10px; 
+            display: flex; flex-direction: column; align-items: center; 
+            max-width: 100vw;
+            box-sizing: border-box;
+        }
 
-		<style type="text/css">
+        /* --- Big Mode Overrides --- */
+        body.big-mode {
+            --score-font: 32px !important; 
+            --player-font: 18px !important; 
+            --anno-font: 22px !important;   
+            --card-width: 45em !important; 
+        }
 
-			body {background-color: #ccc; }
+        /* =========================================
+           2. THE BRIDGE CLUB NAVBAR
+           ========================================= */
+        #navbar {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
 
-			.title {
-				font-size:16px;
-				font-weight:bold;
-				color:#0a0;
-				font-family:sans-serif;
-
-			}
-
-			.subtitle {
-				color:#f00;
-				font-size: small;
-			}
-
-			.bidgrid {
-				position:absolute;
-				z-index:2;
-				float:left;
-				clear:none;
-				margin:1em;
-				padding:1em;
-				margin-right:5%;
-				left:10%;
-				border: 2px solid black;
-				font-size: 14px;
-				background-color: #fff;
-				-moz-border-radius: 16;
-				text-align:center;
-				vertical-align:top;
-				display:block;
-			}
-
-			.allrubbers {
-				position:absolute;
-				float:left;
-				vertical-align:top;
-				text-align:center;
-				clear:none;
-				margin:1em;
-				margin-right:10%;
-				right:0%;
-				background-color: #ccc;
-				display:block;
-				padding:0;
-			}
-
-			.oldrubbers {
-				padding:0;
-				margin:0;
-				background-color: #ccc;
-			}
-
-
-			.thisrubber {
-				padding:0;
-				margin:0;
-			}
-
-			.rubberwindow {
-				clear:none;
-				margin: 0;
-				background-color: #fff;
-				border: 2px solid black;
-				-moz-border-radius: 16;
-				padding: 1em;
-			}
-
-			<!-- table.chooser { -->
-			<!-- 	border-collapse: collapse; -->
-			<!-- 	width:auto; -->
-			<!-- 	font-size: 14px; -->
-			<!-- 	text-align:center; -->
-			<!-- 	padding:8%; -->
-			<!-- } -->
-			<!-- table.chooser td { -->
-			<!-- 	border: 0px solid white; -->
-			<!-- 	padding:0; -->
-			<!-- 	margin: 0; -->
-			<!-- 	text-align:center; -->
-			<!-- } -->
-			<!-- table.chooser td span.contract { -->
-			<!-- 	display: block; -->
-			<!-- 	padding: 0px; -->
-			<!-- 	padding-left: 0.5em; -->
-			<!-- 	padding-right: 0.5em; -->
-			<!-- 	border:1px solid white; -->
-			<!-- 	text-decoration: none; -->
-			<!-- 	color: #000; -->
-			<!-- 	cursor: pointer; -->
-			<!-- } -->
-
-            <!-- # green and red -->
-			<!-- table.chooser td.notgame span.contract { -->
-			<!-- 	border-style: outset; -->
-			<!-- 	border-width: 1px; -->
-			<!-- 	border-color: #CCC; -->
-			<!-- 	background-color: #00cc00; -->
-			<!-- } -->
-			<!-- table.chooser td.game span.contract { -->
-			<!-- 	border-style: outset; -->
-			<!-- 	border-width: 1px; -->
-			<!-- 	border-color: #CCC; -->
-			<!-- 	background-color: #cc0000; -->
-			<!-- } -->
-			<!-- table.chooser td.notgamepick span.contract { -->
-			<!-- 	border-style: inset; -->
-			<!-- 	border-width: 1px; -->
-			<!-- 	border-color: #CCC; -->
-			<!-- 	background-color: #009900; -->
-			<!-- 	color: #aaffff; -->
-			<!-- } -->
-			<!-- table.chooser td.gamepick span.contract { -->
-			<!-- 	border-style: inset; -->
-			<!-- 	border-width: 1px; -->
-			<!-- 	border-color: #CCC; -->
-			<!-- 	color: #fff; -->
-			<!-- 	background-color: #990000; -->
-            <!-- } -->
-
-
-            <!-- blue and red -->
-            table.chooser {
-            border-collapse: collapse;
-            width:auto;
-            font-size: 14px;
-            text-align:center;
-            padding:8%;
-            }
-            table.chooser td {
-            border: 0px solid white;
-            padding:0;
-            margin: 0;
-            text-align:center;
-            }
-            table.chooser td span.contract {
-            display: block;
-            padding: 0px;
-            padding-left: 0.5em;
-            padding-right: 0.5em;
-            border:1px solid white;
-            text-decoration: none;
+        .nav-left { display: flex; gap: 5px; flex: 1; justify-content: flex-start; align-items: center; z-index: 2001; position: relative; }
+        
+        /* Mobile menu button */
+        #menu-toggle {
+            font-size: 11px; 
+            text-decoration: none; 
+            cursor: pointer; 
+            padding: 3px 6px; 
+            border-radius: 3px; 
+            background: #fff; 
+            border: 1px solid #999; 
+            display: inline-block; 
+            font-family: sans-serif; 
             color: #000;
-            cursor: pointer;
+        }
+        
+        #menu-buttons {
+            display: none;
+            gap: 5px;
+        }
+        
+        #menu-buttons.show {
+            display: inline-flex;
+            gap: 5px;
+        }
+        
+        .nav-right { 
+            flex: 1; 
+            display: flex; 
+            justify-content: flex-end; 
+            align-items: baseline; /* Fixes alignment between text and numbers */
+            font-size: small; font-family: sans-serif; text-align: right;
+            line-height: normal; 
+            max-width: 50vw;
+            flex-wrap: wrap;
+            z-index: 2001;
+            color: #fff; /* Score numbers are white */
+        }
+        
+        .nav-right .player-name { 
+            margin-top: 0 !important; 
+            color: var(--gold); 
+            overflow: visible; /* Prevents top of letters from clipping in Firefox */
+            display: inline-block; 
+        }
+        .cumu-label { color: var(--gold); }
+
+        .tool-link { 
+            font-size: 11px; text-decoration: none; cursor: pointer; 
+            padding: 3px 6px; border-radius: 3px; background: #fff; 
+            border: 1px solid #999; display: inline-block; font-family: sans-serif; color: #000;
+        }
+        
+        #menu-toggle { color: #0047AB; }
+        #undo-btn { color: #996600; }
+        #share-btn { color: #008B8B; }
+
+        /* =========================================
+           3. TYPOGRAPHY & UTILS
+           ========================================= */
+        .player-name { color: var(--green); font-weight: normal; font-family: sans-serif; font-size: var(--player-font); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; }
+        .suit-red { color: red !important; font-weight: bold; }
+        .suit-black { color: black !important; font-weight: bold; }
+        .anno-text { color: var(--green); font-size: var(--anno-font); white-space: nowrap; margin-right: 0.5em; }
+        
+        .vulnerable { 
+            text-decoration: underline; text-decoration-color: red;
+            text-decoration-thickness: 1px; text-underline-offset: 3px;
+        }
+
+        .live-contract {
+            font-size: 28px; height: 32px; line-height: 32px; margin-bottom: 5px;
+            color: red; text-align: center; overflow: hidden;
+            font-family: sans-serif; font-weight: bold;
+            flex-shrink: 0; 
+        }
+
+        .hid { display: none !important; visibility: hidden !important; }
+        
+        .main-container { 
+            display: flex; flex-wrap: wrap; justify-content: center; 
+            align-items: flex-start;
+            gap: 50px; 
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* =========================================
+           4. GHOST FOOTPRINT (320px) & POPUPS
+           ========================================= */
+        
+        .bid-spacer {
+            width: 320px; 
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 220px; 
+            margin-bottom: 20px;
+        }
+
+        .bidgrid { 
+            background-color: #fff; 
+            border: 3px solid black;
+            border-radius: 16px;
+            padding: 1em; 
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.25);
+            position: relative; 
+            text-align: center; 
+            color: black;
+            display: flex; flex-direction: column;
+            overflow: hidden; 
+        }
+
+        .bidgrid.collapsed { width: 180px; min-height: 0; padding: 15px; }
+        .bidgrid.expanded { width: 100%; min-height: 220px; }
+        
+        .rubberwindow { 
+             background-color: #fff; border: 3px solid black; border-radius: 16px; 
+             padding: 1em; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); margin-bottom: 20px;
+             width: var(--card-width); 
+             border-collapse: collapse; 
+        }
+        
+        .wethey {
+            display: flex; justify-content: center; align-items: center; 
+            gap: 10px; min-height: 50px; 
+            margin-top: auto; margin-bottom: auto; padding: 5px 0;
+        }
+
+        .popupvis { 
+            position: fixed; top: 20%; left: 50%; transform: translateX(-50%); z-index: 3000; 
+            border: 3px solid var(--green); background-color: #fff; 
+            border-radius: 16px; text-align: center; width: 24em; 
+            padding: 2em 1.5em; box-shadow: 0 0 25px rgba(0,0,0,0.5); 
+        }
+
+        /* Clean DOM Flow without !important (via specificity) */
+        .bid-spacer .popupvis.bid-area { 
+            position: relative; top: auto; left: auto; transform: none; 
+            width: 100%; max-width: 320px; z-index: 1000; box-sizing: border-box; margin-bottom: 20px;
+        }
+        
+        .popupvis .title { margin-top: 0 !important; margin-bottom: 5px; color: var(--green); font-family: var(--frutiger); font-size: 24px; }
+        .popupvis .subtitle { color: red; font-size: 14px; font-weight: bold; margin-bottom: 15px; font-family: var(--frutiger); }
+        .popup-msg { line-height: 1.5; margin: 20px 0; font-size: 18px; color: #000; }
+
+        table.popgrid { margin: 0 auto; border-spacing: 5px; border-collapse: separate; color: #000;}
+        table.popgrid td { text-align: center; vertical-align: middle; }
+        table.popgrid th { font-weight: bold; font-size: 18px; padding-bottom: 5px; font-family: "Times New Roman", serif; }
+        
+        .popgrid input[type="text"] { width: 100%; box-sizing: border-box; }
+        
+        /* Modern HTML5 Button styling for Popups */
+        .popupvis button {
+            font-size: 18px; padding: 8px 30px; cursor: pointer; margin-top: 10px; font-family: var(--serif);
+        }
+        
+        @media (max-width: 800px) {
+            .main-container { flex-direction: column; align-items: center; padding-right: 0; gap: 20px; }
+            .bid-spacer { width: 90vw; min-height: auto; }
+            .bidgrid.expanded, .rubberwindow { width: 90vw; max-width: 90vw; }
+            table.scorecard { font-size: 16px; } 
+            body > .popupvis { top: 5%; max-height: 90vh; overflow-y: auto; }
+            .nav-left { flex: 0 0 auto; }
+            .nav-right { font-size: 10px; max-width: none; } 
+        }
+
+        /* =========================================
+           5. SCORECARD & CONTROLS
+           ========================================= */
+        table.scorecard { border-collapse: collapse; width: 100%; font-size: var(--score-font); table-layout: fixed; }
+        .weheader, .theyheader { border-bottom: 1px solid black; text-align: center; padding: 0.5em 0.25em; width: 22.5%; font-size: small; border-right: 1px solid black; }
+        .theyheader { border-right: none; }
+        .sc-cell { padding: 0 0.25em; color: #000; font-weight: normal; border-right: 1px solid black; line-height: 1.1em; width: 22.5%; }
+        .wabove, .tabove { vertical-align: bottom; height: 10ex; border-bottom: 4px solid black; text-align: right; }
+        .wbelow, .tbelow { vertical-align: top; height: 3em; text-align: right; }
+        
+        tr.gamewon-row td.wbelow, tr.gamewon-row td.tbelow { border-bottom: 1px solid black !important; height: auto !important; }
+        
+        .tabove, .tbelow { text-align: left; border-right: none; }
+        td.anno { vertical-align: top; width: 22.5%; padding: 0 0.25em; line-height: 1.1em; }
+        td.anno.left { text-align: right; } td.anno.right { text-align: left; } td.anno.btm { vertical-align: bottom; }
+
+        span.std-btn { display: inline-block; padding: 2px 8px; margin: 2px; cursor: pointer; min-width: 3em; font-size: 16px; color: black; box-sizing: border-box; }
+        .raised { background-color: #eee; border: 1px solid #999; }
+        .depressed { background-color: #ccc; border: 1px solid #666; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3); filter: brightness(0.95); }
+
+        button#scorebtn { font-weight: bold; font-size: 20px; padding: 5px 15px; background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00; margin-left: 10px; cursor: pointer; font-family: var(--serif); }
+        button#scorebtn:active { background-color: #c8e6c9; box-shadow: inset 2px 2px 5px rgba(0,50,0,0.3); }
+        button#scorebtn:disabled { opacity: 0.6; cursor: default; box-shadow: none; }
+        #btn-we, #btn-they { font-weight: normal; color: black; margin: 0; }
+
+        #res { font-size: 16px !important; padding: 3px; }
+
+        table.chooser { border-collapse: separate; border-spacing: 2px; margin: 0 auto; }
+        table.chooser td span.contract { display: block; padding: 4px 8px; border: 1px solid #bbb; cursor: pointer; font-size: 18px; font-weight: normal; color: black; }
+        table.chooser td.notgame span.contract { background-color: #e3f2fd; } 
+        table.chooser td.game span.contract { background-color: #ffebee; }
+        table.chooser td span.contract.depressed { border: 1px solid #666; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2); filter: brightness(0.92); }
+
+        .grid-red { color: red !important; } .grid-black { color: black !important; }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-left">
+            <button id="menu-toggle" class="hid" onclick="toggleMenu()">menu</button>
+            <div id="menu-buttons">
+                <span id="undo-btn" class="tool-link hid" onclick="Game.undo()">undo</span>
+                <span id="big-btn" class="tool-link" onclick="event.stopPropagation(); UI.toggleBig()"><u>b</u>ig</span>
+                <span id="share-btn" class="tool-link hid" onclick="Storage.share()">share</span>
+                <span id="force-btn" class="tool-link hid" onclick="Game.forceNewRubber()">new</span>
+                <span id="about-btn" class="tool-link" onclick="UI.showAbout()">about</span>
+                <span id="reset-btn" class="tool-link hid" style="color:#c00; border-color:#c00;" onclick="Game.confirmReset()">reset</span>
+            </div>
+        </div>
+        <div class="nav-right hid" id="tallydiv">
+            <span class="cumu-label hid">Cumulative: </span>0 | 0 | 0 | 0
+        </div>
+    </nav>
+
+    <datalist id="namelist"></datalist>
+    
+    <div class="main-container">
+        <div class="bid-spacer">
+            <div id="startuppopup" class="popupvis bid-area hid"></div>
+            <div id="playerpopup" class="popupvis bid-area hid"></div>
+            
+            <div id="sharepopup" class="popupvis bid-area hid">
+                <div class="title">Share Session</div>
+                <div class="popup-msg" style="font-size: 16px; margin: 15px 0;">Share this link to continue this session on another device.</div>
+                <textarea id="share-url-input" readonly rows="4" style="width: 100%; box-sizing: border-box; padding: 8px; margin-bottom: 20px; font-family: monospace; font-size: 14px; color: #000; border: 1px solid #ccc; border-radius: 4px; resize: none; word-break: break-all;"></textarea>
+                <div style="display:flex; justify-content:center; gap:10px;">
+                    <button id="copy-btn" onclick="UI.copyShareLink()" style="background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00;">Copy</button>
+                    <button onclick="UI.closeShare()">Close</button>
+                </div>
+            </div>
+
+            <div id="aboutpopup" class="popupvis bid-area hid">
+                <div class="title">Rubber Soul</div>
+                <div class="popup-msg" style="font-size: 16px; line-height: 1.6;">
+                    Rubber Soul is copyright 2009&ndash;<span id="year"></span> by <a href="mailto:notrump7@gmail.com" style="color: #0047AB; text-decoration: underline;">Paul Adams</a>.<br><br>
+                    <span style="font-size: 14px; color: #666; font-weight: bold;">v26.03</span>
+                </div>
+                <div style="margin-top:20px;">
+                    <button onclick="UI.closeAbout()">Close</button>
+                </div>
+            </div>
+
+            <div id="bidgrid" class="bidgrid collapsed hid">
+                <div id="live-contract" class="live-contract hid"></div>
+                
+                <div class="wethey">
+                    <span id="btn-we" class="std-btn raised" onclick="UI.setSide('we')">WE</span> 
+                    <span id="btn-they" class="std-btn raised" onclick="UI.setSide('they')">THEY</span>
+                </div>
+                
+                <div id="chooser_master" class="hid">
+                    <div id="chooser"></div>
+                    <div style="margin:15px 0;">
+                        <span id="btn-x" class="std-btn raised" onclick="UI.setMultiplier(1)">Doubled</span> 
+                        <span id="btn-xx" class="std-btn raised" onclick="UI.setMultiplier(2)">Redoubled</span>
+                    </div>
+                    <div style="margin:10px 0;">
+                        <span id="btn-h100" class="std-btn raised" onclick="UI.setHonors(100)">100 honors</span> 
+                        <span id="btn-h150" class="std-btn raised" onclick="UI.setHonors(150)">150 honors</span>
+                    </div>
+                    <div id="menu" style="margin-top:15px; font-size:18px;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="allrubbers">
+            <div id="thisrubber" class="rubberwindow hid"></div>
+            <div id="oldrubbers"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        /* --- CENTRALIZED CONFIG --- */
+        const CONFIG = {
+            storageKey: 'RubberSoul_v26.03.1', 
+            suits: ['♣', '♦', '♥', '♠', 'NT'],
+            points: { game: 100, rubFast: 700, rubSlow: 500, baseBook: 6 },
+            penalties: {
+                notVul: [50], notVulX: [100, 300, 500, 800, 1100, 1400, 1700, 2000],
+                vul: [100], vulX: [200, 500, 800, 1100, 1400, 1700, 2000, 2300]
             }
-            table.chooser td.notgame span.contract {
-            border-style: outset;
-            border-width: 1px;
-            border-color: #CCC;
-            background-color: #00ddff;
+        };
+
+        const extendP = (arr) => { while(arr.length < 13) arr.push(arr[arr.length-1]+300); return arr; };
+        CONFIG.penalties.notVulX = extendP(CONFIG.penalties.notVulX);
+        CONFIG.penalties.vulX = extendP(CONFIG.penalties.vulX);
+
+        let STATE = {
+            players: {}, names: { we1: "", we2: "", they1: "", they2: "" }, allNames: [],
+            rubberNum: 1, activeLog: [], math: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } },
+            archive: [], history: [], bid: { side: null, level: null, suit: null, multiplier: 'n', honors: 0 },
+            isBig: false 
+        };
+
+        /* --- XSS SANITIZER --- */
+        const sanitize = (str) => str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        /* --- V2.7 COMPRESSION ENGINE (SHORT URLS) --- */
+        const Compressor = {
+            sideMap: { "we": 0, "they": 1 }, revSide: ["we", "they"],
+            typeMap: { "made":0, "down":1, "ot":2, "hon":3, "ins":4, "slam":5, "rub":6 }, revType: ["made", "down", "ot", "hon", "ins", "slam", "rub"],
+            multMap: { "n": 0, "x": 1, "xx": 2 }, revMult: ["n", "x", "xx"],
+
+            packLog: (log) => {
+                return log.map(item => {
+                    let arr = [Compressor.sideMap[item.s], Compressor.typeMap[item.t], item.sc];
+                    if (item.t === 'made') arr.push(item.b, Compressor.multMap[item.m] || 0, item.g ? 1 : 0);
+                    else if (item.t === 'down') arr.push(item.b, Compressor.multMap[item.m] || 0, item.lbl);
+                    else if (item.t === 'ot') arr.push(item.cnt);
+                    else if (item.t === 'slam') arr.push(item.lvl);
+                    return arr;
+                });
+            },
+            unpackLog: (packedLog) => {
+                return packedLog.map(arr => {
+                    let obj = { s: Compressor.revSide[arr[0]], t: Compressor.revType[arr[1]], sc: arr[2] };
+                    if (obj.t === 'made') { obj.b = arr[3]; obj.m = Compressor.revMult[arr[4]]; obj.g = (arr[5] === 1); } 
+                    else if (obj.t === 'down') { obj.b = arr[3]; obj.m = Compressor.revMult[arr[4]]; obj.lbl = arr[5]; } 
+                    else if (obj.t === 'ot') obj.cnt = arr[3];
+                    else if (obj.t === 'slam') obj.lvl = arr[3];
+                    return obj;
+                });
+            },
+            recalcMath: (logs) => {
+                let m = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
+                logs.forEach(l => {
+                    if (l.t === 'made') {
+                        if (l.g) { m[l.s].games++; m.we.partial=0; m.they.partial=0; }
+                        else { m[l.s].partial += l.sc; }
+                    }
+                });
+                return m;
             }
-            table.chooser td.game span.contract {
-            border-style: outset;
-            border-width: 1px;
-            border-color: #CCC;
-            background-color: #ffaaaa;
-            }
-            table.chooser td.notgamepick span.contract {
-            border-style: inset;
-            border-width: 1px;
-            border-color: #CCC;
-            background-color: #00ccdd;
-            color: #aaffff;
-            }
-            table.chooser td.gamepick span.contract {
-            border-style: inset;
-            border-width: 1px;
-            border-color: #CCC;
-            color: #fff;
-            background-color: #dd9999;
-            }
+        };
 
-			span.depressed {
-				border-style: inset;
-				border-width: 1px;
-				border-color: #CCC;
-				color: black;
-				background-color: #aaaa99;
-				padding: 1px 4px 1px 4px;
-				cursor:pointer;
-				margin-left:0.25em;
-				margin-right:0.25em;
-			}
-			span.raised {
-				border-style: outset;
-				border-width: 1px;
-				border-color: #CCC;
-				color: black;
-				background-color: #F3F3EE;
-				padding: 1px 4px 1px 4px;
-				cursor:pointer;
-				margin-left:0.25em;
-				margin-right:0.25em;
-			}
+        const UI = {
+            get: (id) => document.getElementById(id),
+            show: (id) => UI.get(id).classList.remove('hid'),
+            hide: (id) => UI.get(id).classList.add('hid'),
+            colorBid: (str) => str.replace(/[♥♦]/g, s => `<span class="suit-red">${s}</span>`).replace(/[♣♠]/g, s => `<span class="suit-black">${s}</span>`),
 
-			.allrubbers table {
-				vertical-align:top;
-				border-collapse: collapse;
-				height: auto;
-				font-size:14px;
-				padding:0;
-				width:27em;
-				margin:0.5em; 
-			}
-
-			table.main {
-				margin-bottom:4ex;
-				margin-top:4ex;
-			}
-
-			.oldmain {
-				margin-top:10ex;
-				background-color: #ccc;
-			}
-
-			td.wannoabove {
-				vertical-align:bottom;
-				width:40%;
-				padding: 0.25em;
-				padding-right:1em;
-				border-bottom:3px solid #fff; 
-				color: #0a0;
-				text-align:right;
-			}
-
-			td.wannobelow {
-				width: auto;
-				vertical-align:top;
-				padding: 0.25em;
-				padding-right:1em;
-				color: #0a0;
-				text-align:right;
-			}
-
-			td.tannoabove {
-				vertical-align:bottom;
-				width:40%;
-				padding: 0.25em;
-				padding-left:1em;
-				border-bottom:3px solid #fff; 
-				color: #0a0;
-				text-align:left;
-			}
-
-			td.tannobelow {
-				width: auto;
-				vertical-align:top;
-				padding: 0.25em;
-				padding-left:1em;
-				color: #0a0;
-				text-align:left;
-			}
-
-			.oldrubbers td.tannoabove {
-				border-bottom:3px solid #ccc;
-			}
-			.oldrubbers td.wannoabove {
-				border-bottom:3px solid #ccc;
-			}
-
-			.annohidden {
-				visibility:hidden;
-				visibility:expression("visible");
-			}
-
-
-			.header {
-				text-align: center;
-				padding-left:1em;
-				font-size: small;
-			}
-			td.weheader {
-				border-right:1px solid black; 
-				border-bottom:1px solid black;
-				text-align :center; 
-				vertical-align:top;
-				padding: 0.25em;
-				width:2em;
-				font-size:x-small;
-			}
-			td.theyheader {
-				border-bottom:1px solid black;
-				text-align: center; 
-				vertical-align:top;
-				padding: 0.25em;
-				width:2em;
-				font-size:x-small;
-			}
-
-			div.playerheader {
-				color: #0a0;
-			}
-
-			table.oldmain .weheader {
-				background-color: #ccc;
-			}
-			table.oldmain .theyheader {
-				background-color: #ccc;
-			}
-
-			.wabove {
-				border-bottom:3px solid black; 
-				border-right:1px solid black;
-				text-align:right;
-				vertical-align:bottom;
-				padding: 0.25em;
-				width:12%; 
-				height: 10ex
-			}
-			.tabove {
-				border-bottom:3px solid black; 
-				text-align:left;
-				vertical-align:bottom;
-				padding: 0.25em;
-				width:12%; 
-				height: 10ex
-			}
-			td.wbelow {
-				border-right:1px solid black;
-				text-align:right;
-				vertical-align:top;
-				padding: 0.25em;
-				height: 4ex;
-			}
-			td.tbelow {
-				text-align:left;
-				vertical-align:top;
-				padding: 0.25em;
-				height:4ex;
-			}
-
-			div.wbelowwon {
-				text-align:right;
-				vertical-align:top;
-				color: #f00;
-				font-weight: bold;	
-			}
-
-			div.tbelowwon {
-				text-align:left;
-				vertical-align:top;
-				color: #f00;
-				font-weight: bold;	
-			}
-
-			div.annobelowwon {
-				font-weight: bold;	
-			}
-
-			.result {
-				text-align:center;
-			}
-
-			.results {
-				margin-bottom: 2em;
-				color: #f00;
-			}
-			.hiddenline {
-				display:none;
-			}
-
-			.annobelowblank {
-				padding:0;
-				margin:0;
-				width:0;
-				height:0;
-			}
-
-			.gameline {
-				padding:0;
-				margin:0;
-				border-top:1px solid black;
-			}
-
-			div.tools {
-				width:95%;
-				right:0;
-				display:block;
-				font-size: smaller;
-				margin: 1em;
-				margin-top:0;
-				margin-bottom:0;
-			}
-
-			div.mainbody {
-				position:absolute;
-				float:center;
-				width:95%;
-				right:0;
-				display:block;
-			}
-
-			.tools a
-			{
-				float:right;
-				font-size: smaller;
-				color: red;
-				display:inline;
-			}
-
-			div.undo {
-				float:left;
-				width: auto;
-				display: expression("none");
-			}
-
-			div.annotoggle {
-				width: 15em;
-				float:right;
-				right:0;
-				text-align:right;
-				margin:0em;
-				padding:0;
-				margin-left: 30em;
-				margin-top: 0ex;
-			}
-
-			div.tally {
-				float:center;
-				text-align: center;
-				margin-top:6%;
-				width: auto;
-			}
-
-			.suittxt {
-				display:inline;
-				padding:0px;
-				border:0px;
-			}
-
-			span.Cimg {
-				display:inline;
-				padding:2px;
-				margin:1px;
-				border:0px;
-				background: url(data:image/gif;base64,R0lGODlhCgAKAPcAACQiJHR2dJyenFxeXDQ2NLy6vCwqLISChKyqrIyKjCQmJGxubERGRMTCxCwuLISGhKyurADltAA91AB3dwBw/wL9/wAY/wAA/wA4ywMAtAAA1AAAdyw0DOKXtRIY1AAAd+kAEOXwAIH9AHx/AADADwDiAAESAAAAAFYAAAAAAAAAAAAAADQcHOHjtRIS1AAAd3MIAADjAAASAAAAAFQ0AOKHABLUAAB3ABgaAO4HAJAFAHwBAHAPAAUAAJEAAHwAAP8AJP8A5P8AEv8AAG0A4wUA6pEAkHwAfIWYAOflAIE9FXx3AADNGACrABW6AADcAGAAqAMAbgAAfAAAAKhED1rjABYSAAAAAGCYAGzlABU9AAB3AABwAADjAAASAAAAAH4WmACI5QDUAcB3AAAAAgDwAAD9AAB/AP9wcP/j4/8SEv8AAP9aKv+I2P/U1P93dwAwZADj5AASEgAAAAAqGACI7gDUkAB3fAAAcAAABRUAkQAAfGQaYOIHnhIFgAABfNIAWObwxoEAF3wAAGAUAGwAABUAAAAAAEoBB+MAAIEAAHwAAMAAAHYAAFAAAAAAAGAAAGwAwAEAFwAAAGwQAAAAAAAAAAAAAKAqAOFpABIAAAAAAAB8AADjAAASAAAAAJyFAPcrABKDAAB8ABgAaO4AnpAAgHwAfHAA/wUA/5EA/3wA//8AYP8Anv8AgP8AfG0pOQW3AJGSAHx8AEpYOfTGAIAXAHwAAAA07ABk6hWDEgB8AAD//wD//wD//wD//2AAAGwAABUAAAAAAABgqAHj5AASEgAAAAA0vgBkOwCDTAB8AFeciPT35IASEnwAAIwYd+PuEBKQTwB8AGAAvGy35BWSEgB8AAH/NAD/ZAD/gwD/fMBYZeLG5RIXEgAAAEY0xYpk/wGD/wB8fwWkLADk5QASEgAAAPDnWOFkxhKDFwB8AAOINABkZACDgwB8fNgBWOIAxhIAFwAAABgxKu4AaZAwAHwAAHACAAUAAJEAAHwAAP8A6f8Azv8AR/8AACH5BAEAAA0ALAAAAAAKAAoABwgmABsIbHDixMCDBQseFJjQ4EKCDgcqnGiwocWLGDNC3KgQYcQGAQEAOw==) center no-repeat; 
-			}
-
-			span.Dimg {
-				display:inline;
-				padding:2px;
-				margin:1px;
-				border:0px;
-				background: url(data:image/gif;base64,R0lGODlhCgAKAPcAAPwCBNxmZORaXMS6vPwGBOReXMTCxAB8AN+TdCEZ5QCREgB8AACAZwDABBWX1wB8dxCY0ADltAA91AB3dwDA/wKL/wAY/wAA/wA4ywMAtAAA1AAAdyxUDOI/tRIY1AAAd+kAEOXwAIH9AHx/AADADwDiAAESAAAAAFYAAAAAAAAAAAAAADQcHOHjtRIS1AAAd3MIAADjAAASAAAAAFQ0AOKHABLUAAB3ABgaAO4HAJAGAHwBAHAPAAUAAJEAAHwAAP8AJP8A5P8AEv8AAG0A4wUA6pEAkHwAfIWYAOflAIE9FXx3AADNGACrABW6AADcAGAAUAMAbwAAfAAAALBEDz/jABoSAAAAAGCYAGzlABU9AAB3AABwAADjAAASAAAAAH4WmACI5QDUAcB3AAAAAgDwAAD9AAB/AP9wcP/j4/8SEv8AAP9aKv+I2P/U1P93dwAwZADj5AASEgAAAAAqGACI7gDUkAB3fAAAcAAABRUAkQAAfGQaYOIHnhIGgAABfNIAgObwxIEAF3wAAGAUAGwAABUAAAAAAEoBB+MAAIEAAHwAAMAAAHYAAFAAAAAAAGAAAGwAwAEAFwAAAGwQAAAAAAAAAAAAAKARAOHTABIAAAAAAAB8AADjAAASAAAAAJyFAPcrABKDAAB8ABgAaO4AnpAAgHwAfHAA/wUA/5EA/3wA//8AYP8Anv8AgP8AfG0pPAW3AJGSAHx8AEqAPPTEAIAXAHwAAAA07ABk6hWDEgB8AAD//wD//wD//wD//2AAAGwAABUAAAAAAABgqAHj5AASEgAAAAA0vgBkOwCDTAB8AFeciPT35IASEnwAAIwYd+PuEBKQTwB8AGAAvGy35BWSEgB8AAH/NAD/ZAD/gwD/fMCAaOLE5RIXEgAAAEY0wopk/wGD/wB8fwWkLADk5QASEgAAAPDngOFkxBKDFwB8AAOINABkZACDgwB8fNgBgOIAxBIAFwAAABgxEe4A05AwAHwAAHACAAUAAJEAAHwAAP8A6f8Azv8AR/8AACH5BAEAAAYALAAAAAAKAAoABwg1AA0INCBAwMCDBQAAKHDQQACFAAgEGFiAAESFDAVcvFhwI0SDFS8SYCgwpMKJCDE2FFjwYEAAOw==) center no-repeat; 
-			}
-
-			span.Himg {
-				display:inline;
-				padding:2px;
-				margin:1px;
-				border:0px;
-				background: url(data:image/gif;base64,R0lGODlhCgAJAPcAABQiNKwKFGwWHMwKDMQKDHwSHEQaLPQCBCweLJQSFGQWJLQKFHQWHPwCBBWX1wB8dxCY0ADltAA91AB3dwAQ/wIa/wAX/wAA/wA4ywMAtAAA1AAAdyzEDOJutRIY1AAAd+kAEOXwAIH9AHx/AADADwDiAAESAAAAAFYAAAAAAAAAAAAAADQcHOHjtRIS1AAAd3MIAADjAAASAAAAAFQ0AOKHABLUAAB3ABgaAO4HAJAHAHwBAHAPAAUAAJEAAHwAAP8AJP8A5P8AEv8AAG0A4wUA6pEAkHwAfIWYAOflAIE9FXx3AADNGACrABW6AADcAGAAUAMAbwAAfAAAAIBED2zjABYSAAAAAGCYAGzlABU9AAB3AABwAADjAAASAAAAAH4WmACI5QDUAcB3AAAAAgDwAAD9AAB/AP9wcP/j4/8SEv8AAP9aKv+I2P/U1P93dwAwZADj5AASEgAAAAAqGACI7gDUkAB3fAAAcAAABRUAkQAAfGQaYOIHnhIHgAABfNIAYObwdoEAGHwAAGAUAGwAABUAAAAAAEoBB+MAAIEAAHwAAMAAAHYAAFAAAAAAAGAAAGwAcAEAGAAAAGwQAAAAAAAAAAAAAKClAOFsABIAAAAAAAB8AADjAAASAAAAAJyFAPcrABKDAAB8ABgAaO4AnpAAgHwAfHAA/wUA/5EA/3wA//8AYP8Anv8AgP8AfG0pOgW3AJGSAHx8AEpgOvR2AIAYAHwAAAA07ABk6hWDEgB8AAD//wD//wD//wD//2AAAGwAABUAAAAAAABgqAHj5AASEgAAAAA0vgBkOwCDTAB8AFeciPT35IASEnwAAIwYd+PuEBKQTwB8AGAAvGy35BWSEgB8AAH/NAD/ZAD/gwD/fMBgZuJ25RIYEgAAAEY0xIpk/wGD/wB8fwWkLADk5QASEgAAAPDnYOFkdhKDGAB8AAOINABkZACDgwB8fNgBYOIAdhIAGAAAABgxpe4AbJAwAHwAAHACAAUAAJEAAHwAAP8A6f8Azv8AR/8AACH5BAEAACcALAAAAAAKAAkABwgsAE+caCBQIEGDDYYgJNigocOHECEOORDxgMIhERUKnOhQY0GMCQuKHOLxREAAOw==) center no-repeat; 
-			}
-			span.Simg {
-				display:inline;
-				padding:2px;
-				margin:1px;
-				border:0px;
-				background: url(data:image/gif;base64,R0lGODlhCgAKAPcAACQiJHR2dFxeXKyurDQ2NLy6vCQmJISChGxubERGRMTCxAAAAAAKBQAAABUAAAAAABB0AADjAAASAAAAAAAf0AIAXAAAgwAAAAAAAgMAAAAAAAAAAIi+BOKUABLUAAB3AOktRuW0AIHUAHx3AADG/AAHAwGVAAAAAFYg/AAAAgAAAAAAAJAaBOEHABIEAAABAHMBRgAAAAAAAAACALAA/OIAAxIAAAAAABie/O4CApAAAHwAAHABBAUAAJEAAHwAAP/YM//xAP8SAP8AAG0Q/AX3A5FFAHwAAIUg/OcAAoEAAHwAAAD0EABJABXaAAB0AGAaOgNKAADaAAB0AAAAmC0A5BcAEgAAAGBs22zlvxUS1AAAdwAA0AAAXAAAgwAAAH4VEAAAAAAAOsAAAAAV/AAA8gAAEgAAAP8AEP8A9/8ARf8AAP+QhP/jAP8SAP8AAACYAgDVAADUAAB3AADGaAAHAACVagAAAAAgAAAA/BUA/QAAf8AaYOIHnhIEgAABfNIB2OYAyYEAF3wCAGABAGwAABUAAAAAAErYB+PjAIESAHwAAMBFAHbVAFDUAAB3AGDGAGwHwAGVFwAAAGwgAAAAAAAAAAAAAPyAAOH+ABIAAAAAAADYAADjAAASAAAAAPiFAPcrABKDAAB8ABgAaO4AnpAAgHwAfHAA/wUA/5EA/3wA//8AYP8Anv8AgP8AfG0pOgW3AJGSAHx8AErYOvTJAIAXAHwAAAA0SABk6xWDEgB8AAD//wD//wD//wD//2AAAGwAABUAAAAAAAC8BAHj5QASEgAAAAA0vgBkOwCDTAB8AFf45PT35IASEnwAAOgYd+PuEBKQTwB8AGAAGGy35RWSEgB8ADT/NOj/ZBL/gwD/fAjYwujJ5RIXEgAAAKM0xAtk/wCD/wB8fw4AiLnl5WcSEvoAAOvn2FBkydeDF8Z8ABqINABkZACDgwB8fHQB2OMAyRIAFwAAAAoxgAAA/gAwAAAAADhcAOPkABISAAAAAB9c6QDkzgASRwAAACH5BAEAAAoALAAAAAAKAAoABwg8ABUIVCAAwcCDCAAAOHBQQUKFCxgKfKhQIUMBFTMCoKixowEDGRMoFLBgAUYACRQECKCgpEqWBwkQOBgQADs=) center no-repeat; 
-				display:expression(ieBox ? "inline" : "none");
-
-			}
-
-			.closex {
-				float:right;
-				cursor: pointer;
-				margin: 0;
-				color: #0a0;
-				font-size:small;
-				font-weight: bold;
-				font-family: sans-serif;
-			}
-
-			.players {
-				text-align:center;
-				width:auto;
-				margin: 0;
-				padding:0;
-				margin-left:auto;
-				margin-right:auto;
-			}
-
-			.players td {
-				padding:0.5em;
-			}
-
-			.hid
-			{
-				display:none;
-			}
-
-			div.popupvis
-			{
-				position:absolute; left:35%; right:30%; top:25%;
-				z-index:2;
-				border: 3px solid #0a0;
-				font-size: 14px;
-				background-color: #fff;
-				-moz-border-radius: 16;
-				text-align:center;
-				width: 20em;
-				height: auto;
-				padding: 1em;
-			}
-
-			div.popupcontainer
-			{
-				position:absolute; 
-				margin:auto; 
-				left: 0; 
-				right: 0; 
-				top:25%;
-			}
-
-		</style>
-
-		<!-- YUI dragging scripts -->
-		<!-- Dependencies --> 
-		<!--<script type="text/javascript" src="http://yui.yahooapis.com/2.8.0r4/build/yahoo-dom-event/yahoo-dom-event.js" ></script>-->
-		<!-- Drag and Drop source file --> 
-		<!--<script type="text/javascript" src="http://yui.yahooapis.com/2.8.0r4/build/dragdrop/dragdrop-min.js" ></script>-->
-
-		<script language="JavaScript" type="text/javascript">
-
-			// by Paul Adams, notrump7@gmail.com
-			// scoring code by Andrew Purvis, author of BridgeKeeper, http://www.geocities.com/tlon_uqbar/bk.html
-
-
-                if (window.orientation > -1) {
-                    // don't drag if mobile
-                    Function.prototype();
+            toggleBig: () => {
+                STATE.isBig = !STATE.isBig;
+                UI.applyBigMode();
+                Storage.save();
+            },
+            
+            applyBigMode: () => {
+                const btn = UI.get('big-btn');
+                if (STATE.isBig) {
+                    document.body.classList.add('big-mode');
+                    if (btn) btn.innerText = "small"; 
                 } else {
-                    // drag and drop function from http://nofunc.org
-                    function $(v) { return(document.getElementById(v)); }
-                    function agent(v) { return(Math.max(navigator.userAgent.toLowerCase().indexOf(v),0)); }
-                    function xy(e,v) { return(v?(agent('msie')?event.clientY+document.body.scrollTop:e.pageY):(agent('msie')?event.clientX+document.body.scrollTop:e.pageX)); }
-                    function dragOBJ(d,e) {
-                        function drag(e) { if(!stop) { d.style.top=(tX=xy(e,1)+oY-eY+'px'); d.style.left=(tY=xy(e)+oX-eX+'px'); } }
-                        var oX=parseInt(d.style.left),oY=parseInt(d.style.top),eX=xy(e),eY=xy(e,1),tX,tY,stop;
-                        document.onmousemove=drag; document.onmouseup=function(){ stop=1; document.onmousemove=''; document.onmouseup=''; };
-                    }
+                    document.body.classList.remove('big-mode');
+                    if (btn) btn.innerHTML = "<u>b</u>ig"; 
+                }
+            },
 
-                    function CancelDrag(A)
-                    {
-                        A.cancelBubble=true;
-                        if (A.stopPropagation) A.stopPropagation();
-                        return true;
-                    }
+            updateDisplay: () => {
+                const { level, suit, multiplier } = STATE.bid;
+                const disp = UI.get('live-contract');
+                if (!level || !suit) { disp.innerHTML = ""; return; }
+                let suff = (multiplier === 'x') ? "&nbsp;x" : (multiplier === 'xx') ? "&nbsp;xx" : "";
+                const suitClass = (suit === '♥' || suit === '♦' || suit === 'NT') ? 'suit-red' : 'suit-black';
+                disp.innerHTML = `${level}&nbsp;<span class="${suitClass}">${suit}</span>${suff}`;
+            },
 
+            setSide: (side) => {
+                STATE.bid.side = side;
+                UI.get('btn-we').className = side === 'we' ? 'std-btn depressed' : 'std-btn raised';
+                UI.get('btn-they').className = side === 'they' ? 'std-btn depressed' : 'std-btn raised';
+                const box = UI.get('bidgrid');
+                box.classList.remove('collapsed');
+                box.classList.add('expanded');
+                UI.show('live-contract'); 
+                UI.show('chooser_master'); 
+                UI.renderGrid();
+            },
+            setMultiplier: (val) => {
+                let target = 'n';
+                if (val === 1) target = (STATE.bid.multiplier === 'x') ? 'n' : 'x';
+                if (val === 2) target = (STATE.bid.multiplier === 'xx') ? 'n' : 'xx';
+                STATE.bid.multiplier = target;
+                UI.get('btn-x').className = STATE.bid.multiplier === 'x' ? 'std-btn depressed' : 'std-btn raised';
+                UI.get('btn-xx').className = STATE.bid.multiplier === 'xx' ? 'std-btn depressed' : 'std-btn raised';
+                UI.renderGrid(); UI.updateDisplay(); 
+            },
+            setHonors: (val) => {
+                STATE.bid.honors = (STATE.bid.honors === val ? 0 : val); 
+                UI.get('btn-h100').className = STATE.bid.honors === 100 ? 'std-btn depressed' : 'std-btn raised';
+                UI.get('btn-h150').className = STATE.bid.honors === 150 ? 'std-btn depressed' : 'std-btn raised';
+            },
+            resetBiddingUI: (nuclear = false) => {
+                const box = UI.get('bidgrid');
+                box.classList.remove('expanded');
+                box.classList.add('collapsed');
+                UI.hide('chooser_master'); 
+                UI.hide('live-contract'); 
+                UI.get('chooser').innerHTML = ""; 
+                UI.get('live-contract').innerHTML = ""; 
+                UI.get('btn-we').className = "std-btn raised"; UI.get('btn-they').className = "std-btn raised";
+                UI.get('menu').innerHTML = "";
+                ['btn-x','btn-xx','btn-h100','btn-h150'].forEach(id => UI.get(id).className = "std-btn raised");
+                STATE.bid = { side: null, level: null, suit: null, multiplier: 'n', honors: 0 };
+                Storage.save(nuclear);
+            },
+            renderGrid: () => {
+                if (!STATE.bid.side) return;
+                let html = '<table class="chooser">';
+                for (let l = 1; l <= 7; l++) {
+                    html += '<tr>';
+                    CONFIG.suits.forEach(s => {
+                        let pts = Game.calcTrickBase(s, l);
+                        if (STATE.bid.multiplier === 'x') pts *= 2; if (STATE.bid.multiplier === 'xx') pts *= 4;
+                        const curScore = (STATE.math[STATE.bid.side].partial);
+                        const isGame = (curScore + pts >= CONFIG.points.game) ? 'game' : 'notgame';
+                        const isSelected = (l === STATE.bid.level && s === STATE.bid.suit);
+                        const cls = isSelected ? "contract depressed" : "contract raised";
+                        const suitColorClass = (s === '♥' || s === '♦') ? 'grid-red' : 'grid-black';
+                        html += `<td class="${isGame}"><span class="${cls}" onclick="Game.pick(${l}, '${s}')">${l}<span class="${suitColorClass}">${s}</span></span></td>`;
+                    });
+                    html += '</tr>';
+                }
+                UI.get('chooser').innerHTML = html + '</table>';
+            },
+            renderMenu: (level) => {
+                let menu = `Result: <select id="res" style="font-size:16px; padding:3px;">`; let req = level + CONFIG.points.baseBook;
+                for (let d = req; d >= 1; d--) menu += `<option value="down ${d}">down ${d}</option>`;
+                menu += `<option value="made it" selected>made it</option>`;
+                for (let o = 1; o <= (13-req); o++) { let label = `${o} over`; menu += `<option value="${label}">${label}</option>`; }
+                UI.get('menu').innerHTML = menu + `</select> <button id="scorebtn" onclick="this.disabled=true; Game.scoreHand()">Score</button>`;
+            },
+            
+            renderEntry: (data) => {
+                let html = "", anno = "", section = "above", row = 0;
+                let bidStr = "";
+                if (data.b) bidStr = UI.colorBid(data.b + (data.m === 'x' ? 'x' : (data.m === 'xx' ? 'xx' : '')));
+
+                if (data.t === 'down') { html = data.sc; anno = `<span class="anno-text">${bidStr} ${data.lbl || ''}</span>`; section = "above"; } 
+                else if (data.t === 'made') { html = data.g ? `<span style="color:red">${data.sc}</span>` : data.sc; anno = `<span class="anno-text">${bidStr}</span>`; section = "below"; row = data.r || 0; }
+                else if (data.t === 'ot') { html = data.sc; anno = `<span class="anno-text">${data.cnt} overtrick${data.cnt>1?'s':''}</span>`; section = "above"; }
+                else if (data.t === 'hon') { html = data.sc; anno = `<span class="anno-text">${data.sc} honors</span>`; section = "above"; }
+                else if (data.t === 'ins') { html = data.sc; anno = `<span class="anno-text">insult</span>`; section = "above"; }
+                else if (data.t === 'slam') { html = data.sc; anno = `<span class="anno-text">${data.lvl===6?'small':'grand'} slam</span>`; section = "above"; }
+                else if (data.t === 'rub') { html = data.sc; anno = `<span class="anno-text">rubber bonus</span>`; section = "above"; }
+                
+                return { html, anno, section, row, side: data.s, isLine: data.g };
+            },
+
+            getScorecardHTML: (rubberNum, names, logs, isFinal = false) => {
+                const { we1, we2, they1, they2 } = names;
+                let buffers = { we: { above: "", below: ["", "", ""] }, they: { above: "", below: ["", "", ""] }, anno: { we: { above: "", below: ["", "", ""] }, they: { above: "", below: ["", "", ""] } } };
+                let rowClasses = ["", "", ""];
+                let weGames = 0, theyGames = 0;
+                
+                logs.forEach(rawItem => {
+                    const entry = UI.renderEntry(rawItem);
+                    const b = buffers[entry.side]; const a = buffers.anno[entry.side];
+                    if (entry.section === 'above') {
+                        b.above = `${entry.html}<br>${b.above}`;
+                        if(entry.anno) a.above = `${entry.anno}<br>${a.above}`;
+                    } else {
+                        let r = entry.row || 0; if (r>2) r=2;
+                        if (entry.isLine) {
+                            rowClasses[r] = "gamewon-row";
+                            if(entry.side === 'we') weGames++; else theyGames++;
+                        }
+                        b.below[r] += (b.below[r] ? '<br>' : '') + entry.html;
+                        if(entry.anno) a.below[r] += (a.below[r] ? '<br>' : '') + entry.anno;
+                    }
+                });
+                
+                const weClass = (weGames > 0 && !isFinal) ? "vulnerable" : "";
+                const theyClass = (theyGames > 0 && !isFinal) ? "vulnerable" : "";
+                
+                return `
+                <table class="scorecard">
+                    <tr><td colspan="4" align="center" style="font-size:small; border-bottom:1px solid black; font-family:sans-serif;">Rubber #${rubberNum}</td></tr>
+                    <tr><td style="width:5%"></td>
+                        <td class="weheader"><span class="${weClass}">WE</span><br><div class="player-name">${we1}<br>${we2}</div></td>
+                        <td class="theyheader"><span class="${theyClass}">THEY</span><br><div class="player-name">${they1}<br>${they2}</div></td>
+                        <td style="width:5%"></td></tr>
+                    <tr><td class="anno left btm">${buffers.anno.we.above}</td><td class="sc-cell wabove">${buffers.we.above}</td><td class="sc-cell tabove">${buffers.they.above}</td><td class="anno right btm">${buffers.anno.they.above}</td></tr>
+                    <tr class="${rowClasses[0]}"><td class="anno left">${buffers.anno.we.below[0]}</td><td class="sc-cell wbelow">${buffers.we.below[0]}</td><td class="sc-cell tbelow">${buffers.they.below[0]}</td><td class="anno right">${buffers.anno.they.below[0]}</td></tr>
+                    <tr class="${rowClasses[1]}"><td class="anno left">${buffers.anno.we.below[1]}</td><td class="sc-cell wbelow">${buffers.we.below[1]}</td><td class="sc-cell tbelow">${buffers.they.below[1]}</td><td class="anno right">${buffers.anno.they.below[1]}</td></tr>
+                    <tr class="${rowClasses[2]}"><td class="anno left">${buffers.anno.we.below[2]}</td><td class="sc-cell wbelow">${buffers.we.below[2]}</td><td class="sc-cell tbelow">${buffers.they.below[2]}</td><td class="anno right">${buffers.anno.they.below[2]}</td></tr>
+                </table>`;
+            },
+            drawActive: () => { UI.get('thisrubber').innerHTML = UI.getScorecardHTML(STATE.rubberNum, STATE.names, STATE.activeLog, false); },
+            renderArchive: () => {
+                const con = UI.get('oldrubbers'); con.innerHTML = "";
+                STATE.archive.forEach(item => {
+                    const div = document.createElement("div"); div.className = "rubberwindow";
+                    div.innerHTML = UI.getScorecardHTML(item.rubberNum, item.names, item.activeLog, true);
+                    con.prepend(div);
+                });
+            },
+            updateTally: () => {
+                let parts = []; for (let p in STATE.players) parts.push(`<span class="player-name">${p}</span>&nbsp;<span style="color:#fff">${STATE.players[p]}</span>`);
+                UI.get('tallydiv').innerHTML = `<span class="cumu-label hid">Cumulative:&nbsp; </span>` + parts.join('&nbsp; | &nbsp;');
+                if (STATE.allNames.length) UI.get('namelist').innerHTML = STATE.allNames.map(n => `<option value="${n}">`).join('');
+            },
+            updateUndoBtn: () => {
+                const hasHistory = STATE.history.length > 0;
+                UI.get('undo-btn').classList.toggle('hid', !hasHistory);
+                const hasData = (STATE.activeLog.length > 0 || STATE.archive.length > 0);
+                UI.get('share-btn').classList.toggle('hid', !hasData);
+                const hasActiveRubber = STATE.names.we1 && STATE.names.we2 && STATE.names.they1 && STATE.names.they2;
+                UI.get('force-btn').classList.toggle('hid', !hasActiveRubber);
+                UI.get('reset-btn').classList.toggle('hid', !hasData && !hasHistory);
+                UI.get('menu-toggle').classList.toggle('hid', false);
+                if(hasData || hasHistory) UI.show('tallydiv');
+            },
+            
+            /* --- POPUP HANDLERS --- */
+            hideAllPopups: () => {
+                UI.hide("playerpopup");
+                UI.hide("startuppopup");
+                UI.hide("sharepopup");
+                UI.hide("aboutpopup");
+            },
+            showAbout: () => {
+                const popup = UI.get("aboutpopup");
+                if (!popup.classList.contains('hid')) { UI.closeAbout(); return; }
+                UI.hideAllPopups(); UI.hide("bidgrid"); UI.show("aboutpopup");
+            },
+            closeAbout: () => {
+                UI.hide("aboutpopup"); UI.show("bidgrid");
+            },
+            showShare: (url) => {
+                const popup = UI.get("sharepopup");
+                if (!popup.classList.contains('hid') && !url) { UI.closeShare(); return; }
+                UI.hideAllPopups(); UI.hide("bidgrid");
+                if (url) {
+                    const input = UI.get("share-url-input"); input.value = url;
+                }
+                UI.get("copy-btn").innerText = "Copy";
+                UI.show("sharepopup");
+            },
+            closeShare: () => {
+                UI.hide("sharepopup"); UI.show("bidgrid");
+            },
+            copyShareLink: () => {
+                const input = UI.get("share-url-input");
+                input.select(); input.setSelectionRange(0, 99999);
+                navigator.clipboard.writeText(input.value).then(() => {
+                    const btn = UI.get("copy-btn");
+                    btn.innerText = "Copied!";
+                    setTimeout(() => { if (btn.innerText === "Copied!") btn.innerText = "Copy"; }, 2000);
+                }).catch(err => { console.error("Copy failed", err); });
+            }
+        };
+
+        const Storage = {
+            toBase64: (str) => window.btoa(unescape(encodeURIComponent(str))),
+            fromBase64: (str) => decodeURIComponent(escape(window.atob(str))),
+
+            save: (nuclear = false) => {
+                localStorage.setItem(CONFIG.storageKey, JSON.stringify(STATE));
+                UI.updateTally(); UI.updateUndoBtn();
+            },
+            share: () => {
+                const popup = UI.get("sharepopup");
+                if (!popup.classList.contains('hid')) { UI.closeShare(); return; }
+                const namesArr = [STATE.names.we1, STATE.names.we2, STATE.names.they1, STATE.names.they2];
+                const cleanArchive = STATE.archive.map(rub => ({ n: [rub.names.we1, rub.names.we2, rub.names.they1, rub.names.they2], l: Compressor.packLog(rub.activeLog) }));
+                const packedActive = Compressor.packLog(STATE.activeLog);
+                const minified = [4, namesArr, cleanArchive, packedActive]; 
+                
+                const url = window.location.href.split('#')[0] + '#' + Storage.toBase64(JSON.stringify(minified));
+                UI.showShare(url);
+            },
+            load: () => {
+                let localData = null;
+                const saved = localStorage.getItem(CONFIG.storageKey);
+                if (saved) {
+                    try { localData = JSON.parse(saved); } catch(e) {}
+                }
+                if (localData) STATE = { ...STATE, ...localData };
+
+                let loadedFromHash = false;
+                if (window.location.hash && window.location.hash.length > 1) {
+                    const hasLocalGame = (STATE.archive && STATE.archive.length > 0) || (STATE.activeLog && STATE.activeLog.length > 0) || (STATE.names && STATE.names.we1);
+                    let proceed = true;
+                    if (hasLocalGame) {
+                        proceed = confirm("Loading this shared link will overwrite your current active session. Are you sure you want to proceed?");
+                    }
+                    if (proceed) {
+                        try {
+                            const hashStr = window.location.hash.substring(1);
+                            const decoded = JSON.parse(Storage.fromBase64(hashStr));
+                            
+                            if (Array.isArray(decoded) && decoded[0] === 4) {
+                                let tally = {};
+                                const initPlayers = (nArr) => { nArr.forEach(n => { if(n && !tally[n]) tally[n] = 0; }); };
+                                
+                                const archiveData = decoded[2].map(a => {
+                                    const logs = Compressor.unpackLog(a.l);
+                                    initPlayers(a.n);
+                                    let weTot = logs.filter(l => l.s === 'we').reduce((sum, l) => sum + l.sc, 0);
+                                    let theyTot = logs.filter(l => l.s === 'they').reduce((sum, l) => sum + l.sc, 0);
+                                    const diff = Math.abs(weTot - theyTot);
+                                    if (weTot > theyTot) { tally[a.n[0]] += diff; tally[a.n[1]] += diff; tally[a.n[2]] -= diff; tally[a.n[3]] -= diff; } 
+                                    else { tally[a.n[0]] -= diff; tally[a.n[1]] -= diff; tally[a.n[2]] += diff; tally[a.n[3]] += diff; }
+                                    return { rubberNum: 0, names: { we1: a.n[0], we2: a.n[1], they1: a.n[2], they2: a.n[3] }, activeLog: logs };
+                                });
+                                
+                                initPlayers(decoded[1]);
+                                STATE = {
+                                    ...STATE,
+                                    names: { we1: decoded[1][0], we2: decoded[1][1], they1: decoded[1][2], they2: decoded[1][3] },
+                                    players: tally, archive: archiveData, activeLog: Compressor.unpackLog(decoded[3]), history: [],
+                                    math: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } }, rubberNum: decoded[2].length + 1, isBig: STATE.isBig
+                                };
+                                STATE.math = Compressor.recalcMath(STATE.activeLog);
+                                
+                                let gW=0, gT=0;
+                                STATE.activeLog.forEach(l => {
+                                    if(l.t === 'made') { l.r = gW+gT; if(l.g) { if(l.s === 'we') gW++; else gT++; } }
+                                });
+                                loadedFromHash = true;
+                                window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                                Storage.save(); 
+                            }
+                        } catch(e) { console.error("Hash load error", e); }
+                    }
                 }
 
-var nv0 = new Array(50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650);
-var v0 = new Array(100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300);
-var nvx = new Array(100, 300, 500, 800, 1100, 1400, 1700, 2000, 2300, 2600, 2900, 3200, 3500);
-var vx = new Array(200, 500, 800, 1100, 1400, 1700, 2000, 2300, 2600, 2900, 3200, 3500, 3800);
-var nvxx = new Array(200, 600, 1000, 1600, 2200, 2800, 3400, 4000, 4600, 5200, 5800, 6400, 7000);
-var vxx = new Array(400, 1000, 1600, 2200, 2800, 3400, 4000, 4600, 5200, 5800, 6400, 7000, 7600);
-
-var suits = new Array('C', 'D', 'H', 'S', 'NT');
-
-var bidtrickminor = new Array(20, 40, 60, 80, 100, 120, 140);
-var bidtrickmajor = new Array(30, 60, 90, 120, 150, 180, 210);
-var bidtricknt = new Array(40, 70, 100, 130, 160, 190, 220);
-
-var resVal = new Array("down&nbsp;13", "down&nbsp;12", "down&nbsp;11", "down&nbsp;10","down&nbsp;9", "down&nbsp;8", "down&nbsp;7", "down&nbsp;6", "down&nbsp;5", "down&nbsp;4", "down&nbsp;3", "down&nbsp;2", "down&nbsp;1", "made&nbsp;it", "1&nbsp;over", "2&nbsp;over", "3&nbsp;over", "4&nbsp;over", "5&nbsp;over", "6&nbsp;over");
-
-var rubbernum = 1;
-
-var spacer = '&nbsp;&nbsp;&nbsp;';
-
-var imgarray = new Object();
-imgarray["C"]='<span class="Cimg" name="C">' + spacer + '</span>';
-imgarray["D"]='<span class="Dimg" name="D">' + spacer + '</span>';
-imgarray["H"]='<span class="Himg" name="H">' + spacer + '</span>';
-imgarray["S"]='<span class="Simg" name="S">' + spacer + '</span>';
-imgarray["NT"]='NT';
-
-rubberstring = '';
-
-players = new Object;
-
-function getplayers() {
-
-	document.getElementById("addpopup").className = "hid";
-	document.getElementById("bidgrid").className = "hid";
-
-	if (rubbernum > 1) {
-		wefield1='<select name="we1" id="we1" onmousedown="return CancelDrag(event)">';
-		for (player in players) {
-			wefield1+='<option name="' + player + '" value="' + player + '">' + player;
-		}
-		wefield1+='</select>';
-
-		wefield2='<select name="we2" onmousedown="return CancelDrag(event)">';
-		for (player in players) {
-			wefield2+='<option name="' + player + '" value="' + player + '">' + player;
-		}
-		wefield2+='</select>';
-
-		theyfield1='<select name="they1" onmousedown="return CancelDrag(event)">';
-		for (player in players) {
-			theyfield1+='<option name="' + player + '" value="' + player + '">' + player;
-		}
-		theyfield1+='</select>';
-
-		theyfield2='<select name="they2" onmousedown="return CancelDrag(event)">';
-		for (player in players) {
-			theyfield2+='<option name="' + player + '" value="' + player + '">' + player;
-		}
-		theyfield2+='</select>';
-
-		addbutton='<p><input type="button" value="Add new player" onClick="addnewplayer(); return false;"><p>';
-		intro ='';
-		isnext = 'the next';
-	}
-	else {
-
-		wefield1='<input type="text" name="we1" id="we1" size=10 maxlength=10 onmousedown="return CancelDrag(event)">';
-		wefield2='<input type="text" name="we2" size=10 maxlength=10 onmousedown="return CancelDrag(event)">';
-		theyfield1='<input type="text" name="they1" size=10 maxlength=10 onmousedown="return CancelDrag(event)" onBlur="document.playerform.playersok.disabled=false;">';
-		theyfield2='<input type="text" name="they2" size=10 maxlength=10 onmousedown="return CancelDrag(event)">';
-		addbutton='';
-		intro='<span class="title">Rubber Soul</span><br><span class="subtitle">The Rubber Bridge Scorer</span><p>';
-		isnext = 'the first';
-
-	}
-
-	playerform=intro + rubberstring + '<form name="playerform" class="players" onSubmit="setplayers(); return false;">';
-	playerform+='Who\'s playing ' + isnext + ' rubber?';
-	playerform+=addbutton;
-	playerform+='<table class="players">';
-	playerform+='<tr><td>WE</td>';
-	playerform+='<td>THEY</td>';
-	playerform+='</tr>';
-	playerform+='<tr><td>';
-
-	playerform+=wefield1;
-	playerform+='<p>';
-	playerform+=wefield2;
-	playerform+='</td><td>';
-	playerform+=theyfield1;
-	playerform+='<p>';
-	playerform+=theyfield2;
-	playerform+='</td></tr>';
-	playerform+='</table>';
-	playerform+='<input type="submit" id="playersok" value="OK" onClick="setplayers(); return false;" disabled="true">';
-	playerform+='</form>';
-
-	document.getElementById("playerpopup").innerHTML = playerform;
-
-	document.getElementById("playerpopup").className="popupvis";
-
-	if (rubbernum > 1 && navigator.appName != 'Microsoft Internet Explorer'){
-		document.playerform.we1.options[we1].selected=true;
-		document.playerform.we2.options[we2].selected=true;
-		document.playerform.they1.options[they1].selected=true;
-		document.playerform.they2.options[they2].selected=true;
-	}
-
-	if (rubbernum > 1 ) { document.playerform.playersok.disabled=false; }
-
-	document.getElementById("we1").focus()
-
-}
-
-function playerdupes() {
-	fourplayers = new Array(we1, we2, they1, they2);
-	for (var i=0; i < 4; i++) {
-		if ((fourplayers[i] == fourplayers[i-1]) || (fourplayers[i] == fourplayers[i+1]) || (fourplayers[i] == fourplayers[i+2]) || (fourplayers[i] == fourplayers[i+3])) {
-			alertstring = fourplayers[i] + " seems to be occupying more than one seat.";
-			alert(alertstring);
-			return true;
-		}
-	}
-}
-
-function setplayers() {
-
-	we1 = document.playerform.we1.value.replace(/[^ \w]/g, '');
-	we2 = document.playerform.we2.value.replace(/[^ \w]/g, '');
-	they1 = document.playerform.they1.value.replace(/[^ \w]/g, '');
-	they2 = document.playerform.they2.value.replace(/[^ \w]/g, '');
-
-	if (playerdupes()) {getplayers();}
-	else {
-		document.getElementById("playerpopup").className="hid";
-		document.getElementById("bidgrid").className = "bidgrid";
-		if (!players[we1]) { players[we1] = 0 }
-		if (!players[we2]) { players[we2] = 0 }
-		if (!players[they1]) { players[they1] = 0 }
-		if (!players[they2]) { players[they2] = 0 }
-
-		//	players.sort();
-		//	for (var i=0; i < players.length - 1; i++) {
-		//		if (players[i] == players[i+1])
-		//		players[i+1] = '';
-		//	}
-		if ((rubbernum > 1 && rubberstring.indexOf("cancel") <= 0 ))
-		{
-			nextrubber(); 
-		}
-		ini();
-	}
-}
-
-function addnewplayer() {
-	addform = '<div class="closex" onClick="getplayers();">X</div>';
-	addform += 'New player:<p><form name="addform" onSubmit="addtoplayers(); return false;">';
-	addform += '<input type="text" name="newplayer" id="newplayer" value="" size=10 maxlength=10>';
-	addform += '<input type="button" value="OK" onClick="addtoplayers(); return false;">';
-	addform += '</form>';
-
-	document.getElementById("playerpopup").className = "hid";
-	document.getElementById("addpopup").className = "popupvis";
-	document.getElementById("addpopup").innerHTML = addform;
-	document.getElementById("newplayer").focus();
-}
-
-function addtoplayers() {
-	document.getElementById("addpopup").className = "hid";
-	newplayer = document.addform.newplayer.value.replace(/[^ \w]/g, '');
-	players[newplayer] = 0;
-	showtally();
-	getplayers();
-	document.getElementById("rubberresult").className = "hid";
-	return false;
-}
-
-function showtally() {
-	tallycontents = '';
-	for (player in players) {
-		tallycontents += player + ":&nbsp;" + players[player] + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-	}
-	document.getElementById("tallydiv").innerHTML=tallycontents;
-}
-
-
-function ini() {
-	rubberstring = '';
-	wsum = 0;
-	tsum = 0;
-	tcurscore = new Array(0,0);
-	wcurscore = new Array(0,0);
-	tgames = new Array(0,0);	
-	wgames = new Array(0,0);
-	wvul = new Array(0,0);
-	tvul = new Array(0,0);
-	hist = new Array();
-	document.getElementById("undo").innerHTML = ''; 
-	newrubber = '<div class="rubberwindow" id="rubberwindow"><div id="rubberx" class="hid" onClick="cancelrubber();" title="Cancel this rubber">X</div><div id="tallycontainer"><table id="main" class="main"><tr><td class="header" colspan=4>Rubber #' + rubbernum + '</td></tr><tr id="header" class="header"><td class="annobelowblank"></td><td class="weheader"><div id="wecumul"></div><b>WE</b><br><div class="playerheader">' + we1 + '<br>' + we2 + '</div></td><td class="theyheader"><div id="theycumul"></div><b>THEY</b><br><div class="playerheader">' + they1 + '<br>' + they2 + '</div></td><td class="annobelowblank"></td></tr><tr id="above" class="above"><td id="annowabove" class="wannoabove"><div id="annowabovediv"></div></td><td id="wabove" class="wabove"><div id="wabovediv"></div></td><td id="tabove" class="tabove"><div id="tabovediv"></div></td><td id="tabove" class="tannoabove"><div id="annotabovediv"></div></td></tr><tr id="below" class="below"><td id="annowbelow0" class="wannobelow"><div id="annowbelowdiv0"></div></td><td id="wbelow0" class="wbelow"><div id="wbelowdiv0"></div></td><td id="tbelow0" class="tbelow"><div id="tbelowdiv0"></div></td><td id="annotbelow0" class="tannobelow"><div id="annotbelowdiv0"></div></td></tr><tr><td class="annobelowblank"></td><td id="game1" colspan=2 class="hiddenline"></td><td class="annobelowblank"></td></tr><tr id="below1" class="below"><td id="annowbelow1" class="wannobelow"><div id="annowbelowdiv1"></div></td><td id="wbelow1" class="wbelow"><div id="wbelowdiv1"></div></td><td id="tbelow1" class="tbelow"><div id="tbelowdiv1"></div></td><td id="annotbelow1" class="tannobelow"><div id="annotbelowdiv1"></div></td></tr><tr><td class="annobelowblank"></td><td id="game2" colspan=2 class="hiddenline"></td><td class="annobelowblank"></td></tr><tr id="below2" class="below"><td id="annowbelow2" class="wannobelow"><div id="annowbelowdiv2"></div></td><td id="wbelow2" class="wbelow"><div id="wbelowdiv2"></div></td><td id="tbelow2" class="tbelow"><div id="tbelowdiv2"></div></td><td id="annotbelow2" class="tannobelow"><div id="annotbelowdiv2"></div></td></tr><tr><td class="annobelowblank"></td><td id="game3" colspan=2 class="hiddenline"></td><td class="annobelowblank"></td></tr><tr><td class="annobelowblank"></td><td colspan=2 id="result" class="result"></td><td class="annobelowblank"></td></tr></table></div></div>';
-	document.getElementById("thisrubber").innerHTML = newrubber;
-	if (rubbernum > 1) { document.getElementById("rubberx").className = "closex"; }
-	showtally();
-	cleartable();
-}
-
-function firstrubber() {
-	getplayers();
-	imgtoggle();
-	annotoggle();
-}
-
-function cleartable () {
-	document.getElementById("chooser").innerHTML = '';
-	document.getElementById("menu").innerHTML = '';
-	document.getElementById("double").innerHTML = '';
-	document.getElementById("honors").innerHTML = '';
-	document.info.X.value = 'n';
-	document.info.honors.value = '';
-	toggleButton('', /wethey/i);
-}
-
-function annotoggle() {
-	var arraySpans = document.body.getElementsByTagName("div");
-	if (document.getElementById("annotoggle").checked) {
-		for(var i = 0; i < arraySpans.length; i++) {
-			if(arraySpans[i].id.match(/anno.*below/))
-			{
-				arraySpans[i].className = 'annobelow';
-			}
-			if(arraySpans[i].id.match(/anno.*above/))
-			{
-				arraySpans[i].className = 'annoabove';
-			}
-		}
-	}
-	else {
-		for(var i = 0; i < arraySpans.length; i++) {
-			if(arraySpans[i].id.match(/anno/))
-			{
-				arraySpans[i].className = 'annohidden';
-			}
-		}
-	}
-}
-
-
-function imgtoggle () {
-
-	if (document.getElementById("imgtoggle").checked) {
-		for (var suit in suits) {
-			if (suits[suit] == "NT") {break;}
-			classtoggle = suits[suit] + 'img';
-			imgarray[suits[suit]] = '<span class="' + classtoggle + '" name="' +suits[suit] + '">' + spacer + '</span>'
-				var iconarray = document.getElementsByName(suits[suit]);
-			for (var i=0 ; i < iconarray.length; i++) { 
-				iconarray[i].innerHTML=spacer;
-				iconarray[i].className=classtoggle;
-			}
-		}		
-	}
-	else {
-		for (var suit in suits) {
-			if (suits[suit] == "NT") {break;}
-			imgarray[suits[suit]] = '<span class="suittxt" name="' + suits[suit] + '">' + suits[suit] + '</span>'
-				var iconarray = document.getElementsByName(suits[suit]);
-			for (var i=0 ; i < iconarray.length; i++) { 
-				iconarray[i].innerHTML=suits[suit];
-				iconarray[i].className="suittxt";
-
-			}
-		}
-	}
-}
-
-function undo() {
-	if (hist.length <= 2) {
-		document.getElementById("undo").innerHTML = ''; 
-	}
-	document.getElementById("main").innerHTML = hist.pop();
-	tcurscore.pop();
-	wcurscore.pop();	
-	tgames.pop();	
-	wgames.pop();	
-	tvul.pop();	
-	wvul.pop();	
-	cleartable();
-}
-
-function cancelrubber() {
-
-	var cancelyn = confirm("Abort this rubber?");
-	if (cancelyn == true) {
-		document.getElementById("rubberwindow").className = "annohidden";
-		hist = [];
-		tcurscore = [];
-		wcurscore = [];	
-		tgames = [];	
-		wgames = [];	
-		tvul = [];	
-		wvul = [];	
-		cleartable();
-		rubberstring = "Rubber cancelled.";
-		getplayers(rubberstring);
-	}
-}
-
-function hilite(bidd) {
-	bid = bidd;
-	colortable();
-	if (contractor == "we") {var prtl = wcurscore[wcurscore.length - 1]}
-	if (contractor == "they") {var prtl = tcurscore[tcurscore.length - 1]}
-	level = bid.substring(0,1);
-	suit = bid.substring(1)
-		var isgame = isagame(level, suit, prtl);
-	isgame += "pick";
-	document.getElementById(bid).className=isgame;
-}
-
-function setcont(contractor) {
-	document.info.contractor.value=contractor;
-	document.getElementById("wetheywe").className = 'raised';
-	document.getElementById("wetheythey").className = 'raised';
-	document.getElementById("wethey" + contractor).className = 'depressed';
-	colortable();
-}
-
-function setdouble(doubleObj,doub) {
-	var status = doubleObj.className;
-	document.getElementById("doublex").className = 'raised';
-	document.getElementById("doublexx").className = 'raised';	
-	if (status == 'depressed' ) {doub = 0;}
-	else {doubleObj.className = 'depressed';}
-	if (doub == 1) { document.info.X.value='x';}
-	else if (doub == 2) { document.info.X.value='xx';}
-	else { document.info.X.value='n';}
-	hilite(bid);
-}
-
-function sethonors(honorsObj, honors) {
-	var status = honorsObj.className;
-	if (document.getElementById("honors100")) {document.getElementById("honors100").className = 'raised';}
-	document.getElementById("honors150").className = 'raised';	
-	if (status == 'depressed' ) {honors = 0}
-	else {honorsObj.className = 'depressed';}
-	document.info.honors.value=honors;
-}
-
-function isagame(level, suit, prtl) {
-	denom = '';
-	if (suit == "C" || suit == "D") {points = bidtrickminor[level - 1] ; denom = "minor" }
-	if (suit == "H" || suit == "S") {points = bidtrickmajor[level - 1] ; denom = "major" }
-	else if (suit == "NT") {points = bidtricknt[level - 1] ; denom = "nt" }
-	if  (document.info.X.value == 'x') {points = points * 2} 
-	else if  (document.info.X.value == 'xx') {points = points * 4} 
-	if (prtl + points >= 100) { return "game"}
-	else { return "notgame"}
-
-}
-
-function colortable() {
-	contractor=document.info.contractor.value;
-	if (contractor == "we") {var prtl = wcurscore[wcurscore.length - 1]}
-	if (contractor == "they") {var prtl = tcurscore[tcurscore.length - 1]}
-	points = 0;
-	denom = '';
-	tablecontents = '<table class="chooser">';
-	for (level = 1; level <= 7 ; level++) {
-		tablecontents += '<tr>'
-			for (suit in suits) {
-				suit = suits[suit];
-				tdclass = isagame(level, suit, prtl);		
-				tablecontents += '<td id="' + level + suit + '" class="' + tdclass +
-					'"><span class="contract" onclick="hilite(\'' + level + suit + '\'); menu(\'' + level + suit + '\');">'+ level + imgarray[suit] + '</span></td>';
-			}
-		tablecontents += '</tr>';
-	}
-	tablecontents += '</table>';
-	if (hist.length == 0) {hist.push(document.getElementById("main").innerHTML);}
-	document.getElementById("chooser").innerHTML = tablecontents;
-
-}
-
-function drawxh() {
-	document.info.X.value = 'n';
-	var xcontents = '<span id="doublex" class="raised" onclick="setdouble(this,1);">Doubled</span> <span id="doublexx" class="raised" onclick="setdouble(this,2);">Redoubled</span>';
-	var suithonorscontents = '<span id="honors100" class="raised" onclick="sethonors(this, 100);">100&nbsp;honors</span>&nbsp;';
-	var honorscontents = '<span id="honors150" class="raised" onclick="sethonors(this, 150);">150&nbsp;honors</span>';
-	if (denom != 'nt') {honorscontents = suithonorscontents + honorscontents}
-
-	document.getElementById("double").innerHTML = xcontents;
-	document.getElementById("honors").innerHTML = honorscontents;
-}
-
-function menu(bid) {
-	level = bid.match(/\d/);
-	menucontents = 'Result: <select name="result" onmousedown="return CancelDrag(event)">';
-	i2 = 14;
-	for (i=0; i < 14; i++) {
-		i2--;
-		var resultstring = resVal[(20 - i) - level];
-		menucontents += '<option value=' + i2 + '>' +  resultstring;
-	}
-	if (document.info.X.value == 'n' && ( document.info.honors.value == '0' || document.info.honors.value == '')) {drawxh(); }
-
-	menucontents += '</select><p><input type="button" id="submit" value ="Score" onClick="score(); return false;">';
-	document.getElementById("menu").innerHTML = menucontents;
-	document.getElementById("submit").focus();
-	sel = 7-(level-0);
-	res = document.info.result.options;
-	res[sel].selected = true;
-}
-
-
-function cumul() {
-
-	wtotal = document.getElementById("wabovediv").innerHTML + ' ' + document.getElementById("wbelowdiv0").innerHTML +  ' ' + document.getElementById("wbelowdiv1").innerHTML + ' ' + document.getElementById("wbelowdiv2").innerHTML; 
-
-	var wtotalarray = wtotal.split(/\D/);
-	wsum = 0;
-	var wscores = '';
-	for (var i = 0; i < wtotalarray.length ; i++) {
-		wsum += parseInt((wtotalarray[i].replace(/\D/, "") * 1));
-	}
-	ttotal = document.getElementById("tabovediv").innerHTML + ' ' + document.getElementById("tbelowdiv0").innerHTML + ' ' + document.getElementById("tbelowdiv1").innerHTML + ' ' + document.getElementById("tbelowdiv2").innerHTML; 
-	var ttotalarray = ttotal.split(/\D/);
-	tsum = 0;
-	for (var i = 0; i < ttotalarray.length ; i++) {
-		tsum += parseInt((ttotalarray[i].replace(/\D/, "") * 1));
-	}
-}
-
-
-function score() {
-	hist.push(document.getElementById("main").innerHTML);
-	document.getElementById("undo").innerHTML = '<input type="button" onclick="undo();" value="Undo last score">';
-	contractor=document.info.contractor.value;
-	var X = document.info.X.value;
-	var honors = document.info.honors.value;
-	var result = document.info.result.value;
-	setTimeout('cleartable()',700);
-	if (result < ((level-0)+6)) {
-		down(result, X, contractor);
-	}
-	else {
-		made(X, result, contractor, honors); 
-	}
-	cumul();
-	document.getElementById("wecumul").innerHTML = wsum;
-	document.getElementById("theycumul").innerHTML = tsum;
-}
-
-function down(result, X, contractor) {
-	resultstring = document.info.result.options[(13 - result)].text;
-	if (contractor == "we" ) { side = "tabovediv" ; vul = wvul[wvul.length - 1];}
-	else { side = "wabovediv" ; vul = tvul[tvul.length - 1];}
-	annoside = "anno" + side;
-	oldscore = document.getElementById(side).innerHTML;
-	oldanno = document.getElementById(annoside).innerHTML;
-	if (vul=="0" && X=="n")
-		downscore = nv0[(level-0)-(result-5)];
-	else if (vul=="0" && X=="x")
-		downscore = nvx[(level-0)-(result-5)];
-	else if (vul=="0" && X=="xx")
-		downscore = nvxx[(level-0)-(result-5)];
-	else if (vul=="1" && X=="n")
-		downscore = v0[(level-0)-(result-5)];
-	else if (vul=="1" && X=="x")
-		downscore = vx[(level-0)-(result-5)];
-	else
-		downscore = vxx[(level-0)-(result-5)];
-
-	var xstring = '';
-	if (X == 'x') {var xstring = ' dbl'} 
-	else if (X == 'xx') {var xstring = ' rdbl'} 
-	var annolevel = bid.substring(0,1);
-	var annosuit = imgarray[bid.substring(1)];
-	var annobid = annolevel + annosuit;
-
-	annocontents = '<br />' + annobid + '&nbsp;' + resultstring + xstring +  oldanno;
-	contents = '<br />' + downscore + oldscore;
-	document.getElementById(side).innerHTML = contents;
-	document.getElementById(annoside).innerHTML = annocontents;
-
-	wvul.push(wvul[wvul.length - 1]);
-	tvul.push(tvul[tvul.length - 1]);
-	wgames.push(wgames[wgames.length - 1]);
-	tgames.push(tgames[tgames.length - 1]);
-	wcurscore.push(wcurscore[wcurscore.length - 1]);
-	tcurscore.push(tcurscore[tcurscore.length - 1]);
-}
-
-function made(X,result, contractor, honors) {
-
-	if (contractor == "we" ) { vul = wvul[wvul.length - 1]; var curscore = wcurscore[wcurscore.length - 1];}
-	else { vul = tvul[tvul.length - 1]; var curscore = tcurscore[tcurscore.length - 1];}
-
-	if (denom=="minor")
-		den = bidtrickminor;
-	else if (denom=="major")
-		den = bidtrickmajor;
-	else
-		den = bidtricknt;
-
-	if (X=="n") { base = den[level - 1]; xbonus = 0}
-	else if (X=="x") { base = 2 * (den[level - 1]); xbonus = 50 }
-	else { base = 4 * (den[level - 1]); xbonus = 100}
-
-	if (X=="n" && denom=="minor")
-		ot = (result -((level-0)+6)) * 20;
-	else if (X=="n" && (denom=="major" || denom=="nt"))
-		ot = (result -((level-0)+6)) * 30;
-	else if (vul=="0" && X=="x")
-		ot = (result -((level-0)+6)) * 100;
-	else if ((vul=="1" && X=="x") || (vul=="0" && X=="xx"))
-		ot = (result -((level-0)+6)) * 200;
-	else
-		ot = (result -((level-0)+6)) * 400;
-
-        if (level == 6 && vul=="0") 
-        {
-            slambonus = 500;
-            slamsize = "small" 
+                if (!STATE.activeLog) STATE.activeLog = []; 
+                if (!STATE.math) STATE.math = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
+                
+                STATE.archive.forEach((rub, i) => rub.rubberNum = i + 1);
+                STATE.rubberNum = STATE.archive.length + 1;
+
+                UI.applyBigMode(); 
+                UI.renderArchive(); UI.drawActive(); UI.show('bidgrid'); UI.show('thisrubber'); UI.updateTally(); UI.updateUndoBtn();
+                
+                if (!loadedFromHash && (STATE.archive.length > 0 || STATE.activeLog.length > 0 || STATE.names.we1)) {
+                    Game.showStartupMenu();
+                } else if (!STATE.names.we1 && !STATE.names.we2) {
+                    let lastNames = null;
+                    if (STATE.archive.length > 0) lastNames = STATE.archive[STATE.archive.length - 1].names;
+                    Game.showEntry(loadedFromHash, loadedFromHash ? `<div class="title" style="font-size: 24px; margin-bottom: 12px;">Session loaded.</div>` : "", lastNames);
+                }
+            }
+        };
+
+        const Game = {
+            calcTrickBase: (suit, level) => {
+                if (suit === 'NT') return 40 + (level - 1) * 30;
+                return (suit === '♥' || suit === '♠') ? level * 30 : level * 20;
+            },
+            
+            showStartupMenu: () => {
+                const hasActiveRubber = STATE.names.we1 && STATE.names.we2 && STATE.names.they1 && STATE.names.they2;
+                
+                UI.get("startuppopup").innerHTML = `
+                    <div class="title">Rubber Soul</div>
+                    <div class="subtitle">Session Found</div>
+                    <div class="popup-msg">You have an existing session in progress.</div>
+                    <div style="margin-top:15px; display:flex; flex-direction:column; gap:10px; align-items:center;">
+                        <button style="width:200px;" onclick="Game.continueSession()">Continue Session</button>
+                        ${hasActiveRubber ? `<button style="width:200px;" onclick="UI.hideAllPopups(); Game.forceNewRubber()">Start New Rubber</button>` : ''}
+                        <button style="width:200px; color:#c00;" onclick="Game.resetFromStartup()">Start New Session</button>
+                    </div>
+                `;
+                UI.hideAllPopups();
+                UI.hide("bidgrid");
+                
+                if (hasActiveRubber || STATE.activeLog.length > 0) UI.show("thisrubber");
+                else UI.hide("thisrubber");
+                
+                UI.show("startuppopup");
+            },
+            continueSession: () => {
+                UI.hide("startuppopup");
+                if (!STATE.names.we1 || !STATE.names.we2) {
+                    let lastNames = null;
+                    if (STATE.archive.length > 0) lastNames = STATE.archive[STATE.archive.length - 1].names;
+                    Game.showEntry(true, `<div class="title" style="font-size: 24px; margin-bottom: 12px;">New Rubber</div>`, lastNames);
+                } else {
+                    UI.show("bidgrid"); UI.show("thisrubber");
+                }
+            },
+            resetFromStartup: () => {
+                if (confirm("Erase entire session?")) { window.location.hash = ""; localStorage.clear(); location.reload(); }
+            },
+            
+            showEntry: (isNewRubber = false, resultMsg = "", defaultNames = null) => {
+                const { we1, we2, they1, they2 } = defaultNames || STATE.names;
+                const listAttr = `list="namelist" autocomplete="off"`; 
+                const kL = `onkeydown="if(event.key==='Enter') Game.startMatch()"`;
+                const msgBody = isNewRubber ? `${resultMsg}<br><br>Who's playing the next rubber?` : "Who's playing the first rubber?";
+                let headerHTML = "";
+                if (!isNewRubber) headerHTML = `<div class="title">Rubber Soul</div><div class="subtitle">The Rubber Bridge Scorer</div>`;
+                
+                UI.get("playerpopup").innerHTML = `
+                    ${headerHTML}
+                    <div class="popup-msg">${msgBody}</div>
+                    <table class="popgrid">
+                        <tr><th>WE</th><th>THEY</th></tr>
+                        <tr>
+                            <td><input type="text" id="p1" value="${we1 || ''}" size="10" tabindex="1" ${listAttr} ${kL}></td>
+                            <td><input type="text" id="p3" value="${they1 || ''}" size="10" tabindex="3" ${listAttr} ${kL}></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" id="p2" value="${we2 || ''}" size="10" tabindex="2" ${listAttr} ${kL}></td>
+                            <td><input type="text" id="p4" value="${they2 || ''}" size="10" tabindex="4" ${listAttr} ${kL}></td>
+                        </tr>
+                    </table>
+                    <div style="margin-top:15px;"><button tabindex="5" onclick="Game.startMatch()">OK</button></div>
+                `;
+                
+                UI.hideAllPopups(); UI.hide("bidgrid"); UI.hide("thisrubber"); 
+                UI.show("playerpopup");
+            },
+            startMatch: () => {
+                const [p1,p2,p3,p4] = ['p1','p2','p3','p4'].map(id => sanitize(UI.get(id).value.trim())); // Sanitizer applied
+                if (!p1 || !p2 || !p3 || !p4) return alert("Please enter all four names!");
+                if (new Set([p1, p2, p3, p4]).size < 4) return alert("Unique names required!");
+                STATE.names = { we1: p1, we2: p2, they1: p3, they2: p4 };
+                [p1, p2, p3, p4].forEach(p => { if (STATE.players[p] === undefined) STATE.players[p] = 0; if (!STATE.allNames.includes(p)) STATE.allNames.push(p); });
+                UI.hide("playerpopup"); 
+                UI.show("tallydiv"); UI.show("bidgrid"); UI.show("thisrubber"); UI.drawActive(); Storage.save();
+            },
+            pick: (level, suit) => { 
+                STATE.bid.level = level; STATE.bid.suit = suit; 
+                UI.renderGrid(); UI.updateDisplay(); UI.renderMenu(level); 
+            },
+
+            calculateScore: (side, level, suit, multiplier, honors, resLabel) => {
+                const isVul = (STATE.math[side].games > 0);
+                const bidStr = `${level}${suit}`;
+                let newLogs = [];
+
+                if (resLabel.includes("down")) {
+                    const oppSide = (side === 'we' ? 'they' : 'we');
+                    const downCount = parseInt(resLabel.match(/\d+/)[0]);
+                    let pts = 0;
+                    if (multiplier === 'n') pts = downCount * (isVul ? 100 : 50);
+                    else { const table = isVul ? CONFIG.penalties.vulX : CONFIG.penalties.notVulX; pts = table[downCount - 1] * (multiplier === 'xx' ? 2 : 1); }
+                    newLogs.push({ s: oppSide, t: 'down', sc: pts, b: bidStr, m: multiplier, lbl: resLabel });
+                } else {
+                    let trickPoints = Game.calcTrickBase(suit, level);
+                    if (multiplier === 'x') trickPoints *= 2; if (multiplier === 'xx') trickPoints *= 4;
+                    const isGameWon = (STATE.math[side].partial + trickPoints >= CONFIG.points.game);
+                    
+                    newLogs.push({ s: side, t: 'made', sc: trickPoints, b: bidStr, m: multiplier, g: isGameWon });
+
+                    if (resLabel.includes("over")) {
+                         const ot = parseInt(resLabel.match(/\d+/)[0]);
+                         let otPts = 0;
+                         if (multiplier === 'n') otPts = ot * ((suit==='♣'||suit==='♦') ? 20 : 30);
+                         else { otPts = ot * (isVul ? 200 : 100); if (multiplier === 'xx') otPts *= 2; }
+                         if(otPts > 0) newLogs.push({ s: side, t: 'ot', sc: otPts, cnt: ot });
+                    }
+                    if (honors > 0) newLogs.push({ s: side, t: 'hon', sc: honors });
+                    if (multiplier === 'x') newLogs.push({ s: side, t: 'ins', sc: 50 });
+                    if (multiplier === 'xx') newLogs.push({ s: side, t: 'ins', sc: 100 });
+                    
+                    let slamPts = 0; 
+                    if (level === 6) slamPts = (isVul ? 750 : 500); 
+                    if (level === 7) slamPts = (isVul ? 1500 : 1000); 
+                    if (slamPts > 0) newLogs.push({ s: side, t: 'slam', sc: slamPts, lvl: level });
+                }
+                return newLogs;
+            },
+
+            scoreHand: () => {
+                const { side, level, suit, multiplier, honors } = STATE.bid;
+                if (!side) return alert("Select side!");
+                STATE.history.push(JSON.stringify(STATE)); 
+                const resLabel = UI.get("res").value;
+                
+                const newLogs = Game.calculateScore(side, level, suit, multiplier, honors, resLabel);
+                
+                newLogs.forEach(log => {
+                    if (log.t === 'made') {
+                        let rowIdx = STATE.math.we.games + STATE.math.they.games; if (rowIdx > 2) rowIdx = 2;
+                        log.r = rowIdx;
+                        if (log.g) {
+                            STATE.math[log.s].games++; STATE.math.we.partial = 0; STATE.math.they.partial = 0;
+                        } else {
+                            STATE.math[log.s].partial += log.sc;
+                        }
+                    }
+                    STATE.activeLog.push(log);
+                });
+
+                if (STATE.math[side].games === 2) {
+                    const oppSide = (side === 'we' ? 'they' : 'we');
+                    const bonus = (STATE.math[oppSide].games === 0) ? CONFIG.points.rubFast : CONFIG.points.rubSlow;
+                    STATE.activeLog.push({ s: side, t: 'rub', sc: bonus });
+                    UI.drawActive(); 
+                    Game.finalizeMatch(side); 
+                    return; 
+                }
+
+                UI.drawActive();
+                if (STATE.math.we.games < 2 && STATE.math.they.games < 2) UI.resetBiddingUI();
+            },
+
+            closeOutRubber: (titleMsg) => {
+                const weTotal = STATE.activeLog.filter(l => l.s === 'we').reduce((sum, l) => sum + l.sc, 0);
+                const theyTotal = STATE.activeLog.filter(l => l.s === 'they').reduce((sum, l) => sum + l.sc, 0);
+                const diff = Math.abs(weTotal - theyTotal);
+                const { we1, we2, they1, they2 } = STATE.names;
+                
+                let winMsg = `<div class="title" style="font-size: 24px; margin-bottom: 12px;">${titleMsg}</div>`;
+                if (weTotal > theyTotal) {
+                    winMsg += `<div style="font-size:18px;"><b>Final Score:</b><br>${we1} & ${we2}: ${diff}<br>${they1} & ${they2}: -${diff}</div>`;
+                    STATE.players[we1]+=diff; STATE.players[we2]+=diff; STATE.players[they1]-=diff; STATE.players[they2]-=diff;
+                } else {
+                    winMsg += `<div style="font-size:18px;"><b>Final Score:</b><br>${they1} & ${they2}: ${diff}<br>${we1} & ${we2}: -${diff}</div>`;
+                    STATE.players[we1]-=diff; STATE.players[we2]-=diff; STATE.players[they1]+=diff; STATE.players[they2]+=diff;
+                }
+                
+                STATE.archive.push(JSON.parse(JSON.stringify({ rubberNum: STATE.rubberNum, names: STATE.names, activeLog: STATE.activeLog })));
+                const namesForPopup = { ...STATE.names };
+                STATE.activeLog = []; STATE.names = { we1: "", we2: "", they1: "", they2: "" };
+                STATE.math = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
+                STATE.history = []; STATE.rubberNum++;
+                UI.resetBiddingUI(true); UI.drawActive(); UI.renderArchive();
+                Game.showEntry(true, winMsg, namesForPopup);
+            },
+            finalizeMatch: (winnerSide) => {
+                const winners = (winnerSide === 'we') ? `${STATE.names.we1} & ${STATE.names.we2}` : `${STATE.names.they1} & ${STATE.names.they2}`;
+                Game.closeOutRubber(`${winners} win the rubber!`);
+            },
+            forceNewRubber: () => {
+                if (!confirm("End current rubber and start a new one?")) return;
+                Game.closeOutRubber("Rubber ended.");
+            },
+            undo: () => { if (STATE.history.length === 0) return; STATE = JSON.parse(STATE.history.pop()); UI.hideAllPopups(); UI.show("thisrubber"); UI.show("bidgrid"); UI.renderArchive(); UI.drawActive(); UI.resetBiddingUI(); UI.updateUndoBtn(); Storage.save(); },
+            confirmReset: () => { if (confirm("Erase entire session?")) { window.location.hash = ""; localStorage.clear(); location.reload(); } }
+        };
+        
+        function toggleMenu() {
+            const menuButtons = document.getElementById('menu-buttons');
+            menuButtons.classList.toggle('show');
         }
-        else if (level == 6 && vul=="1")
-        {
-            slambonus = 750;
-            slamsize = "small" 
-        }
-        else if (level == 7 && vul=="0")
-        {
-            slambonus = 1000;
-            slamsize = "grand" 
-        }
-        else if (level == 7 && vul=="1")
-        {
-            slambonus = 1500;
-            slamsize = "grand" 
-        }
-        else {
-            slambonus = 0;
-            slamsize = '';
-        }
-
-	madescore = (base);
-
-    if (contractor == "we" ) {
-        side = "wbelowdiv"; 
-        aboveside = "wabovediv"; 
-        wcurscore.push(madescore + wcurscore[wcurscore.length - 1]); 
-    }
-    else { 
-        side = "tbelowdiv"; 
-        aboveside = "tabovediv"; 
-        tcurscore.push(madescore + tcurscore[tcurscore.length - 1]) 
-    }
-
-	games = (wgames[wgames.length - 1] + tgames[tgames.length - 1]);
-	side += games;
-
-	annoside = "anno" + side;
-	annoaboveside = "anno" + aboveside;
-
-	if (curscore == 0) {var br = ' '}
-	else {var br = '<br>'}
-
-	var xstring = '';
-	if (X == 'x') {var xstring = ' dbl'} 
-	else if (X == 'xx') {var xstring = ' rdbl'} 
-
-	var annolevel = bid.substring(0,1);
-	var annosuit = imgarray[bid.substring(1)];
-	var annobid = annolevel + annosuit + xstring;
-
-	var oldabove = document.getElementById(aboveside).innerHTML;
-	var oldscore = document.getElementById(side).innerHTML;
-	var oldannoabove = document.getElementById(annoaboveside).innerHTML;
-	var oldannobelow = document.getElementById(annoside).innerHTML;
-
-	var contents = oldscore + br + madescore;
-	var annobelowcontents = oldannobelow + br  + annobid;
-
-	document.getElementById(side).innerHTML = contents;
-	document.getElementById(annoside).innerHTML = annobelowcontents;
-
-
-	var abovecontents = '';
-	var annoabovecontents = '';
-	otnum = (result - ((level - 0)+6));
-    if (otnum == 1) 
-    {
-        otplural = ''; 
-    }
-    else {
-        otplural = 's';
-    }
-
-	var abovescore = new Object();
-	abovescore[slamsize + " slam"] = slambonus;
-	abovescore["insult"] = xbonus;
-	abovescore[otnum + " overtrick" + otplural] = ot;
-	abovescore["honors"] = honors;
-
-
-	for (i in abovescore) {
-		bonus = abovescore[i];
-		if (bonus != '' && bonus > 0 ) { 
-			abovecontents += '<br />' + bonus; 
-			annoabovecontents += '<br />' + i;
-		}
-	}
-
-	abovecontents += oldabove;
-	annoabovecontents += oldannoabove;
-
-	document.getElementById(aboveside).innerHTML = abovecontents;
-	document.getElementById(annoaboveside).innerHTML = annoabovecontents;
-
-    if (tcurscore[tcurscore.length - 1] >= 100) 
-    {
-		document.getElementById(side).className="tbelowwon";
-		tgames.push(tgames[tgames.length - 1] + 1);
-		tvul.push(1);
-		wgames.push(wgames[wgames.length - 1]);
-		wvul.push(wvul[wvul.length - 1]);
-		games = (wgames[wgames.length - 1] + tgames[tgames.length - 1]);
-		line = "game" + games;
-		document.getElementById(line).className = "gameline"
-
-        if (tgames[tgames.length - 1] == 2) { rubber('THEY'); }
-		tcurscore[tcurscore.length - 1] = 0;
-		wcurscore[wcurscore.length - 1] = 0;
-	}
-
-	else if (wcurscore[wcurscore.length - 1] >= 100) {
-		document.getElementById(side).className="wbelowwon";
-		wgames.push(wgames[wgames.length - 1] + 1);
-		wvul.push(1);
-		tgames.push(tgames[tgames.length - 1]);
-		tvul.push(tvul[tvul.length - 1]);
-		games = (wgames[wgames.length - 1] + tgames[tgames.length - 1]);
-		line = "game" + games;
-		document.getElementById(line).className = "gameline"
-
-			if (wgames[wgames.length -1] == 2) { rubber('WE'); }
-		tcurscore[tcurscore.length - 1] = 0;
-		wcurscore[wcurscore.length - 1] = 0;
-	}
-	else {
-		wvul.push(wvul[wvul.length - 1]);
-		tvul.push(tvul[tvul.length - 1]);
-		wgames.push(wgames[wgames.length - 1]);
-		tgames.push(tgames[tgames.length - 1]);
-	}
-
-
-}
-
-function rubber(who) {
-
-	games = (wgames[wgames.length - 1] + tgames[tgames.length - 1]);
-	if (who == "WE" ) { aboveside = "wabovediv"; }
-	else { aboveside = "tabovediv"; }
-
-	annoaboveside = "anno" + aboveside;
-
-	if (games == 2) { var rubberbonus = 700; }
-	else { var rubberbonus = 500; }
-
-	var oldabove = document.getElementById(aboveside).innerHTML;
-	var oldannoabove = document.getElementById(annoaboveside).innerHTML;
-
-	abovecontents = rubberbonus ;
-	annoabovecontents = games + "-game rubber";
-
-	abovecontents += oldabove;
-	annoabovecontents += oldannoabove;
-
-	document.getElementById(aboveside).innerHTML = abovecontents;
-	document.getElementById(annoaboveside).innerHTML = annoabovecontents;
-
-
-	//  wtotal = document.getElementById("wabovediv").innerHTML + ' ' + document.getElementById("wbelowdiv0").innerHTML +  ' ' + document.getElementById("wbelowdiv1").innerHTML + ' ' + document.getElementById("wbelowdiv2").innerHTML; 
-	//
-	//  var wtotalarray = wtotal.split(/\D/);
-	//  var wsum = 0;
-	//  var wscores = '';
-	//  for (var i = 0; i < wtotalarray.length ; i++) {
-	//    wsum += parseInt((wtotalarray[i].replace(/\D/, "") * 1));
-	//  }
-	//  ttotal = document.getElementById("tabovediv").innerHTML + ' ' + document.getElementById("tbelowdiv0").innerHTML + ' ' + document.getElementById("tbelowdiv1").innerHTML + ' ' + document.getElementById("tbelowdiv2").innerHTML; 
-	//  var ttotalarray = ttotal.split(/\D/);
-	//  var tsum = 0;
-	//  for (var i = 0; i < ttotalarray.length ; i++) {
-	//    tsum += parseInt((ttotalarray[i].replace(/\D/, "") * 1));
-	//  }
-	cumul();
-	var endscore = Math.abs(wsum-tsum);
-	if (wsum > tsum) { var winner = "WE"; players[we1] += endscore; players[we2] += endscore; players[they1] -= endscore; players[they2] -= endscore; }
-	else if (tsum > wsum) { var winner = "THEY"; players[we1] -= endscore; players[we2] -= endscore; players[they1] += endscore; players[they2] += endscore; }
-
-	if (who == winner) { var conjunction = "<br>and "; }
-	else {var conjunction = "<br>but "; }
-
-	if (wsum == tsum) { rubberstring = "The rubber was tied!"; } 
-	else {rubberstring = '<div class="results" id="rubberresult">' + who + ' won the rubber \n' + conjunction + winner + ' win with a net score of ' + endscore + '!</div>'; 
-		document.getElementById("result").innerHTML = winner + ":&nbsp;" + endscore;
-	}
-	document.getElementById("undo").innerHTML = '';
-	rubbernum++;
-	showtally();
-	getplayers(rubberstring);
-	return false;
-
-}
-
-function nextrubber() {
-	var prevrubber = document.getElementById("tallycontainer").innerHTML;
-	numid = 'id="' + rubbernum;
-	prevrubber = prevrubber.replace(/id=\"/g, numid);
-	prevrubber += document.getElementById("oldrubbers").innerHTML;
-	var prevmain = rubbernum + "main";
-	document.getElementById("oldrubbers").innerHTML = prevrubber;
-	document.getElementById("thisrubber").innerHTML = newrubber;
-	//	document.getElementById(prevmain).className = "oldmain";
-	return false;
-}
-
-
-
-function toggleButton(elementObj, idRegex) {
-	var arraySpans = document.body.getElementsByTagName("SPAN");
-
-	for(var i = 0; i < arraySpans.length; i++)
-	{
-		if(arraySpans[i].id.match(idRegex))
-		{
-			arraySpans[i].className = 'raised';
-		}
-	}
-
-	elementObj.className = 'depressed';
-}
-
-window.onbeforeunload = noexit;
-function noexit()
-{
-	return "If you click OK, your scorekeeping will NOT be saved.";
-}
-
-
-function pop() {
-	var newwindow=window.open('','About','height=350,width=400');
-	var aboutpage = '<html><head><title>About</title></head><style type="text/css">body { height: auto; border: 2px solid black;	padding: 2em;font-size: 14px;	background-color: #fff;	-moz-border-radius: 16;	text-align:center;}</style><body>Rubber Soul is a score-keeping application for rubber bridge. You can use it on the web or <a href="' + location.search + '">right-click here</a> to download a copy of the page to your computer</a>.<p>It was written by <a href="mailto:notrump7@gmail.com">Paul Adams</a> in September 2006 because I wasn\'t seeing anything else in existence that filled the role, and because I was bored. Comments, questions, and suggestions are very welcome. Certain features don\'t work on Internet Explorer -- anyone who wants to help them do so, feel free. The scoring math is based on code by <a href="http://www.geocities.com/tlon_uqbar/bk.html">Andrew Purvis</a>.<p>Rubber Soul is free to use, distribute, and modify, but please credit the author.</body></html>';
-
-	if (window.focus) {newwindow.focus()}
-	newwindow.document.write(aboutpage);
-	newwindow.document.close();
-}
-
-</script>
-
-</head>
-
-<body onload="firstrubber();">
-
-
-	<div class="tools">
-		<a href="javascript:pop();">about</a><br>
-		<!-- <div id="cancel" class="cancel" style="" title="Delete this rubber"><input type="button" onclick="cancelrubber();" value="Cancel this rubber" title="Delete this rubber"></div > -->
-		<div id="undo" class="undo"></div>
-
-		<div class="annotoggle">
-			<![if !IE]>
-			Images:<input type="checkbox" onChange="imgtoggle()" id="imgtoggle" checked> <br>
-			Annotations:<input type="checkbox" onChange="annotoggle()" id="annotoggle" checked>
-			<![endif]>
-			<![if IE]>
-			<input type="hidden" id="imgtoggle"><br>
-			<input type="hidden" id="annotoggle" checked>
-			<![endif]>
-		</div>
-
-		<div id="tallydiv" class="tally">
-		</div>
-		<div id="playerpopup-container" align="center" class="popupcontainer">
-			<div id="playerpopup" style="position: relative; top: 0; left: 0" onmousedown="dragOBJ(this,event); return false;">
-			</div>
-		</div>
-		<div id="addpopup-container" align="center" class="popupcontainer">
-			<div id="addpopup" class="hid" style="position: relative; top: 0; left: 0" onmousedown="dragOBJ(this,event); return false;">
-			</div>
-		</div>
-	</div>
-
-	<div class="mainbody">
-
-		<div class="hid" id="bidgrid" style="position: relative; top: 0; left: 0" onmousedown="dragOBJ(this,event); return false;">
-			<form name="info">
-				<div class="wethey">
-					<span id="wetheywe" class="raised" onclick="setcont('we');">WE</span> 
-					<span id="wetheythey" class="raised" onclick="setcont('they');">THEY</span>
-					<input type="hidden" name="contractor" value="">
-				</div>
-				<p>
-				<div class="chooser" id="chooser">
-				</div>
-				<p>
-				<div id="double">
-				</div>
-				<input type="hidden" name="X" value="n">
-				<p>
-				<div id="honors">
-				</div>
-				<input type="hidden" name="honors" value="">
-				<p>
-				<div id='menu'>
-				</div>
-			</form>
-		</div>
-		<div class="allrubbers"><div class="thisrubber" id="thisrubber" style="position: relative; top: 0; left: 0" onmousedown="dragOBJ(this,event); return false;"></div><div class="oldrubbers" id="oldrubbers"></div></div>
-
-	</div>
-</div>
-<!-- Start of StatCounter Code -->
-<script type="text/javascript" language="javascript">
-	var sc_project=1943374; 
-	var sc_invisible=1; 
-	var sc_partition=17; 
-	var sc_security="632572c1"; 
-	var sc_remove_link=1; 
-</script>
-
-<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><img  src="http://c18.statcounter.com/counter.php?sc_project=1943374&java=0&security=632572c1&invisible=1" alt="free web tracker" border="0"> </noscript>
-<!-- End of StatCounter Code -->
+        
+        document.addEventListener('click', function(event) {
+            const menuToggle = document.getElementById('menu-toggle');
+            const menuButtons = document.getElementById('menu-buttons');
+            if (menuToggle && menuButtons && !menuToggle.contains(event.target) && !menuButtons.contains(event.target)) {
+                menuButtons.classList.remove('show');
+            }
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+            if (e.key.toLowerCase() === 'b') {
+                e.preventDefault(); 
+                UI.toggleBig();
+            }
+        });
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('year').textContent = new Date().getFullYear();
+            Storage.load();
+        });
+    </script>
 </body>
 </html>
-
-
-
-
