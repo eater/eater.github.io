@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+    <head>
+        <!-- Rubber Soul, by Paul Adams. v26.03 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
@@ -100,19 +101,19 @@
             flex: 1; 
             display: flex; 
             justify-content: flex-end; 
-            align-items: baseline; /* Fixes alignment between text and numbers */
+            align-items: baseline; 
             font-size: small; font-family: sans-serif; text-align: right;
             line-height: normal; 
             max-width: 50vw;
             flex-wrap: wrap;
             z-index: 2001;
-            color: #fff; /* Score numbers are white */
+            color: #fff; 
         }
         
         .nav-right .player-name { 
             margin-top: 0 !important; 
             color: var(--gold); 
-            overflow: visible; /* Prevents top of letters from clipping in Firefox */
+            overflow: visible; 
             display: inline-block; 
         }
         .cumu-label { color: var(--gold); }
@@ -204,14 +205,13 @@
             padding: 2em 1.5em; box-shadow: 0 0 25px rgba(0,0,0,0.5); 
         }
 
-        /* Clean DOM Flow without !important (via specificity) */
         .bid-spacer .popupvis.bid-area { 
             position: relative; top: auto; left: auto; transform: none; 
             width: 100%; max-width: 320px; z-index: 1000; box-sizing: border-box; margin-bottom: 20px;
         }
         
         .popupvis .title { margin-top: 0 !important; margin-bottom: 5px; color: var(--green); font-family: var(--frutiger); font-size: 24px; }
-        .popupvis .subtitle { color: red; font-size: 14px; font-weight: bold; margin-bottom: 15px; font-family: var(--frutiger); }
+        .popupvis .subtitle { color: red; font-size: 14px; font-weight: normal; margin-bottom: 15px; font-family: var(--frutiger); }
         .popup-msg { line-height: 1.5; margin: 20px 0; font-size: 18px; color: #000; }
 
         table.popgrid { margin: 0 auto; border-spacing: 5px; border-collapse: separate; color: #000;}
@@ -220,7 +220,6 @@
         
         .popgrid input[type="text"] { width: 100%; box-sizing: border-box; }
         
-        /* Modern HTML5 Button styling for Popups */
         .popupvis button {
             font-size: 18px; padding: 8px 30px; cursor: pointer; margin-top: 10px; font-family: var(--serif);
         }
@@ -363,11 +362,12 @@
         CONFIG.penalties.notVulX = extendP(CONFIG.penalties.notVulX);
         CONFIG.penalties.vulX = extendP(CONFIG.penalties.vulX);
 
+        /* STATE.screen manages strict UI routing ('startup', 'entry', or 'game') */
         let STATE = {
             players: {}, names: { we1: "", we2: "", they1: "", they2: "" }, allNames: [],
             rubberNum: 1, activeLog: [], math: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } },
             archive: [], history: [], bid: { side: null, level: null, suit: null, multiplier: 'n', honors: 0 },
-            isBig: false 
+            isBig: false, screen: 'entry'
         };
 
         /* --- XSS SANITIZER --- */
@@ -590,7 +590,12 @@
                 if(hasData || hasHistory) UI.show('tallydiv');
             },
             
-            /* --- POPUP HANDLERS --- */
+            /* --- POPUP HANDLERS & ROUTING --- */
+            restoreScreen: () => {
+                if (STATE.screen === 'startup') UI.show("startuppopup");
+                else if (STATE.screen === 'entry') UI.show("playerpopup");
+                else if (STATE.screen === 'game') UI.show("bidgrid");
+            },
             hideAllPopups: () => {
                 UI.hide("playerpopup");
                 UI.hide("startuppopup");
@@ -604,8 +609,7 @@
             },
             closeAbout: () => {
                 UI.hide("aboutpopup"); 
-                if (STATE.names.we1) UI.show("bidgrid");
-                else UI.show("playerpopup");
+                UI.restoreScreen();
             },
             showShare: (url) => {
                 const popup = UI.get("sharepopup");
@@ -619,8 +623,7 @@
             },
             closeShare: () => {
                 UI.hide("sharepopup"); 
-                if (STATE.names.we1) UI.show("bidgrid");
-                else UI.show("playerpopup");
+                UI.restoreScreen();
             },
             copyShareLink: () => {
                 const input = UI.get("share-url-input");
@@ -723,6 +726,8 @@
                     let lastNames = null;
                     if (STATE.archive.length > 0) lastNames = STATE.archive[STATE.archive.length - 1].names;
                     Game.showEntry(loadedFromHash, loadedFromHash ? `<div class="title" style="font-size: 24px; margin-bottom: 12px;">Session loaded.</div>` : "", lastNames);
+                } else {
+                    STATE.screen = 'game';
                 }
             }
         };
@@ -734,6 +739,7 @@
             },
             
             showStartupMenu: () => {
+                STATE.screen = 'startup';
                 const hasActiveRubber = STATE.names.we1 && STATE.names.we2 && STATE.names.they1 && STATE.names.they2;
                 
                 UI.get("startuppopup").innerHTML = `
@@ -761,6 +767,7 @@
                     if (STATE.archive.length > 0) lastNames = STATE.archive[STATE.archive.length - 1].names;
                     Game.showEntry(true, `<div class="title" style="font-size: 24px; margin-bottom: 12px;">New Rubber</div>`, lastNames);
                 } else {
+                    STATE.screen = 'game';
                     UI.show("bidgrid"); UI.show("thisrubber");
                 }
             },
@@ -769,6 +776,7 @@
             },
             
             showEntry: (isNewRubber = false, resultMsg = "", defaultNames = null) => {
+                STATE.screen = 'entry';
                 const { we1, we2, they1, they2 } = defaultNames || STATE.names;
                 const listAttr = `list="namelist" autocomplete="off"`; 
                 const kL = `onkeydown="if(event.key==='Enter') Game.startMatch()"`;
@@ -797,11 +805,12 @@
                 UI.show("playerpopup");
             },
             startMatch: () => {
-                const [p1,p2,p3,p4] = ['p1','p2','p3','p4'].map(id => sanitize(UI.get(id).value.trim())); // Sanitizer applied
+                const [p1,p2,p3,p4] = ['p1','p2','p3','p4'].map(id => sanitize(UI.get(id).value.trim())); 
                 if (!p1 || !p2 || !p3 || !p4) return alert("Please enter all four names!");
                 if (new Set([p1, p2, p3, p4]).size < 4) return alert("Unique names required!");
                 STATE.names = { we1: p1, we2: p2, they1: p3, they2: p4 };
                 [p1, p2, p3, p4].forEach(p => { if (STATE.players[p] === undefined) STATE.players[p] = 0; if (!STATE.allNames.includes(p)) STATE.allNames.push(p); });
+                STATE.screen = 'game';
                 UI.hide("playerpopup"); 
                 UI.show("tallydiv"); UI.show("bidgrid"); UI.show("thisrubber"); UI.drawActive(); Storage.save();
             },
@@ -913,7 +922,7 @@
                 if (!confirm("End current rubber and start a new one?")) return;
                 Game.closeOutRubber("Rubber ended.");
             },
-            undo: () => { if (STATE.history.length === 0) return; STATE = JSON.parse(STATE.history.pop()); UI.hideAllPopups(); UI.show("thisrubber"); UI.show("bidgrid"); UI.renderArchive(); UI.drawActive(); UI.resetBiddingUI(); UI.updateUndoBtn(); Storage.save(); },
+            undo: () => { if (STATE.history.length === 0) return; STATE = JSON.parse(STATE.history.pop()); STATE.screen = 'game'; UI.hideAllPopups(); UI.show("thisrubber"); UI.show("bidgrid"); UI.renderArchive(); UI.drawActive(); UI.resetBiddingUI(); UI.updateUndoBtn(); Storage.save(); },
             confirmReset: () => { if (confirm("Erase entire session?")) { window.location.hash = ""; localStorage.clear(); location.reload(); } }
         };
         
