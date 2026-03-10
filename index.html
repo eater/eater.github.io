@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <!-- Rubber Soul, by Paul Adams. v26.03 -->
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
@@ -16,12 +15,12 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'><text x='40' y='68' font-size='80' text-anchor='middle' fill='%230a0'>♠</text></svg>">
     <style>
         /* =========================================
-           1. VARIABLES & GLOBAL
+           1. VARIABLES & GLOBAL STYLES
            ========================================= */
         :root { 
-            --bg: #1b5e20; /* Hunter Green */
+            --bg: #1b5e20; 
             --green: #0a0; 
-            --gold: #ffe082; /* Pale Gold */
+            --gold: #ffe082; 
             --black: #000; 
             --font: 16px; 
             --score-font: 20px; 
@@ -36,20 +35,16 @@
             font-family: "Times New Roman", Times, serif; 
         }
         
-        input[type="text"] {
-            font-size: 16px;
-            padding: 4px;
-        }
+        /* Reset buttons to behave visually like the old spans */
+        button { border: none; background: none; padding: 0; outline: none; color: inherit; }
+        input[type="text"] { font-size: 16px; padding: 4px; }
 
         body { 
-            background-color: var(--bg); 
-            margin: 0 auto; padding: 10px; 
+            background-color: var(--bg); margin: 0 auto; padding: 10px; 
             display: flex; flex-direction: column; align-items: center; 
-            max-width: 100vw;
-            box-sizing: border-box;
+            max-width: 100vw; box-sizing: border-box;
         }
 
-        /* --- Big Mode Overrides --- */
         body.big-mode {
             --score-font: 32px !important; 
             --player-font: 18px !important; 
@@ -57,71 +52,39 @@
             --card-width: 45em !important; 
         }
 
+        /* Semantic HTML5 hiding */
+        [hidden] { display: none !important; visibility: hidden !important; }
+
         /* =========================================
            2. THE BRIDGE CLUB NAVBAR
            ========================================= */
         #navbar {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 10px;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; margin-bottom: 10px; width: 100%; max-width: 100%; box-sizing: border-box;
         }
 
         .nav-left { display: flex; gap: 5px; flex: 1; justify-content: flex-start; align-items: center; z-index: 2001; position: relative; }
         
-        /* Mobile menu button */
         #menu-toggle {
-            font-size: 11px; 
-            text-decoration: none; 
-            cursor: pointer; 
-            padding: 3px 6px; 
-            border-radius: 3px; 
-            background: #fff; 
-            border: 1px solid #999; 
-            display: inline-block; 
-            font-family: sans-serif; 
-            color: #000;
+            font-size: 11px; text-decoration: none; cursor: pointer; padding: 3px 6px; border-radius: 3px; 
+            background: #fff; border: 1px solid #999; display: inline-block; font-family: sans-serif; color: #000;
         }
         
-        #menu-buttons {
-            display: none;
-            gap: 5px;
-        }
-        
-        #menu-buttons.show {
-            display: inline-flex;
-            gap: 5px;
-        }
+        #menu-buttons { display: none; gap: 5px; }
+        #menu-buttons.show { display: inline-flex; gap: 5px; }
         
         .nav-right { 
-            flex: 1; 
-            display: flex; 
-            justify-content: flex-end; 
-            align-items: baseline; 
-            font-size: small; font-family: sans-serif; text-align: right;
-            line-height: normal; 
-            max-width: 50vw;
-            flex-wrap: wrap;
-            z-index: 2001;
-            color: #fff; 
+            flex: 1; display: flex; justify-content: flex-end; align-items: baseline; 
+            font-size: small; font-family: sans-serif; text-align: right; line-height: normal; 
+            max-width: 50vw; flex-wrap: wrap; z-index: 2001; color: #fff; 
         }
         
-        .nav-right .player-name { 
-            margin-top: 0 !important; 
-            color: var(--gold); 
-            overflow: visible; 
-            display: inline-block; 
-        }
+        .nav-right .player-name { margin-top: 0 !important; color: var(--gold); overflow: visible; display: inline-block; }
         .cumu-label { color: var(--gold); }
 
         .tool-link { 
-            font-size: 11px; text-decoration: none; cursor: pointer; 
-            padding: 3px 6px; border-radius: 3px; background: #fff; 
-            border: 1px solid #999; display: inline-block; font-family: sans-serif; color: #000;
+            font-size: 11px; text-decoration: none; cursor: pointer; padding: 3px 6px; border-radius: 3px; 
+            background: #fff; border: 1px solid #999; display: inline-block; font-family: sans-serif; color: #000;
         }
         
         #menu-toggle { color: #0047AB; }
@@ -135,80 +98,24 @@
         .suit-red { color: red !important; font-weight: bold; }
         .suit-black { color: black !important; font-weight: bold; }
         .anno-text { color: var(--green); font-size: var(--anno-font); white-space: nowrap; margin-right: 0.5em; }
+        .vulnerable { text-decoration: underline; text-decoration-color: red; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+        .live-contract { font-size: 28px; height: 32px; line-height: 32px; margin-bottom: 5px; color: red; text-align: center; overflow: hidden; font-family: sans-serif; font-weight: bold; flex-shrink: 0; }
         
-        .vulnerable { 
-            text-decoration: underline; text-decoration-color: red;
-            text-decoration-thickness: 1px; text-underline-offset: 3px;
-        }
-
-        .live-contract {
-            font-size: 28px; height: 32px; line-height: 32px; margin-bottom: 5px;
-            color: red; text-align: center; overflow: hidden;
-            font-family: sans-serif; font-weight: bold;
-            flex-shrink: 0; 
-        }
-
-        .hid { display: none !important; visibility: hidden !important; }
-        
-        .main-container { 
-            display: flex; flex-wrap: wrap; justify-content: center; 
-            align-items: flex-start;
-            gap: 50px; 
-            width: 100%;
-            box-sizing: border-box;
-        }
+        .main-container { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 50px; width: 100%; box-sizing: border-box; }
         
         /* =========================================
-           4. GHOST FOOTPRINT (320px) & POPUPS
+           4. LAYOUT & POPUPS
            ========================================= */
-        
-        .bid-spacer {
-            width: 320px; 
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 220px; 
-            margin-bottom: 20px;
-        }
-
-        .bidgrid { 
-            background-color: #fff; 
-            border: 3px solid black;
-            border-radius: 16px;
-            padding: 1em; 
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.25);
-            position: relative; 
-            text-align: center; 
-            color: black;
-            display: flex; flex-direction: column;
-            overflow: hidden; 
-        }
-
+        .bid-spacer { width: 320px; display: flex; flex-direction: column; align-items: center; min-height: 220px; margin-bottom: 20px; }
+        .bidgrid { background-color: #fff; border: 3px solid black; border-radius: 16px; padding: 1em; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); position: relative; text-align: center; color: black; display: flex; flex-direction: column; overflow: hidden; }
         .bidgrid.collapsed { width: 180px; min-height: 0; padding: 15px; }
         .bidgrid.expanded { width: 100%; min-height: 220px; }
         
-        .rubberwindow { 
-             background-color: #fff; border: 3px solid black; border-radius: 16px; 
-             padding: 1em; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); margin-bottom: 20px;
-             width: var(--card-width); 
-             border-collapse: collapse; 
-        }
-        
-        .wethey {
-            display: flex; justify-content: center; align-items: center; 
-            gap: 10px; min-height: 50px; 
-            margin-top: auto; margin-bottom: auto; padding: 5px 0;
-        }
+        .rubberwindow { background-color: #fff; border: 3px solid black; border-radius: 16px; padding: 1em; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); margin-bottom: 20px; width: var(--card-width); border-collapse: collapse; }
+        .wethey { display: flex; justify-content: center; align-items: center; gap: 10px; min-height: 50px; margin-top: auto; margin-bottom: auto; padding: 5px 0; }
 
-        .popupvis { 
-            position: fixed; top: 20%; left: 50%; transform: translateX(-50%); z-index: 3000; 
-            border: 3px solid var(--green); background-color: #fff; 
-            border-radius: 16px; text-align: center; width: 24em; 
-            padding: 2em 1.5em; box-shadow: 0 0 25px rgba(0,0,0,0.5); 
-        }
-
-        .bid-spacer .popupvis.bid-area { 
-            position: relative; top: auto; left: auto; transform: none; 
-            width: 100%; max-width: 320px; z-index: 1000; box-sizing: border-box; margin-bottom: 20px;
-        }
+        .popupvis { position: fixed; top: 20%; left: 50%; transform: translateX(-50%); z-index: 3000; border: 3px solid var(--green); background-color: #fff; border-radius: 16px; text-align: center; width: 24em; padding: 2em 1.5em; box-shadow: 0 0 25px rgba(0,0,0,0.5); }
+        .bid-spacer .popupvis.bid-area { position: relative; top: auto; left: auto; transform: none; width: 100%; max-width: 320px; z-index: 1000; box-sizing: border-box; margin-bottom: 20px; }
         
         .popupvis .title { margin-top: 0 !important; margin-bottom: 5px; color: var(--green); font-family: var(--frutiger); font-size: 24px; }
         .popupvis .subtitle { color: red; font-size: 14px; font-weight: normal; margin-bottom: 15px; font-family: var(--frutiger); }
@@ -217,12 +124,9 @@
         table.popgrid { margin: 0 auto; border-spacing: 5px; border-collapse: separate; color: #000;}
         table.popgrid td { text-align: center; vertical-align: middle; }
         table.popgrid th { font-weight: bold; font-size: 18px; padding-bottom: 5px; font-family: "Times New Roman", serif; }
-        
         .popgrid input[type="text"] { width: 100%; box-sizing: border-box; }
-        
-        .popupvis button {
-            font-size: 18px; padding: 8px 30px; cursor: pointer; margin-top: 10px; font-family: var(--serif);
-        }
+        .popupvis button { font-size: 18px; padding: 8px 30px; cursor: pointer; margin-top: 10px; font-family: var(--serif); color: #000; border: 1px solid #999; border-radius: 3px; background-color: #f0f0f0; }
+        .popupvis button:active { background-color: #e0e0e0; }
         
         @media (max-width: 800px) {
             .main-container { flex-direction: column; align-items: center; padding-right: 0; gap: 20px; }
@@ -243,49 +147,45 @@
         .sc-cell { padding: 0 0.25em; color: #000; font-weight: normal; border-right: 1px solid black; line-height: 1.1em; width: 22.5%; }
         .wabove, .tabove { vertical-align: bottom; height: 10ex; border-bottom: 4px solid black; text-align: right; }
         .wbelow, .tbelow { vertical-align: top; height: 3em; text-align: right; }
-        
         tr.gamewon-row td.wbelow, tr.gamewon-row td.tbelow { border-bottom: 1px solid black !important; height: auto !important; }
-        
         .tabove, .tbelow { text-align: left; border-right: none; }
         td.anno { vertical-align: top; width: 22.5%; padding: 0 0.25em; line-height: 1.1em; }
         td.anno.left { text-align: right; } td.anno.right { text-align: left; } td.anno.btm { vertical-align: bottom; }
 
-        span.std-btn { display: inline-block; padding: 2px 8px; margin: 2px; cursor: pointer; min-width: 3em; font-size: 16px; color: black; box-sizing: border-box; }
+        .std-btn { display: inline-block; padding: 2px 8px; margin: 2px; cursor: pointer; min-width: 3em; font-size: 16px; color: black; box-sizing: border-box; text-align: center; border-radius: 3px; }
         .raised { background-color: #eee; border: 1px solid #999; }
         .depressed { background-color: #ccc; border: 1px solid #666; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3); filter: brightness(0.95); }
 
-        button#scorebtn { font-weight: bold; font-size: 20px; padding: 5px 15px; background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00; margin-left: 10px; cursor: pointer; font-family: var(--serif); }
+        button#scorebtn { font-weight: bold; font-size: 20px; padding: 5px 15px; background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00; margin-left: 10px; cursor: pointer; font-family: var(--serif); border-radius: 3px; }
         button#scorebtn:active { background-color: #c8e6c9; box-shadow: inset 2px 2px 5px rgba(0,50,0,0.3); }
         button#scorebtn:disabled { opacity: 0.6; cursor: default; box-shadow: none; }
         #btn-we, #btn-they { font-weight: normal; color: black; margin: 0; }
-
         #res { font-size: 16px !important; padding: 3px; }
 
         table.chooser { border-collapse: separate; border-spacing: 2px; margin: 0 auto; }
-        table.chooser td span.contract { display: block; padding: 4px 8px; border: 1px solid #bbb; cursor: pointer; font-size: 18px; font-weight: normal; color: black; }
-        table.chooser td.notgame span.contract { background-color: #e3f2fd; } 
-        table.chooser td.game span.contract { background-color: #ffebee; }
-        table.chooser td span.contract.depressed { border: 1px solid #666; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2); filter: brightness(0.92); }
-
+        table.chooser td .contract { display: block; padding: 4px 8px; border: 1px solid #bbb; cursor: pointer; font-size: 18px; font-weight: normal; color: black; text-align: center; border-radius: 3px; width: 100%; box-sizing: border-box; }
+        table.chooser td.notgame .contract { background-color: #e3f2fd; } 
+        table.chooser td.game .contract { background-color: #ffebee; }
+        table.chooser td .contract.depressed { border: 1px solid #666; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2); filter: brightness(0.92); }
         .grid-red { color: red !important; } .grid-black { color: black !important; }
     </style>
 </head>
 <body>
 
     <nav id="navbar">
-        <div class="nav-left">
-            <button id="menu-toggle" class="hid" onclick="toggleMenu()">menu</button>
+        <div class="nav-left" hidden>
+            <button type="button" id="menu-toggle" data-action="toggleMenu">menu</button>
             <div id="menu-buttons">
-                <span id="undo-btn" class="tool-link hid" onclick="Game.undo()">undo</span>
-                <span id="big-btn" class="tool-link" onclick="event.stopPropagation(); UI.toggleBig()"><u>b</u>ig</span>
-                <span id="share-btn" class="tool-link hid" onclick="Storage.share()">share</span>
-                <span id="force-btn" class="tool-link hid" onclick="Game.forceNewRubber()">new</span>
-                <span id="about-btn" class="tool-link" onclick="UI.showAbout()">about</span>
-                <span id="reset-btn" class="tool-link hid" style="color:#c00; border-color:#c00;" onclick="Game.confirmReset()">reset</span>
+                <button type="button" id="undo-btn" class="tool-link" data-action="undo" hidden>undo</button>
+                <button type="button" id="big-btn" class="tool-link" data-action="toggleBig"><u>b</u>ig</button>
+                <button type="button" id="share-btn" class="tool-link" data-action="share" hidden>share</button>
+                <button type="button" id="force-btn" class="tool-link" data-action="forceNew" hidden>new</button>
+                <button type="button" id="about-btn" class="tool-link" data-action="showAbout">about</button>
+                <button type="button" id="reset-btn" class="tool-link" style="color:#c00; border-color:#c00;" data-action="reset" hidden>reset</button>
             </div>
         </div>
-        <div class="nav-right hid" id="tallydiv">
-            <span class="cumu-label hid">Cumulative: </span>0 | 0 | 0 | 0
+        <div class="nav-right" id="tallydiv" hidden>
+            <span class="cumu-label" hidden>Cumulative: </span>0 | 0 | 0 | 0
         </div>
     </nav>
 
@@ -293,47 +193,47 @@
     
     <div class="main-container">
         <div class="bid-spacer">
-            <div id="startuppopup" class="popupvis bid-area hid"></div>
-            <div id="playerpopup" class="popupvis bid-area hid"></div>
+            <div id="startuppopup" class="popupvis bid-area" hidden></div>
+            <div id="playerpopup" class="popupvis bid-area" hidden></div>
             
-            <div id="sharepopup" class="popupvis bid-area hid">
+            <div id="sharepopup" class="popupvis bid-area" hidden>
                 <div class="title">Share Session</div>
                 <div class="popup-msg" style="font-size: 16px; margin: 15px 0;">Share this link to continue this session on another device.</div>
                 <textarea id="share-url-input" readonly rows="4" style="width: 100%; box-sizing: border-box; padding: 8px; margin-bottom: 20px; font-family: monospace; font-size: 14px; color: #000; border: 1px solid #ccc; border-radius: 4px; resize: none; word-break: break-all;"></textarea>
                 <div style="display:flex; justify-content:center; gap:10px;">
-                    <button id="copy-btn" onclick="UI.copyShareLink()" style="background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00;">Copy</button>
-                    <button onclick="UI.closeShare()">Close</button>
+                    <button type="button" id="copy-btn" style="background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00;" data-action="copyShare">Copy</button>
+                    <button type="button" data-action="closeShare">Close</button>
                 </div>
             </div>
 
-            <div id="aboutpopup" class="popupvis bid-area hid">
+            <div id="aboutpopup" class="popupvis bid-area" hidden>
                 <div class="title">Rubber Soul</div>
                 <div class="popup-msg" style="font-size: 16px; line-height: 1.6;">
-                    Rubber Soul is copyright 2009&ndash;<span id="year"></span> by <a href="mailto:notrump7@gmail.com" style="color: #0047AB; text-decoration: underline;">Paul Adams</a>.<br><br>
+                    Rubber Soul is copyright 2009&ndash;<span id="year"></span> by <a href="#" data-action="emailAuthor" style="color: #0047AB; text-decoration: underline;">Paul Adams</a>.<br><br>
                     <span style="font-size: 14px; color: #666; font-weight: bold;">v26.03</span>
                 </div>
                 <div style="margin-top:20px;">
-                    <button onclick="UI.closeAbout()">Close</button>
+                    <button type="button" data-action="closeAbout">Close</button>
                 </div>
             </div>
 
-            <div id="bidgrid" class="bidgrid collapsed hid">
-                <div id="live-contract" class="live-contract hid"></div>
+            <div id="bidgrid" class="bidgrid collapsed" hidden>
+                <div id="live-contract" class="live-contract" hidden></div>
                 
                 <div class="wethey">
-                    <span id="btn-we" class="std-btn raised" onclick="UI.setSide('we')">WE</span> 
-                    <span id="btn-they" class="std-btn raised" onclick="UI.setSide('they')">THEY</span>
+                    <button type="button" id="btn-we" class="std-btn raised" data-action="setSide" data-side="we">WE</button> 
+                    <button type="button" id="btn-they" class="std-btn raised" data-action="setSide" data-side="they">THEY</button>
                 </div>
                 
-                <div id="chooser_master" class="hid">
+                <div id="chooser_master" hidden>
                     <div id="chooser"></div>
                     <div style="margin:15px 0;">
-                        <span id="btn-x" class="std-btn raised" onclick="UI.setMultiplier(1)">Doubled</span> 
-                        <span id="btn-xx" class="std-btn raised" onclick="UI.setMultiplier(2)">Redoubled</span>
+                        <button type="button" id="btn-x" class="std-btn raised" data-action="setMult" data-val="1">Doubled</button> 
+                        <button type="button" id="btn-xx" class="std-btn raised" data-action="setMult" data-val="2">Redoubled</button>
                     </div>
                     <div style="margin:10px 0;">
-                        <span id="btn-h100" class="std-btn raised" onclick="UI.setHonors(100)">100 honors</span> 
-                        <span id="btn-h150" class="std-btn raised" onclick="UI.setHonors(150)">150 honors</span>
+                        <button type="button" id="btn-h100" class="std-btn raised" data-action="setHonors" data-val="100">100 honors</button> 
+                        <button type="button" id="btn-h150" class="std-btn raised" data-action="setHonors" data-val="150">150 honors</button>
                     </div>
                     <div id="menu" style="margin-top:15px; font-size:18px;"></div>
                 </div>
@@ -341,17 +241,25 @@
         </div>
         
         <div class="allrubbers">
-            <div id="thisrubber" class="rubberwindow hid"></div>
+            <div id="thisrubber" class="rubberwindow" hidden></div>
             <div id="oldrubbers"></div>
         </div>
     </div>
 
     <script type="text/javascript">
+    (() => {
         /* --- CENTRALIZED CONFIG --- */
         const CONFIG = {
-            storageKey: 'RubberSoul_v26.03', 
+            storageKey: 'Rubber_Soul_v26.03', 
             suits: ['♣', '♦', '♥', '♠', 'NT'],
-            points: { game: 100, rubFast: 700, rubSlow: 500, baseBook: 6 },
+            baseBook: 6,
+            points: { 
+                game: 100, rubFast: 700, rubSlow: 500,
+                trick: { minor: 20, major: 30, ntFirst: 40 },
+                slam: { small: { notVul: 500, vul: 750 }, grand: { notVul: 1000, vul: 1500 } },
+                insult: { x: 50, xx: 100 },
+                overtrickX: { notVul: 100, vul: 200 }
+            },
             penalties: {
                 notVul: [50], notVulX: [100, 300, 500, 800, 1100, 1400, 1700, 2000],
                 vul: [100], vulX: [200, 500, 800, 1100, 1400, 1700, 2000, 2300]
@@ -362,43 +270,40 @@
         CONFIG.penalties.notVulX = extendP(CONFIG.penalties.notVulX);
         CONFIG.penalties.vulX = extendP(CONFIG.penalties.vulX);
 
-        /* STATE.screen manages strict UI routing ('startup', 'entry', or 'game') */
+        /* --- APPLICATION STATE --- */
         let STATE = {
             players: {}, names: { we1: "", we2: "", they1: "", they2: "" }, allNames: [],
-            rubberNum: 1, activeLog: [], math: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } },
+            rubberNum: 1, hands: [], ledger: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } },
             archive: [], history: [], bid: { side: null, level: null, suit: null, multiplier: 'n', honors: 0 },
             isBig: false, screen: 'entry'
         };
 
-        /* --- XSS SANITIZER --- */
         const sanitize = (str) => str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-        /* --- V2.7 COMPRESSION ENGINE (SHORT URLS) --- */
+        /* --- COMPRESSION ENGINE --- */
         const Compressor = {
             sideMap: { "we": 0, "they": 1 }, revSide: ["we", "they"],
             typeMap: { "made":0, "down":1, "ot":2, "hon":3, "ins":4, "slam":5, "rub":6 }, revType: ["made", "down", "ot", "hon", "ins", "slam", "rub"],
             multMap: { "n": 0, "x": 1, "xx": 2 }, revMult: ["n", "x", "xx"],
 
-            packLog: (log) => {
-                return log.map(item => {
-                    let arr = [Compressor.sideMap[item.s], Compressor.typeMap[item.t], item.sc];
-                    if (item.t === 'made') arr.push(item.b, Compressor.multMap[item.m] || 0, item.g ? 1 : 0);
-                    else if (item.t === 'down') arr.push(item.b, Compressor.multMap[item.m] || 0, item.lbl);
-                    else if (item.t === 'ot') arr.push(item.cnt);
-                    else if (item.t === 'slam') arr.push(item.lvl);
-                    return arr;
-                });
-            },
-            unpackLog: (packedLog) => {
-                return packedLog.map(arr => {
-                    let obj = { s: Compressor.revSide[arr[0]], t: Compressor.revType[arr[1]], sc: arr[2] };
-                    if (obj.t === 'made') { obj.b = arr[3]; obj.m = Compressor.revMult[arr[4]]; obj.g = (arr[5] === 1); } 
-                    else if (obj.t === 'down') { obj.b = arr[3]; obj.m = Compressor.revMult[arr[4]]; obj.lbl = arr[5]; } 
-                    else if (obj.t === 'ot') obj.cnt = arr[3];
-                    else if (obj.t === 'slam') obj.lvl = arr[3];
-                    return obj;
-                });
-            },
+            packLog: (log) => log.map(item => {
+                let arr = [Compressor.sideMap[item.s], Compressor.typeMap[item.t], item.sc];
+                if (item.t === 'made') arr.push(item.b, Compressor.multMap[item.m] || 0, item.g ? 1 : 0);
+                else if (item.t === 'down') arr.push(item.b, Compressor.multMap[item.m] || 0, item.lbl);
+                else if (item.t === 'ot') arr.push(item.cnt);
+                else if (item.t === 'slam') arr.push(item.lvl);
+                return arr;
+            }),
+            
+            unpackLog: (packedLog) => packedLog.map(arr => {
+                let obj = { s: Compressor.revSide[arr[0]], t: Compressor.revType[arr[1]], sc: arr[2] };
+                if (obj.t === 'made') { obj.b = arr[3]; obj.m = Compressor.revMult[arr[4]]; obj.g = (arr[5] === 1); } 
+                else if (obj.t === 'down') { obj.b = arr[3]; obj.m = Compressor.revMult[arr[4]]; obj.lbl = arr[5]; } 
+                else if (obj.t === 'ot') obj.cnt = arr[3];
+                else if (obj.t === 'slam') obj.lvl = arr[3];
+                return obj;
+            }),
+            
             recalcMath: (logs) => {
                 let m = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
                 logs.forEach(l => {
@@ -411,10 +316,11 @@
             }
         };
 
+        /* --- UI & VIEW LAYER --- */
         const UI = {
             get: (id) => document.getElementById(id),
-            show: (id) => UI.get(id).classList.remove('hid'),
-            hide: (id) => UI.get(id).classList.add('hid'),
+            show: (id) => UI.get(id).hidden = false,
+            hide: (id) => UI.get(id).hidden = true,
             colorBid: (str) => str.replace(/[♥♦]/g, s => `<span class="suit-red">${s}</span>`).replace(/[♣♠]/g, s => `<span class="suit-black">${s}</span>`),
 
             toggleBig: () => {
@@ -443,45 +349,42 @@
                 disp.innerHTML = `${level}&nbsp;<span class="${suitClass}">${suit}</span>${suff}`;
             },
 
-            setSide: (side) => {
-                STATE.bid.side = side;
-                UI.get('btn-we').className = side === 'we' ? 'std-btn depressed' : 'std-btn raised';
-                UI.get('btn-they').className = side === 'they' ? 'std-btn depressed' : 'std-btn raised';
-                const box = UI.get('bidgrid');
-                box.classList.remove('collapsed');
-                box.classList.add('expanded');
-                UI.show('live-contract'); 
-                UI.show('chooser_master'); 
-                UI.renderGrid();
-            },
-            setMultiplier: (val) => {
-                let target = 'n';
-                if (val === 1) target = (STATE.bid.multiplier === 'x') ? 'n' : 'x';
-                if (val === 2) target = (STATE.bid.multiplier === 'xx') ? 'n' : 'xx';
-                STATE.bid.multiplier = target;
+            renderBiddingBox: () => {
+                UI.show('bidgrid'); 
+                
+                UI.get('btn-we').className = STATE.bid.side === 'we' ? 'std-btn depressed' : 'std-btn raised';
+                UI.get('btn-they').className = STATE.bid.side === 'they' ? 'std-btn depressed' : 'std-btn raised';
+                
                 UI.get('btn-x').className = STATE.bid.multiplier === 'x' ? 'std-btn depressed' : 'std-btn raised';
                 UI.get('btn-xx').className = STATE.bid.multiplier === 'xx' ? 'std-btn depressed' : 'std-btn raised';
-                UI.renderGrid(); UI.updateDisplay(); 
-            },
-            setHonors: (val) => {
-                STATE.bid.honors = (STATE.bid.honors === val ? 0 : val); 
+
                 UI.get('btn-h100').className = STATE.bid.honors === 100 ? 'std-btn depressed' : 'std-btn raised';
                 UI.get('btn-h150').className = STATE.bid.honors === 150 ? 'std-btn depressed' : 'std-btn raised';
-            },
-            resetBiddingUI: (nuclear = false) => {
+
                 const box = UI.get('bidgrid');
-                box.classList.remove('expanded');
-                box.classList.add('collapsed');
-                UI.hide('chooser_master'); 
-                UI.hide('live-contract'); 
-                UI.get('chooser').innerHTML = ""; 
-                UI.get('live-contract').innerHTML = ""; 
-                UI.get('btn-we').className = "std-btn raised"; UI.get('btn-they').className = "std-btn raised";
-                UI.get('menu').innerHTML = "";
-                ['btn-x','btn-xx','btn-h100','btn-h150'].forEach(id => UI.get(id).className = "std-btn raised");
+                if (STATE.bid.side) {
+                    box.classList.remove('collapsed');
+                    box.classList.add('expanded');
+                    UI.show('live-contract'); 
+                    UI.show('chooser_master');
+                    UI.renderGrid();
+                } else {
+                    box.classList.remove('expanded');
+                    box.classList.add('collapsed');
+                    UI.hide('chooser_master'); 
+                    UI.hide('live-contract');
+                }
+                UI.updateDisplay();
+            },
+
+            resetBiddingUI: (nuclear = false) => {
                 STATE.bid = { side: null, level: null, suit: null, multiplier: 'n', honors: 0 };
+                UI.get('chooser').innerHTML = ""; 
+                UI.get('menu').innerHTML = "";
+                UI.renderBiddingBox();
                 Storage.save(nuclear);
             },
+
             renderGrid: () => {
                 if (!STATE.bid.side) return;
                 let html = '<table class="chooser">';
@@ -490,23 +393,24 @@
                     CONFIG.suits.forEach(s => {
                         let pts = Game.calcTrickBase(s, l);
                         if (STATE.bid.multiplier === 'x') pts *= 2; if (STATE.bid.multiplier === 'xx') pts *= 4;
-                        const curScore = (STATE.math[STATE.bid.side].partial);
+                        const curScore = (STATE.ledger[STATE.bid.side].partial);
                         const isGame = (curScore + pts >= CONFIG.points.game) ? 'game' : 'notgame';
                         const isSelected = (l === STATE.bid.level && s === STATE.bid.suit);
                         const cls = isSelected ? "contract depressed" : "contract raised";
                         const suitColorClass = (s === '♥' || s === '♦') ? 'grid-red' : 'grid-black';
-                        html += `<td class="${isGame}"><span class="${cls}" onclick="Game.pick(${l}, '${s}')">${l}<span class="${suitColorClass}">${s}</span></span></td>`;
+                        html += `<td class="${isGame}"><button type="button" class="${cls}" data-action="pick" data-level="${l}" data-suit="${s}">${l}<span class="${suitColorClass}">${s}</span></button></td>`;
                     });
                     html += '</tr>';
                 }
                 UI.get('chooser').innerHTML = html + '</table>';
             },
+
             renderMenu: (level) => {
-                let menu = `Result: <select id="res" style="font-size:16px; padding:3px;">`; let req = level + CONFIG.points.baseBook;
+                let menu = `Result: <select id="res" style="font-size:16px; padding:3px;">`; let req = level + CONFIG.baseBook;
                 for (let d = req; d >= 1; d--) menu += `<option value="down ${d}">down ${d}</option>`;
                 menu += `<option value="made it" selected>made it</option>`;
                 for (let o = 1; o <= (13-req); o++) { let label = `${o} over`; menu += `<option value="${label}">${label}</option>`; }
-                UI.get('menu').innerHTML = menu + `</select> <button id="scorebtn" onclick="this.disabled=true; Game.scoreHand()">Score</button>`;
+                UI.get('menu').innerHTML = menu + `</select> <button type="button" id="scorebtn" data-action="scoreHand">Score</button>`;
             },
             
             renderEntry: (data) => {
@@ -564,78 +468,76 @@
                     <tr class="${rowClasses[2]}"><td class="anno left">${buffers.anno.we.below[2]}</td><td class="sc-cell wbelow">${buffers.we.below[2]}</td><td class="sc-cell tbelow">${buffers.they.below[2]}</td><td class="anno right">${buffers.anno.they.below[2]}</td></tr>
                 </table>`;
             },
-            drawActive: () => { UI.get('thisrubber').innerHTML = UI.getScorecardHTML(STATE.rubberNum, STATE.names, STATE.activeLog, false); },
+            
+            drawActive: () => { UI.get('thisrubber').innerHTML = UI.getScorecardHTML(STATE.rubberNum, STATE.names, STATE.hands, false); },
+            
             renderArchive: () => {
                 const con = UI.get('oldrubbers'); con.innerHTML = "";
                 STATE.archive.forEach(item => {
                     const div = document.createElement("div"); div.className = "rubberwindow";
-                    div.innerHTML = UI.getScorecardHTML(item.rubberNum, item.names, item.activeLog, true);
+                    div.innerHTML = UI.getScorecardHTML(item.rubberNum, item.names, item.hands, true);
                     con.prepend(div);
                 });
             },
+            
             updateTally: () => {
                 let parts = []; for (let p in STATE.players) parts.push(`<span class="player-name">${p}</span>&nbsp;<span style="color:#fff">${STATE.players[p]}</span>`);
-                UI.get('tallydiv').innerHTML = `<span class="cumu-label hid">Cumulative:&nbsp; </span>` + parts.join('&nbsp; | &nbsp;');
+                UI.get('tallydiv').innerHTML = `<span class="cumu-label" hidden>Cumulative:&nbsp; </span>` + parts.join('&nbsp; | &nbsp;');
                 if (STATE.allNames.length) UI.get('namelist').innerHTML = STATE.allNames.map(n => `<option value="${n}">`).join('');
             },
+            
             updateUndoBtn: () => {
                 const hasHistory = STATE.history.length > 0;
-                UI.get('undo-btn').classList.toggle('hid', !hasHistory);
-                const hasData = (STATE.activeLog.length > 0 || STATE.archive.length > 0);
-                UI.get('share-btn').classList.toggle('hid', !hasData);
-                const hasActiveRubber = STATE.names.we1 && STATE.names.we2 && STATE.names.they1 && STATE.names.they2;
-                UI.get('force-btn').classList.toggle('hid', !hasActiveRubber);
-                UI.get('reset-btn').classList.toggle('hid', !hasData && !hasHistory);
-                UI.get('menu-toggle').classList.toggle('hid', false);
-                if(hasData || hasHistory) UI.show('tallydiv');
+                const hasData = (STATE.hands.length > 0 || STATE.archive.length > 0);
+                const hasActiveRubber = !!(STATE.names.we1); 
+                const isBlankSlate = !hasData && !hasHistory && !hasActiveRubber;
+
+                UI.get('undo-btn').hidden = !hasHistory;
+                UI.get('share-btn').hidden = !hasData;
+                UI.get('force-btn').hidden = !hasActiveRubber;
+                UI.get('reset-btn').hidden = isBlankSlate;
+                
+                const navLeft = document.querySelector('.nav-left');
+                if (navLeft) navLeft.hidden = isBlankSlate;
+                
+                if (!isBlankSlate) UI.show('tallydiv');
+                else UI.hide('tallydiv');
             },
             
-            /* --- POPUP HANDLERS & ROUTING --- */
             restoreScreen: () => {
                 if (STATE.screen === 'startup') UI.show("startuppopup");
                 else if (STATE.screen === 'entry') UI.show("playerpopup");
                 else if (STATE.screen === 'game') UI.show("bidgrid");
             },
             hideAllPopups: () => {
-                UI.hide("playerpopup");
-                UI.hide("startuppopup");
-                UI.hide("sharepopup");
-                UI.hide("aboutpopup");
+                UI.hide("playerpopup"); UI.hide("startuppopup"); UI.hide("sharepopup"); UI.hide("aboutpopup");
             },
             showAbout: () => {
                 const popup = UI.get("aboutpopup");
-                if (!popup.classList.contains('hid')) { UI.closeAbout(); return; }
+                if (!popup.hidden) { UI.closeAbout(); return; }
                 UI.hideAllPopups(); UI.hide("bidgrid"); UI.show("aboutpopup");
             },
-            closeAbout: () => {
-                UI.hide("aboutpopup"); 
-                UI.restoreScreen();
-            },
+            closeAbout: () => { UI.hide("aboutpopup"); UI.restoreScreen(); },
             showShare: (url) => {
                 const popup = UI.get("sharepopup");
-                if (!popup.classList.contains('hid') && !url) { UI.closeShare(); return; }
+                if (!popup.hidden && !url) { UI.closeShare(); return; }
                 UI.hideAllPopups(); UI.hide("bidgrid");
-                if (url) {
-                    const input = UI.get("share-url-input"); input.value = url;
-                }
+                if (url) { UI.get("share-url-input").value = url; }
                 UI.get("copy-btn").innerText = "Copy";
                 UI.show("sharepopup");
             },
-            closeShare: () => {
-                UI.hide("sharepopup"); 
-                UI.restoreScreen();
-            },
+            closeShare: () => { UI.hide("sharepopup"); UI.restoreScreen(); },
             copyShareLink: () => {
                 const input = UI.get("share-url-input");
                 input.select(); input.setSelectionRange(0, 99999);
                 navigator.clipboard.writeText(input.value).then(() => {
-                    const btn = UI.get("copy-btn");
-                    btn.innerText = "Copied!";
+                    const btn = UI.get("copy-btn"); btn.innerText = "Copied!";
                     setTimeout(() => { if (btn.innerText === "Copied!") btn.innerText = "Copy"; }, 2000);
                 }).catch(err => { console.error("Copy failed", err); });
             }
         };
 
+        /* --- STORAGE LAYER --- */
         const Storage = {
             toBase64: (str) => window.btoa(unescape(encodeURIComponent(str))),
             fromBase64: (str) => decodeURIComponent(escape(window.atob(str))),
@@ -646,10 +548,10 @@
             },
             share: () => {
                 const popup = UI.get("sharepopup");
-                if (!popup.classList.contains('hid')) { UI.closeShare(); return; }
+                if (!popup.hidden) { UI.closeShare(); return; }
                 const namesArr = [STATE.names.we1, STATE.names.we2, STATE.names.they1, STATE.names.they2];
-                const cleanArchive = STATE.archive.map(rub => ({ n: [rub.names.we1, rub.names.we2, rub.names.they1, rub.names.they2], l: Compressor.packLog(rub.activeLog) }));
-                const packedActive = Compressor.packLog(STATE.activeLog);
+                const cleanArchive = STATE.archive.map(rub => ({ n: [rub.names.we1, rub.names.we2, rub.names.they1, rub.names.they2], l: Compressor.packLog(rub.hands) }));
+                const packedActive = Compressor.packLog(STATE.hands);
                 const minified = [4, namesArr, cleanArchive, packedActive]; 
                 
                 const url = window.location.href.split('#')[0] + '#' + Storage.toBase64(JSON.stringify(minified));
@@ -658,14 +560,12 @@
             load: () => {
                 let localData = null;
                 const saved = localStorage.getItem(CONFIG.storageKey);
-                if (saved) {
-                    try { localData = JSON.parse(saved); } catch(e) {}
-                }
+                if (saved) { try { localData = JSON.parse(saved); } catch(e) {} }
                 if (localData) STATE = { ...STATE, ...localData };
 
                 let loadedFromHash = false;
                 if (window.location.hash && window.location.hash.length > 1) {
-                    const hasLocalGame = (STATE.archive && STATE.archive.length > 0) || (STATE.activeLog && STATE.activeLog.length > 0) || (STATE.names && STATE.names.we1);
+                    const hasLocalGame = (STATE.archive && STATE.archive.length > 0) || (STATE.hands && STATE.hands.length > 0) || (STATE.names && STATE.names.we1);
                     let proceed = true;
                     if (hasLocalGame) {
                         proceed = confirm("Loading this shared link will overwrite your current active session. Are you sure you want to proceed?");
@@ -682,25 +582,23 @@
                                 const archiveData = decoded[2].map(a => {
                                     const logs = Compressor.unpackLog(a.l);
                                     initPlayers(a.n);
-                                    let weTot = logs.filter(l => l.s === 'we').reduce((sum, l) => sum + l.sc, 0);
-                                    let theyTot = logs.filter(l => l.s === 'they').reduce((sum, l) => sum + l.sc, 0);
-                                    const diff = Math.abs(weTot - theyTot);
-                                    if (weTot > theyTot) { tally[a.n[0]] += diff; tally[a.n[1]] += diff; tally[a.n[2]] -= diff; tally[a.n[3]] -= diff; } 
-                                    else { tally[a.n[0]] -= diff; tally[a.n[1]] -= diff; tally[a.n[2]] += diff; tally[a.n[3]] += diff; }
-                                    return { rubberNum: 0, names: { we1: a.n[0], we2: a.n[1], they1: a.n[2], they2: a.n[3] }, activeLog: logs };
+                                    const totals = Game.getTotals(logs);
+                                    if (totals.we > totals.they) { tally[a.n[0]] += totals.diff; tally[a.n[1]] += totals.diff; tally[a.n[2]] -= totals.diff; tally[a.n[3]] -= totals.diff; } 
+                                    else { tally[a.n[0]] -= totals.diff; tally[a.n[1]] -= totals.diff; tally[a.n[2]] += totals.diff; tally[a.n[3]] += totals.diff; }
+                                    return { rubberNum: 0, names: { we1: a.n[0], we2: a.n[1], they1: a.n[2], they2: a.n[3] }, hands: logs };
                                 });
                                 
                                 initPlayers(decoded[1]);
                                 STATE = {
                                     ...STATE,
                                     names: { we1: decoded[1][0], we2: decoded[1][1], they1: decoded[1][2], they2: decoded[1][3] },
-                                    players: tally, archive: archiveData, activeLog: Compressor.unpackLog(decoded[3]), history: [],
-                                    math: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } }, rubberNum: decoded[2].length + 1, isBig: STATE.isBig
+                                    players: tally, archive: archiveData, hands: Compressor.unpackLog(decoded[3]), history: [],
+                                    ledger: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } }, rubberNum: decoded[2].length + 1, isBig: STATE.isBig
                                 };
-                                STATE.math = Compressor.recalcMath(STATE.activeLog);
+                                STATE.ledger = Compressor.recalcMath(STATE.hands);
                                 
                                 let gW=0, gT=0;
-                                STATE.activeLog.forEach(l => {
+                                STATE.hands.forEach(l => {
                                     if(l.t === 'made') { l.r = gW+gT; if(l.g) { if(l.s === 'we') gW++; else gT++; } }
                                 });
                                 loadedFromHash = true;
@@ -711,16 +609,16 @@
                     }
                 }
 
-                if (!STATE.activeLog) STATE.activeLog = []; 
-                if (!STATE.math) STATE.math = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
+                if (!STATE.hands) STATE.hands = []; 
+                if (!STATE.ledger) STATE.ledger = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
                 
                 STATE.archive.forEach((rub, i) => rub.rubberNum = i + 1);
                 STATE.rubberNum = STATE.archive.length + 1;
 
                 UI.applyBigMode(); 
-                UI.renderArchive(); UI.drawActive(); UI.show('bidgrid'); UI.show('thisrubber'); UI.updateTally(); UI.updateUndoBtn();
+                UI.renderArchive(); UI.drawActive(); UI.show('thisrubber'); UI.updateTally(); UI.updateUndoBtn();
                 
-                if (!loadedFromHash && (STATE.archive.length > 0 || STATE.activeLog.length > 0 || STATE.names.we1)) {
+                if (!loadedFromHash && (STATE.archive.length > 0 || STATE.hands.length > 0 || STATE.names.we1)) {
                     Game.showStartupMenu();
                 } else if (!STATE.names.we1 && !STATE.names.we2) {
                     let lastNames = null;
@@ -728,16 +626,24 @@
                     Game.showEntry(loadedFromHash, loadedFromHash ? `<div class="title" style="font-size: 24px; margin-bottom: 12px;">Session loaded.</div>` : "", lastNames);
                 } else {
                     STATE.screen = 'game';
+                    UI.renderBiddingBox();
                 }
             }
         };
 
+        /* --- GAME ENGINE & LOGIC --- */
         const Game = {
             calcTrickBase: (suit, level) => {
-                if (suit === 'NT') return 40 + (level - 1) * 30;
-                return (suit === '♥' || suit === '♠') ? level * 30 : level * 20;
+                if (suit === 'NT') return CONFIG.points.trick.ntFirst + (level - 1) * CONFIG.points.trick.major;
+                return (suit === '♥' || suit === '♠') ? level * CONFIG.points.trick.major : level * CONFIG.points.trick.minor;
             },
             
+            getTotals: (logs) => {
+                const we = logs.filter(l => l.s === 'we').reduce((sum, l) => sum + l.sc, 0);
+                const they = logs.filter(l => l.s === 'they').reduce((sum, l) => sum + l.sc, 0);
+                return { we, they, diff: Math.abs(we - they) };
+            },
+
             showStartupMenu: () => {
                 STATE.screen = 'startup';
                 const hasActiveRubber = STATE.names.we1 && STATE.names.we2 && STATE.names.they1 && STATE.names.they2;
@@ -747,19 +653,17 @@
                     <div class="subtitle">Session Found</div>
                     <div class="popup-msg">You have an existing session in progress.</div>
                     <div style="margin-top:15px; display:flex; flex-direction:column; gap:10px; align-items:center;">
-                        <button style="width:200px;" onclick="Game.continueSession()">Continue Session</button>
-                        ${hasActiveRubber ? `<button style="width:200px;" onclick="UI.hideAllPopups(); Game.forceNewRubber()">Start New Rubber</button>` : ''}
-                        <button style="width:200px; color:#c00;" onclick="Game.resetFromStartup()">Start New Session</button>
+                        <button type="button" style="width:200px;" data-action="continueSession">Continue Session</button>
+                        ${hasActiveRubber ? `<button type="button" style="width:200px;" data-action="forceNew">Start New Rubber</button>` : ''}
+                        <button type="button" style="width:200px; color:#c00;" data-action="resetStartup">Start New Session</button>
                     </div>
                 `;
-                UI.hideAllPopups();
-                UI.hide("bidgrid");
-                
-                if (hasActiveRubber || STATE.activeLog.length > 0) UI.show("thisrubber");
+                UI.hideAllPopups(); UI.hide("bidgrid");
+                if (hasActiveRubber || STATE.hands.length > 0) UI.show("thisrubber");
                 else UI.hide("thisrubber");
-                
                 UI.show("startuppopup");
             },
+            
             continueSession: () => {
                 UI.hide("startuppopup");
                 if (!STATE.names.we1 || !STATE.names.we2) {
@@ -768,9 +672,11 @@
                     Game.showEntry(true, `<div class="title" style="font-size: 24px; margin-bottom: 12px;">New Rubber</div>`, lastNames);
                 } else {
                     STATE.screen = 'game';
-                    UI.show("bidgrid"); UI.show("thisrubber");
+                    UI.renderBiddingBox();
+                    UI.show("thisrubber");
                 }
             },
+            
             resetFromStartup: () => {
                 if (confirm("Erase entire session?")) { window.location.hash = ""; localStorage.clear(); location.reload(); }
             },
@@ -779,7 +685,6 @@
                 STATE.screen = 'entry';
                 const { we1, we2, they1, they2 } = defaultNames || STATE.names;
                 const listAttr = `list="namelist" autocomplete="off"`; 
-                const kL = `onkeydown="if(event.key==='Enter') Game.startMatch()"`;
                 const msgBody = isNewRubber ? `${resultMsg}<br><br>Who's playing the next rubber?` : "Who's playing the first rubber?";
                 let headerHTML = "";
                 if (!isNewRubber) headerHTML = `<div class="title">Rubber Soul</div><div class="subtitle">The Rubber Bridge Scorer</div>`;
@@ -790,20 +695,21 @@
                     <table class="popgrid">
                         <tr><th>WE</th><th>THEY</th></tr>
                         <tr>
-                            <td><input type="text" id="p1" value="${we1 || ''}" size="10" tabindex="1" ${listAttr} ${kL}></td>
-                            <td><input type="text" id="p3" value="${they1 || ''}" size="10" tabindex="3" ${listAttr} ${kL}></td>
+                            <td><input type="text" id="p1" value="${we1 || ''}" size="10" tabindex="1" ${listAttr}></td>
+                            <td><input type="text" id="p3" value="${they1 || ''}" size="10" tabindex="3" ${listAttr}></td>
                         </tr>
                         <tr>
-                            <td><input type="text" id="p2" value="${we2 || ''}" size="10" tabindex="2" ${listAttr} ${kL}></td>
-                            <td><input type="text" id="p4" value="${they2 || ''}" size="10" tabindex="4" ${listAttr} ${kL}></td>
+                            <td><input type="text" id="p2" value="${we2 || ''}" size="10" tabindex="2" ${listAttr}></td>
+                            <td><input type="text" id="p4" value="${they2 || ''}" size="10" tabindex="4" ${listAttr}></td>
                         </tr>
                     </table>
-                    <div style="margin-top:15px;"><button tabindex="5" onclick="Game.startMatch()">OK</button></div>
+                    <div style="margin-top:15px;"><button type="button" tabindex="5" data-action="startMatch">OK</button></div>
                 `;
                 
                 UI.hideAllPopups(); UI.hide("bidgrid"); UI.hide("thisrubber"); 
                 UI.show("playerpopup");
             },
+            
             startMatch: () => {
                 const [p1,p2,p3,p4] = ['p1','p2','p3','p4'].map(id => sanitize(UI.get(id).value.trim())); 
                 if (!p1 || !p2 || !p3 || !p4) return alert("Please enter all four names!");
@@ -812,15 +718,11 @@
                 [p1, p2, p3, p4].forEach(p => { if (STATE.players[p] === undefined) STATE.players[p] = 0; if (!STATE.allNames.includes(p)) STATE.allNames.push(p); });
                 STATE.screen = 'game';
                 UI.hide("playerpopup"); 
-                UI.show("tallydiv"); UI.show("bidgrid"); UI.show("thisrubber"); UI.drawActive(); Storage.save();
-            },
-            pick: (level, suit) => { 
-                STATE.bid.level = level; STATE.bid.suit = suit; 
-                UI.renderGrid(); UI.updateDisplay(); UI.renderMenu(level); 
+                UI.show("tallydiv"); UI.renderBiddingBox(); UI.show("thisrubber"); UI.drawActive(); Storage.save();
             },
 
             calculateScore: (side, level, suit, multiplier, honors, resLabel) => {
-                const isVul = (STATE.math[side].games > 0);
+                const isVul = (STATE.ledger[side].games > 0);
                 const bidStr = `${level}${suit}`;
                 let newLogs = [];
 
@@ -828,30 +730,30 @@
                     const oppSide = (side === 'we' ? 'they' : 'we');
                     const downCount = parseInt(resLabel.match(/\d+/)[0]);
                     let pts = 0;
-                    if (multiplier === 'n') pts = downCount * (isVul ? 100 : 50);
+                    if (multiplier === 'n') pts = downCount * (isVul ? CONFIG.penalties.vul[0] : CONFIG.penalties.notVul[0]);
                     else { const table = isVul ? CONFIG.penalties.vulX : CONFIG.penalties.notVulX; pts = table[downCount - 1] * (multiplier === 'xx' ? 2 : 1); }
                     newLogs.push({ s: oppSide, t: 'down', sc: pts, b: bidStr, m: multiplier, lbl: resLabel });
                 } else {
                     let trickPoints = Game.calcTrickBase(suit, level);
                     if (multiplier === 'x') trickPoints *= 2; if (multiplier === 'xx') trickPoints *= 4;
-                    const isGameWon = (STATE.math[side].partial + trickPoints >= CONFIG.points.game);
+                    const isGameWon = (STATE.ledger[side].partial + trickPoints >= CONFIG.points.game);
                     
                     newLogs.push({ s: side, t: 'made', sc: trickPoints, b: bidStr, m: multiplier, g: isGameWon });
 
                     if (resLabel.includes("over")) {
                          const ot = parseInt(resLabel.match(/\d+/)[0]);
                          let otPts = 0;
-                         if (multiplier === 'n') otPts = ot * ((suit==='♣'||suit==='♦') ? 20 : 30);
-                         else { otPts = ot * (isVul ? 200 : 100); if (multiplier === 'xx') otPts *= 2; }
+                         if (multiplier === 'n') otPts = ot * ((suit==='♣'||suit==='♦') ? CONFIG.points.trick.minor : CONFIG.points.trick.major);
+                         else { otPts = ot * (isVul ? CONFIG.points.overtrickX.vul : CONFIG.points.overtrickX.notVul); if (multiplier === 'xx') otPts *= 2; }
                          if(otPts > 0) newLogs.push({ s: side, t: 'ot', sc: otPts, cnt: ot });
                     }
                     if (honors > 0) newLogs.push({ s: side, t: 'hon', sc: honors });
-                    if (multiplier === 'x') newLogs.push({ s: side, t: 'ins', sc: 50 });
-                    if (multiplier === 'xx') newLogs.push({ s: side, t: 'ins', sc: 100 });
+                    if (multiplier === 'x') newLogs.push({ s: side, t: 'ins', sc: CONFIG.points.insult.x });
+                    if (multiplier === 'xx') newLogs.push({ s: side, t: 'ins', sc: CONFIG.points.insult.xx });
                     
                     let slamPts = 0; 
-                    if (level === 6) slamPts = (isVul ? 750 : 500); 
-                    if (level === 7) slamPts = (isVul ? 1500 : 1000); 
+                    if (level === 6) slamPts = (isVul ? CONFIG.points.slam.small.vul : CONFIG.points.slam.small.notVul); 
+                    if (level === 7) slamPts = (isVul ? CONFIG.points.slam.grand.vul : CONFIG.points.slam.grand.notVul); 
                     if (slamPts > 0) newLogs.push({ s: side, t: 'slam', sc: slamPts, lvl: level });
                 }
                 return newLogs;
@@ -867,38 +769,36 @@
                 
                 newLogs.forEach(log => {
                     if (log.t === 'made') {
-                        let rowIdx = STATE.math.we.games + STATE.math.they.games; if (rowIdx > 2) rowIdx = 2;
+                        let rowIdx = STATE.ledger.we.games + STATE.ledger.they.games; if (rowIdx > 2) rowIdx = 2;
                         log.r = rowIdx;
                         if (log.g) {
-                            STATE.math[log.s].games++; STATE.math.we.partial = 0; STATE.math.they.partial = 0;
+                            STATE.ledger[log.s].games++; STATE.ledger.we.partial = 0; STATE.ledger.they.partial = 0;
                         } else {
-                            STATE.math[log.s].partial += log.sc;
+                            STATE.ledger[log.s].partial += log.sc;
                         }
                     }
-                    STATE.activeLog.push(log);
+                    STATE.hands.push(log);
                 });
 
-                if (STATE.math[side].games === 2) {
+                if (STATE.ledger[side].games === 2) {
                     const oppSide = (side === 'we' ? 'they' : 'we');
-                    const bonus = (STATE.math[oppSide].games === 0) ? CONFIG.points.rubFast : CONFIG.points.rubSlow;
-                    STATE.activeLog.push({ s: side, t: 'rub', sc: bonus });
+                    const bonus = (STATE.ledger[oppSide].games === 0) ? CONFIG.points.rubFast : CONFIG.points.rubSlow;
+                    STATE.hands.push({ s: side, t: 'rub', sc: bonus });
                     UI.drawActive(); 
                     Game.finalizeMatch(side); 
                     return; 
                 }
 
                 UI.drawActive();
-                if (STATE.math.we.games < 2 && STATE.math.they.games < 2) UI.resetBiddingUI();
+                if (STATE.ledger.we.games < 2 && STATE.ledger.they.games < 2) UI.resetBiddingUI();
             },
 
             closeOutRubber: (titleMsg) => {
-                const weTotal = STATE.activeLog.filter(l => l.s === 'we').reduce((sum, l) => sum + l.sc, 0);
-                const theyTotal = STATE.activeLog.filter(l => l.s === 'they').reduce((sum, l) => sum + l.sc, 0);
-                const diff = Math.abs(weTotal - theyTotal);
+                const { we, they, diff } = Game.getTotals(STATE.hands);
                 const { we1, we2, they1, they2 } = STATE.names;
                 
                 let winMsg = `<div class="title" style="font-size: 24px; margin-bottom: 12px;">${titleMsg}</div>`;
-                if (weTotal > theyTotal) {
+                if (we > they) {
                     winMsg += `<div style="font-size:18px;"><b>Final Score:</b><br>${we1} & ${we2}: ${diff}<br>${they1} & ${they2}: -${diff}</div>`;
                     STATE.players[we1]+=diff; STATE.players[we2]+=diff; STATE.players[they1]-=diff; STATE.players[they2]-=diff;
                 } else {
@@ -906,40 +806,109 @@
                     STATE.players[we1]-=diff; STATE.players[we2]-=diff; STATE.players[they1]+=diff; STATE.players[they2]+=diff;
                 }
                 
-                STATE.archive.push(JSON.parse(JSON.stringify({ rubberNum: STATE.rubberNum, names: STATE.names, activeLog: STATE.activeLog })));
+                STATE.archive.push(JSON.parse(JSON.stringify({ rubberNum: STATE.rubberNum, names: STATE.names, hands: STATE.hands })));
                 const namesForPopup = { ...STATE.names };
-                STATE.activeLog = []; STATE.names = { we1: "", we2: "", they1: "", they2: "" };
-                STATE.math = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
+                STATE.hands = []; STATE.names = { we1: "", we2: "", they1: "", they2: "" };
+                STATE.ledger = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
                 STATE.history = []; STATE.rubberNum++;
                 UI.resetBiddingUI(true); UI.drawActive(); UI.renderArchive();
                 Game.showEntry(true, winMsg, namesForPopup);
             },
+            
             finalizeMatch: (winnerSide) => {
                 const winners = (winnerSide === 'we') ? `${STATE.names.we1} & ${STATE.names.we2}` : `${STATE.names.they1} & ${STATE.names.they2}`;
                 Game.closeOutRubber(`${winners} win the rubber!`);
             },
+            
             forceNewRubber: () => {
                 if (!confirm("End current rubber and start a new one?")) return;
                 Game.closeOutRubber("Rubber ended.");
             },
-            undo: () => { if (STATE.history.length === 0) return; STATE = JSON.parse(STATE.history.pop()); STATE.screen = 'game'; UI.hideAllPopups(); UI.show("thisrubber"); UI.show("bidgrid"); UI.renderArchive(); UI.drawActive(); UI.resetBiddingUI(); UI.updateUndoBtn(); Storage.save(); },
-            confirmReset: () => { if (confirm("Erase entire session?")) { window.location.hash = ""; localStorage.clear(); location.reload(); } }
+            
+            undo: () => { 
+                if (STATE.history.length === 0) return; 
+                STATE = JSON.parse(STATE.history.pop()); 
+                STATE.screen = 'game'; 
+                UI.hideAllPopups(); 
+                UI.show("thisrubber"); 
+                UI.renderArchive(); 
+                UI.drawActive(); 
+                UI.renderBiddingBox(); 
+                UI.updateUndoBtn(); 
+                Storage.save(); 
+            },
+            
+            confirmReset: () => { 
+                if (confirm("Erase entire session?")) { window.location.hash = ""; localStorage.clear(); location.reload(); } 
+            }
         };
-        
-        function toggleMenu() {
-            const menuButtons = document.getElementById('menu-buttons');
-            menuButtons.classList.toggle('show');
-        }
-        
-        document.addEventListener('click', function(event) {
+
+        /* --- GLOBAL EVENT DELEGATION --- */
+        document.addEventListener('click', function(e) {
             const menuToggle = document.getElementById('menu-toggle');
             const menuButtons = document.getElementById('menu-buttons');
-            if (menuToggle && menuButtons && !menuToggle.contains(event.target) && !menuButtons.contains(event.target)) {
+            
+            if (menuToggle && menuButtons && !menuToggle.contains(e.target) && !menuButtons.contains(e.target)) {
                 menuButtons.classList.remove('show');
+            }
+
+            const trigger = e.target.closest('[data-action]');
+            if (!trigger) return;
+
+            const action = trigger.getAttribute('data-action');
+            switch(action) {
+                case 'toggleMenu': e.stopPropagation(); menuButtons.classList.toggle('show'); break;
+                case 'toggleBig': e.stopPropagation(); UI.toggleBig(); break;
+                case 'undo': Game.undo(); break;
+                case 'share': Storage.share(); break;
+                case 'forceNew': Game.forceNewRubber(); break;
+                case 'showAbout': UI.showAbout(); break;
+                case 'reset': Game.confirmReset(); break;
+                case 'closeAbout': UI.closeAbout(); break;
+                case 'closeShare': UI.closeShare(); break;
+                case 'copyShare': UI.copyShareLink(); break;
+                case 'continueSession': Game.continueSession(); break;
+                case 'resetStartup': Game.resetFromStartup(); break;
+                case 'startMatch': Game.startMatch(); break;
+                case 'emailAuthor': 
+                    e.preventDefault(); 
+                    window.location.href = 'mailto:' + ['notrump7', 'gmail.com'].join('@'); 
+                    break;
+                case 'setSide': 
+                    STATE.bid.side = trigger.dataset.side; 
+                    UI.renderBiddingBox(); 
+                    break;
+                case 'setMult': 
+                    const val = parseInt(trigger.dataset.val);
+                    let target = 'n';
+                    if (val === 1) target = (STATE.bid.multiplier === 'x') ? 'n' : 'x';
+                    if (val === 2) target = (STATE.bid.multiplier === 'xx') ? 'n' : 'xx';
+                    STATE.bid.multiplier = target;
+                    UI.renderBiddingBox();
+                    break;
+                case 'setHonors': 
+                    const hVal = parseInt(trigger.dataset.val);
+                    STATE.bid.honors = (STATE.bid.honors === hVal ? 0 : hVal);
+                    UI.renderBiddingBox();
+                    break;
+                case 'pick': 
+                    STATE.bid.level = parseInt(trigger.dataset.level); 
+                    STATE.bid.suit = trigger.dataset.suit; 
+                    UI.renderBiddingBox(); 
+                    UI.renderMenu(STATE.bid.level); 
+                    break;
+                case 'scoreHand': 
+                    trigger.disabled = true; 
+                    Game.scoreHand(); 
+                    break;
             }
         });
         
         document.addEventListener('keydown', function(e) {
+            if (e.target.tagName === 'INPUT' && e.key === 'Enter' && e.target.id.startsWith('p')) {
+                Game.startMatch();
+                return;
+            }
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
             if (e.key.toLowerCase() === 'b') {
                 e.preventDefault(); 
@@ -951,6 +920,8 @@
             document.getElementById('year').textContent = new Date().getFullYear();
             Storage.load();
         });
+        
+    })();
     </script>
 </body>
 </html>
