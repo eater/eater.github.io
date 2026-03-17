@@ -227,7 +227,7 @@
                 <button type="button" id="big-btn" class="tool-link" data-action="toggleBig"><u>b</u>ig</button>
                 <button type="button" id="force-btn" class="tool-link" data-action="forceNew" hidden>new</button>
                 <button type="button" id="settings-btn" class="tool-link" data-action="showSettings">settings</button>
-                <button type="button" id="share-btn" class="tool-link" data-action="share" hidden>share</button>
+                <button type="button" id="share-btn" class="tool-link" data-action="share" hidden>link</button>
                 <button type="button" id="about-btn" class="tool-link" data-action="showAbout">about</button>
                 <button type="button" id="reset-btn" class="tool-link" data-action="reset" hidden>reset</button>
             </div>
@@ -260,7 +260,7 @@
                 <div style="margin: 25px 0; font-family: sans-serif; font-size: 16px; color: inherit;">
                     
                     <label class="setting-row">
-                        <span>4-Color Deck (♠ <span style="color:red">♥</span> <span style="color:#1E90FF">♦</span> <span style="color:#008000">♣</span>)</span>
+                        <span>4-Color Deck (♠&#xFE0E; <span style="color:red">♥&#xFE0E;</span> <span style="color:#1E90FF">♦&#xFE0E;</span> <span style="color:#008000">♣&#xFE0E;</span>)</span>
                         <div class="toggle-switch">
                             <input type="checkbox" id="setting-fourColor" data-action="toggleSetting" data-key="fourColor">
                             <span class="slider"></span>
@@ -412,13 +412,13 @@
             show: (id) => UI.get(id).hidden = false,
             hide: (id) => UI.get(id).hidden = true,
             
-            // replaces text suits with semantic spans for css targeting
+            // replaces text suits with semantic spans and forces text-rendering
             colorBid: (str) => {
                 return str
-                    .replace(/♣/g, '<span class="suit-clubs">♣</span>')
-                    .replace(/♦/g, '<span class="suit-diamonds">♦</span>')
-                    .replace(/♥/g, '<span class="suit-hearts">♥</span>')
-                    .replace(/♠/g, '<span class="suit-spades">♠</span>');
+                    .replace(/♣/g, '<span class="suit-clubs">♣\uFE0E</span>')
+                    .replace(/♦/g, '<span class="suit-diamonds">♦\uFE0E</span>')
+                    .replace(/♥/g, '<span class="suit-hearts">♥\uFE0E</span>')
+                    .replace(/♠/g, '<span class="suit-spades">♠\uFE0E</span>');
             },
 
             // evaluates state.settings and updates the css and view
@@ -477,7 +477,7 @@
                 else if (suit === '♣') suitClass = 'suit-clubs';
                 else if (suit === '♠') suitClass = 'suit-spades';
 
-                disp.innerHTML = `${level}&nbsp;<span class="${suitClass}">${suit}</span>${suff}`;
+                disp.innerHTML = `${level}&nbsp;<span class="${suitClass}">${suit === 'NT' ? suit : suit + '\uFE0E'}</span>${suff}`;
             },
 
             // re-renders the bidding box based on state.bid
@@ -537,7 +537,7 @@
                         else if (s === '♣') suitClass = 'suit-clubs';
                         else if (s === '♠') suitClass = 'suit-spades';
 
-                        html += `<td class="${isGame}"><button type="button" class="${cls}" data-action="pick" data-level="${l}" data-suit="${s}">${l}<span class="${suitClass}">${s}</span></button></td>`;
+                        html += `<td class="${isGame}"><button type="button" class="${cls}" data-action="pick" data-level="${l}" data-suit="${s}">${l}<span class="${suitClass}">${s === 'NT' ? s : s + '\uFE0E'}</span></button></td>`;
                     });
                     html += '</tr>';
                 }
