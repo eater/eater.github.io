@@ -4,6 +4,8 @@
         <!-- Rubber Soul, by Paul Adams. v26.03 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1b5e20">
 
     <script>
         window.goatcounter = {
@@ -1110,6 +1112,15 @@
         });
         
     })();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => {
+        console.error('Service Worker registration failed:', err);
+        });
+        });
+        }
     </script>
 </body>
 </html>
