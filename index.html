@@ -1086,7 +1086,7 @@
             const menuToggle = document.getElementById('menu-toggle');
             const menuButtons = document.getElementById('menu-buttons');
             
-            if (menuToggle && menuButtons && !menuToggle.contains(e.target) && !menuButtons.contains(e.target)) {
+            if (menuToggle && menuButtons && !menuToggle.contains(e.target)) {
                 menuButtons.classList.remove('show');
             }
 
