@@ -20,5 +20,21 @@
       "purpose": "maskable"
     }
   ]
+  "shortcuts": [
+    {
+      "name": "New Rubber",
+      "short_name": "New Rubber",
+      "description": "Start a new rubber",
+      "url": "/?action=new",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Settings",
+      "short_name": "Settings",
+      "description": "Open settings",
+      "url": "/?action=settings",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
 }
 

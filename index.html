@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <!-- Rubber Soul, by Paul Adams. v26.03 -->
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <link rel="manifest" href="manifest.json">
@@ -285,6 +284,14 @@
                         </div>
                     </label>
                     
+                    <label class="setting-row">
+                        <span>Keep Screen On</span>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="setting-keepAwake" data-action="toggleSetting" data-key="keepAwake">
+                            <span class="slider"></span>
+                        </div>
+                    </label>
+                    
                 </div>
                 <div style="margin-top:20px;">
                     <button type="button" data-action="closeSettings">Close</button>
@@ -297,7 +304,8 @@
                     Rubber Soul is copyright 2009&ndash;<span id="year"></span> by <a href="#" data-action="emailAuthor" style="color: #0047AB; text-decoration: underline;">Paul Adams</a>.<br><br>
                     <span style="font-size: 14px; color: #666; font-weight: bold;">v26.03</span>
                 </div>
-                <div style="margin-top:20px;">
+                <div style="margin-top:20px; display:flex; justify-content:center; gap: 10px;">
+                    <button type="button" id="install-app-btn" data-action="installApp" style="background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00; display: none;">Install App</button>
                     <button type="button" data-action="closeAbout">Close</button>
                 </div>
             </div>
@@ -365,8 +373,31 @@
             rubberNum: 1, hands: [], ledger: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } },
             archive: [], history: [], bid: { side: null, level: null, suit: null, multiplier: 'n', honors: 0 },
             isBig: false, screen: 'entry',
-            settings: { fourColor: false, highContrast: false, showHonors: true }
+            settings: { fourColor: false, highContrast: false, showHonors: true, keepAwake: true }
         };
+
+        // PWA Variables
+        let deferredPrompt;
+        let wakeLock = null;
+
+        // Screen Wake Lock API handler
+        const updateWakeLock = async () => {
+            if (!('wakeLock' in navigator)) return;
+            if (STATE.settings.keepAwake && document.visibilityState === 'visible') {
+                try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) { console.warn('Wake Lock error', err); }
+            } else if (wakeLock) {
+                wakeLock.release().then(() => { wakeLock = null; });
+            }
+        };
+        document.addEventListener('visibilitychange', updateWakeLock);
+
+        // PWA Install Prompt Interceptor
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('install-app-btn');
+            if (installBtn) installBtn.style.display = 'inline-block';
+        });
 
         // basic xss protection for player names, escaping quotes to protect element attributes
         const sanitize = (str) => str.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -395,7 +426,6 @@
                 return obj;
             }),
             
-            // reconstructs game/partial totals from an unpacked log
             recalcMath: (logs) => {
                 let m = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
                 logs.forEach(l => {
@@ -414,7 +444,6 @@
             show: (id) => UI.get(id).hidden = false,
             hide: (id) => UI.get(id).hidden = true,
             
-            // replaces text suits with semantic spans and forces text-rendering
             colorBid: (str) => {
                 return str
                     .replace(/♣/g, '<span class="suit-clubs">♣\uFE0E</span>')
@@ -423,20 +452,20 @@
                     .replace(/♠/g, '<span class="suit-spades">♠\uFE0E</span>');
             },
 
-            // evaluates state.settings and updates the css and view
             applySettings: () => {
                 document.body.classList.toggle('four-color', STATE.settings.fourColor);
                 document.body.classList.toggle('high-contrast', STATE.settings.highContrast);
                 
                 UI.get('honors-container').hidden = !STATE.settings.showHonors;
                 
-                // sync toggle switches to current state
                 UI.get('setting-fourColor').checked = STATE.settings.fourColor;
                 UI.get('setting-highContrast').checked = STATE.settings.highContrast;
                 UI.get('setting-showHonors').checked = STATE.settings.showHonors;
+                UI.get('setting-keepAwake').checked = STATE.settings.keepAwake;
+                
+                updateWakeLock();
             },
 
-            // forces complete dom rebuild of tables to bypass firefox caching bugs
             toggleBig: () => {
                 STATE.isBig = !STATE.isBig;
                 UI.applyBigMode();
@@ -456,7 +485,6 @@
                 }
             },
             
-            // validation step: ensures 4 names exist before enabling the ok button
             validateNames: () => {
                 const btn = UI.get('start-match-btn');
                 if (!btn || !UI.get('p1')) return;
@@ -482,7 +510,6 @@
                 disp.innerHTML = `${level}&nbsp;<span class="${suitClass}">${suit === 'NT' ? suit : suit + '\uFE0E'}</span>${suff}`;
             },
 
-            // re-renders the bidding box based on state.bid
             renderBiddingBox: () => {
                 UI.show('bidgrid'); 
                 
@@ -519,7 +546,6 @@
                 Storage.save(nuclear);
             },
 
-            // draws the 1-7 selection grid
             renderGrid: () => {
                 if (!STATE.bid.side) return;
                 let html = '<table class="chooser">';
@@ -554,7 +580,6 @@
                 UI.get('menu').innerHTML = menu + `</select> <button type="button" id="scorebtn" data-action="scoreHand">Score</button>`;
             },
             
-            // formats individual log data objects into html lines
             renderEntry: (data) => {
                 let html = "", anno = "", section = "above", row = 0;
                 let bidStr = "";
@@ -571,7 +596,6 @@
                 return { html, anno, section, row, side: data.s, isLine: data.g };
             },
 
-            // iterates over all logs in a rubber and constructs the scorecard
             getScorecardHTML: (rubberNum, names, logs, isFinal = false) => {
                 const { we1, we2, they1, they2 } = names;
                 let buffers = { we: { above: "", below: ["", "", ""] }, they: { above: "", below: ["", "", ""] }, anno: { we: { above: "", below: ["", "", ""] }, they: { above: "", below: ["", "", ""] } } };
@@ -629,7 +653,6 @@
                 if (STATE.allNames.length) UI.get('namelist').innerHTML = STATE.allNames.map(n => `<option value="${n}">`).join('');
             },
             
-            // keeps navbar clean before game starts
             updateUndoBtn: () => {
                 const hasHistory = STATE.history.length > 0;
                 const hasData = (STATE.hands.length > 0 || STATE.archive.length > 0);
@@ -648,7 +671,6 @@
                 else UI.hide('tallydiv');
             },
             
-            /* --- routing logic for overlays --- */
             restoreScreen: () => {
                 if (STATE.screen === 'startup') UI.show("startuppopup");
                 else if (STATE.screen === 'entry') UI.show("playerpopup");
@@ -701,6 +723,8 @@
                 }
                 UI.updateTally(); UI.updateUndoBtn();
             },
+            
+            // updated to use Native Web Share when available
             share: () => {
                 const popup = UI.get("sharepopup");
                 if (!popup.hidden) { UI.closeShare(); return; }
@@ -710,18 +734,31 @@
                 const minified = [4, namesArr, cleanArchive, packedActive]; 
                 
                 const url = window.location.href.split('#')[0] + '#' + Storage.toBase64(JSON.stringify(minified));
-                UI.showShare(url);
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Rubber Soul',
+                        text: 'Join my session!',
+                        url: url
+                    }).catch((e) => {
+                        // if user cancelled, don't show popup. If it failed for other reasons, show popup.
+                        if (e.name !== 'AbortError') UI.showShare(url);
+                    });
+                } else {
+                    UI.showShare(url);
+                }
             },
+            
             load: () => {
                 let localData = null;
                 const saved = localStorage.getItem(CONFIG.storageKey);
                 if (saved) { try { localData = JSON.parse(saved); } catch(e) {} }
                 
-                // safely merge incoming save data while protecting nested setting defaults
                 if (localData) {
                     const savedSettings = localData.settings || {};
                     STATE = { ...STATE, ...localData };
-                    STATE.settings = { ...{ fourColor: false, highContrast: false, showHonors: true }, ...savedSettings };
+                    // Added keepAwake default to true
+                    STATE.settings = { ...{ fourColor: false, highContrast: false, showHonors: true, keepAwake: true }, ...savedSettings };
                 }
 
                 let loadedFromHash = false;
@@ -1043,6 +1080,18 @@
                 case 'startMatch': 
                     if (!trigger.disabled) Game.startMatch(); 
                     break;
+                // NEW: Trigger the browser's install prompt
+                case 'installApp': 
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        deferredPrompt.userChoice.then((choiceResult) => {
+                            if (choiceResult.outcome === 'accepted') {
+                                document.getElementById('install-app-btn').style.display = 'none';
+                            }
+                            deferredPrompt = null;
+                        });
+                    }
+                    break;
                 case 'emailAuthor': 
                     if (trigger.getAttribute('href') === '#') {
                         e.preventDefault(); 
@@ -1109,17 +1158,30 @@
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('year').textContent = new Date().getFullYear();
             Storage.load();
+
+            // Check for Home Screen Shortcuts triggers
+            const params = new URLSearchParams(window.location.search);
+            const action = params.get('action');
+            if (action === 'new') {
+                setTimeout(() => { if (!document.getElementById('force-btn').hidden) Game.forceNewRubber(); }, 100);
+            } else if (action === 'settings') {
+                setTimeout(() => { UI.showSettings(); }, 100);
+            }
+            // Clean up the URL so reloads don't trigger the shortcut again
+            if (action) {
+                window.history.replaceState(null, '', window.location.pathname + window.location.hash);
+            }
         });
         
     })();
     </script>
     <script>
         if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(err => {
-        console.error('Service Worker registration failed:', err);
-        });
-        });
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => {
+                    console.error('Service Worker registration failed:', err);
+                });
+            });
         }
     </script>
 </body>
