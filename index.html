@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+    <head>
+        <!-- Rubber Soul, by Paul Adams. v26.03.1 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <link rel="manifest" href="manifest.json">
@@ -66,11 +67,6 @@
 
         .nav-left { display: flex; gap: 5px; flex: 1; justify-content: flex-start; align-items: center; z-index: 2001; position: relative; }
         
-        #menu-toggle {
-            font-size: 11px; text-decoration: none; cursor: pointer; padding: 3px 6px; border-radius: 3px; 
-            background: #fff; border: 1px solid #999; display: inline-block; font-family: sans-serif; color: #000;
-        }
-        
         #menu-buttons { display: none; gap: 5px; }
         #menu-buttons.show { display: inline-flex; gap: 5px; }
         
@@ -83,8 +79,10 @@
         .nav-right .player-name { margin-top: 0 !important; color: var(--gold); overflow: visible; display: inline-block; }
         .cumu-label { color: var(--gold); }
 
+        /* --- Base Menu Styling --- */
         .tool-link, #menu-toggle { 
-            font-size: 11px; text-decoration: none; cursor: pointer; padding: 3px 6px; border-radius: 3px; 
+            font-size: 13px; /* Slightly larger on desktop */
+            text-decoration: none; cursor: pointer; padding: 5px 10px; border-radius: 4px; 
             background: #fff; border: 1px solid #999; display: inline-block; font-family: sans-serif; 
         }
 
@@ -178,7 +176,7 @@
         td.anno { vertical-align: top; width: 22.5%; padding: 0 0.25em; font-size: var(--anno-font); line-height: var(--lh); }
         td.anno.left { text-align: right; } td.anno.right { text-align: left; } td.anno.btm { vertical-align: bottom; }
 
-        /* mobile breakpoints */
+        /* --- Mobile Breakpoints & Dropdown Menu --- */
         @media (max-width: 800px) {
             :root {
                 --score-font: 16px; 
@@ -196,8 +194,48 @@
             .bid-spacer { width: 90vw; min-height: auto; }
             .bidgrid.expanded, .rubberwindow { width: 90vw; max-width: 90vw; }
             body > .popupvis { top: 5%; max-height: 90vh; overflow-y: auto; }
-            .nav-left { flex: 0 0 auto; }
+            .nav-left { flex: 0 0 auto; position: relative; } /* Added relative positioning for dropdown */
             .nav-right { font-size: 10px; max-width: none; } 
+            
+            /* Mobile Dropdown Menu Magic */
+            #menu-toggle { font-size: 16px; padding: 8px 14px; font-weight: bold; border-color: #000; }
+            
+            #menu-buttons {
+                display: none; 
+                flex-direction: column; 
+                position: absolute; 
+                top: 100%; /* Opens directly below the menu button */
+                left: 0; 
+                margin-top: 5px;
+                background: #fff; 
+                border: 2px solid #000; 
+                border-radius: 8px; 
+                box-shadow: 0 8px 16px rgba(0,0,0,0.5); 
+                z-index: 5000; 
+                gap: 0; /* Remove gap so items touch */
+                min-width: 150px;
+                overflow: hidden;
+            }
+            
+            #menu-buttons.show { display: flex; }
+            
+            #menu-buttons .tool-link {
+                border: none; /* Remove individual borders */
+                border-bottom: 1px solid #ddd; /* Add separator lines */
+                border-radius: 0; 
+                padding: 14px 20px; /* Massive touch target for thumbs */
+                font-size: 16px; 
+                text-align: left;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            
+            #menu-buttons .tool-link:last-child { border-bottom: none; }
+            
+            /* High Contrast Mobile Dropdown override */
+            body.high-contrast #menu-buttons { border-width: 3px; }
+            body.high-contrast #menu-buttons .tool-link { border-bottom: 2px solid #000 !important; }
+            body.high-contrast #menu-buttons .tool-link:last-child { border-bottom: none !important; }
         }
 
         /* standard ui buttons */
@@ -738,7 +776,7 @@
                 if (navigator.share) {
                     navigator.share({
                         title: 'Rubber Soul',
-                        text: 'Join my session!',
+                        text: 'Share this link to continue session on another device',
                         url: url
                     }).catch((e) => {
                         // if user cancelled, don't show popup. If it failed for other reasons, show popup.
@@ -1080,7 +1118,7 @@
                 case 'startMatch': 
                     if (!trigger.disabled) Game.startMatch(); 
                     break;
-                // NEW: Trigger the browser's install prompt
+                // Trigger the browser's install prompt
                 case 'installApp': 
                     if (deferredPrompt) {
                         deferredPrompt.prompt();
