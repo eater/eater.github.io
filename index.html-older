@@ -1,0 +1,1220 @@
+<html>
+  <head>
+    <title>Rubber Soul: the rubber bridge scorer</title>
+
+    <!-- Last modified: 2009-09-15: added YUI dragging -->
+
+    <meta name="description" content="Rubber Soul: the rubber bridge scorer">
+    <meta name="keywords" content="bridge, rubber bridge, rubber, score, scorer, scoring, bonus, tricks, overtricks, penalty, double, honors">
+
+    <style type="text/css">
+
+      body {background-color: #ccc; }
+
+      .title {
+        font-size:16px;
+        font-weight:bold;
+        color:#0a0;
+        font-family:sans-serif;
+
+      }
+
+      .subtitle {
+        color:#f00;
+        font-size: small;
+      }
+
+      .bidgrid {
+        position:absolute;
+        z-index:2;
+        float:left;
+        clear:none;
+        margin:1em;
+        padding:1em;
+        margin-right:5%;
+        left:10%;
+        border: 2px solid black;
+        font-size: 14px;
+        background-color: #fff;
+        -moz-border-radius: 16;
+        text-align:center;
+        vertical-align:top;
+        display:block;
+      }
+
+      .allrubbers {
+        position:absolute;
+        float:left;
+        vertical-align:top;
+        text-align:center;
+        clear:none;
+        margin:1em;
+        margin-right:10%;
+        right:0%;
+        background-color: #ccc;
+        display:block;
+        padding:0;
+      }
+
+      .oldrubbers {
+        padding:0;
+        margin:0;
+        background-color: #ccc;
+      }
+
+
+      .thisrubber {
+        padding:0;
+        margin:0;
+      }
+
+      .rubberwindow {
+        clear:none;
+        margin: 0;
+        background-color: #fff;
+        border: 2px solid black;
+        -moz-border-radius: 16;
+      }
+
+      table.chooser {
+        border-collapse: collapse;
+        width:auto;
+        font-size: 14px;
+        text-align:center;
+        padding:8%;
+      }
+      table.chooser td {
+        border: 0px solid white;
+        padding:0;
+        margin: 0;
+        text-align:center;
+      }
+      table.chooser td span.contract {
+        display: block;
+        padding: 0px;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        border:1px solid white;
+        text-decoration: none;
+        color: #000;
+        cursor: pointer;
+      }
+
+      table.chooser td.notgame span.contract {
+        border-style: outset;
+        border-width: 1px;
+        border-color: #CCC;
+        background-color: #00ddff;
+      }
+      table.chooser td.game span.contract {
+        border-style: outset;
+        border-width: 1px;
+        border-color: #CCC;
+        background-color: #ffaaaa;
+      }
+      table.chooser td.notgamepick span.contract {
+        border-style: inset;
+        border-width: 1px;
+        border-color: #CCC;
+        background-color: #00ccdd;
+        color: #aaffff;
+      }
+      table.chooser td.gamepick span.contract {
+        border-style: inset;
+        border-width: 1px;
+        border-color: #CCC;
+        color: #fff;
+        background-color: #dd9999;
+      }
+      span.depressed {
+        border-style: inset;
+        border-width: 1px;
+        border-color: #CCC;
+        color: black;
+        background-color: #aaaa99;
+        padding: 1px 4px 1px 4px;
+        cursor:pointer;
+        margin-left:0.25em;
+        margin-right:0.25em;
+      }
+      span.raised {
+        border-style: outset;
+        border-width: 1px;
+        border-color: #CCC;
+        color: black;
+        background-color: #F3F3EE;
+        padding: 1px 4px 1px 4px;
+        cursor:pointer;
+        margin-left:0.25em;
+        margin-right:0.25em;
+      }
+
+      .allrubbers table {
+        vertical-align:top;
+        border-collapse: collapse;
+        height: auto;
+        font-size:14px;
+        padding:0;
+        width:27em;
+        margin:0.5em; 
+      }
+
+      table.main {
+        margin-bottom:4ex;
+        margin-top:4ex;
+      }
+
+      .oldmain {
+        margin-top:10ex;
+        background-color: #ccc;
+      }
+
+      td.wannoabove {
+        vertical-align:bottom;
+        width:40%;
+        padding: 0.25em;
+        padding-right:1em;
+        border-bottom:3px solid #fff; 
+        color: #0a0;
+        text-align:right;
+      }
+
+      td.wannobelow {
+        width: auto;
+        vertical-align:top;
+        padding: 0.25em;
+        padding-right:1em;
+        color: #0a0;
+        text-align:right;
+      }
+
+      td.tannoabove {
+        vertical-align:bottom;
+        width:40%;
+        padding: 0.25em;
+        padding-left:1em;
+        border-bottom:3px solid #fff; 
+        color: #0a0;
+        text-align:left;
+      }
+
+      td.tannobelow {
+        width: auto;
+        vertical-align:top;
+        padding: 0.25em;
+        padding-left:1em;
+        color: #0a0;
+        text-align:left;
+      }
+
+      .oldrubbers td.tannoabove {
+        border-bottom:3px solid #ccc;
+      }
+      .oldrubbers td.wannoabove {
+        border-bottom:3px solid #ccc;
+      }
+
+      .annohidden {
+        visibility:hidden;
+        visibility:expression("visible");
+      }
+
+
+      .header {
+        text-align: center;
+        padding-left:1em;
+        font-size: small;
+      }
+      td.weheader {
+        border-right:1px solid black; 
+        border-bottom:1px solid black;
+        text-align :center; 
+        vertical-align:top;
+        padding: 0.25em;
+        width:2em;
+        font-size:x-small;
+      }
+      td.theyheader {
+        border-bottom:1px solid black;
+        text-align: center; 
+        vertical-align:top;
+        padding: 0.25em;
+        width:2em;
+        font-size:x-small;
+      }
+
+      div.playerheader {
+        color: #0a0;
+      }
+
+      table.oldmain .weheader {
+        background-color: #ccc;
+      }
+      table.oldmain .theyheader {
+        background-color: #ccc;
+      }
+
+      .wabove {
+        border-bottom:3px solid black; 
+        border-right:1px solid black;
+        text-align:right;
+        vertical-align:bottom;
+        padding: 0.25em;
+        width:12%; 
+        height: 10ex
+      }
+      .tabove {
+        border-bottom:3px solid black; 
+        text-align:left;
+        vertical-align:bottom;
+        padding: 0.25em;
+        width:12%; 
+        height: 10ex
+      }
+      td.wbelow {
+        border-right:1px solid black;
+        text-align:right;
+        vertical-align:top;
+        padding: 0.25em;
+        height: 4ex;
+      }
+      td.tbelow {
+        text-align:left;
+        vertical-align:top;
+        padding: 0.25em;
+        height:4ex;
+      }
+
+      div.wbelowwon {
+        text-align:right;
+        vertical-align:top;
+        color: #f00;
+      }
+      div.tbelowwon {
+        text-align:left;
+        vertical-align:top;
+        color: #f00;
+      }
+
+      .result {
+        text-align:center;
+      }
+
+      .results {
+        margin-bottom: 2em;
+        color: #f00;
+      }
+      .hiddenline {
+        display:none;
+      }
+
+      .annobelowblank {
+        padding:0;
+        margin:0;
+        width:0;
+        height:0;
+      }
+
+      .gameline {
+        padding:0;
+        margin:0;
+        border-top:1px solid black;
+      }
+
+      div.tools {
+        width:95%;
+        right:0;
+        display:block;
+        font-size: smaller;
+        margin: 1em;
+        margin-top:0;
+        margin-bottom:0;
+      }
+
+      div.mainbody {
+        position:absolute;
+        float:center;
+        width:95%;
+        right:0;
+        display:block;
+      }
+
+      .tools a
+      {
+        float:right;
+        font-size: smaller;
+        color: red;
+        display:inline;
+      }
+
+      div.undo {
+        float:left;
+        width: auto;
+        display: expression("none");
+      }
+
+      div.annotoggle {
+        width: 15em;
+        float:right;
+        right:0;
+        text-align:right;
+        margin:0em;
+        padding:0;
+        margin-left: 30em;
+        margin-top: 0ex;
+      }
+
+      div.tally {
+        float:center;
+        text-align: center;
+        margin-top:6%;
+        width: auto;
+      }
+
+      .suittxt {
+        display:inline;
+        padding:0px;
+        border:0px;
+      }
+
+      span.Cimg {
+        display:inline;
+        padding:2px;
+        margin:1px;
+        border:0px;
+        background: url(data:image/gif;base64,R0lGODlhCgAKAPcAACQiJHR2dJyenFxeXDQ2NLy6vCwqLISChKyqrIyKjCQmJGxubERGRMTCxCwuLISGhKyurADltAA91AB3dwBw/wL9/wAY/wAA/wA4ywMAtAAA1AAAdyw0DOKXtRIY1AAAd+kAEOXwAIH9AHx/AADADwDiAAESAAAAAFYAAAAAAAAAAAAAADQcHOHjtRIS1AAAd3MIAADjAAASAAAAAFQ0AOKHABLUAAB3ABgaAO4HAJAFAHwBAHAPAAUAAJEAAHwAAP8AJP8A5P8AEv8AAG0A4wUA6pEAkHwAfIWYAOflAIE9FXx3AADNGACrABW6AADcAGAAqAMAbgAAfAAAAKhED1rjABYSAAAAAGCYAGzlABU9AAB3AABwAADjAAASAAAAAH4WmACI5QDUAcB3AAAAAgDwAAD9AAB/AP9wcP/j4/8SEv8AAP9aKv+I2P/U1P93dwAwZADj5AASEgAAAAAqGACI7gDUkAB3fAAAcAAABRUAkQAAfGQaYOIHnhIFgAABfNIAWObwxoEAF3wAAGAUAGwAABUAAAAAAEoBB+MAAIEAAHwAAMAAAHYAAFAAAAAAAGAAAGwAwAEAFwAAAGwQAAAAAAAAAAAAAKAqAOFpABIAAAAAAAB8AADjAAASAAAAAJyFAPcrABKDAAB8ABgAaO4AnpAAgHwAfHAA/wUA/5EA/3wA//8AYP8Anv8AgP8AfG0pOQW3AJGSAHx8AEpYOfTGAIAXAHwAAAA07ABk6hWDEgB8AAD//wD//wD//wD//2AAAGwAABUAAAAAAABgqAHj5AASEgAAAAA0vgBkOwCDTAB8AFeciPT35IASEnwAAIwYd+PuEBKQTwB8AGAAvGy35BWSEgB8AAH/NAD/ZAD/gwD/fMBYZeLG5RIXEgAAAEY0xYpk/wGD/wB8fwWkLADk5QASEgAAAPDnWOFkxhKDFwB8AAOINABkZACDgwB8fNgBWOIAxhIAFwAAABgxKu4AaZAwAHwAAHACAAUAAJEAAHwAAP8A6f8Azv8AR/8AACH5BAEAAA0ALAAAAAAKAAoABwgmABsIbHDixMCDBQseFJjQ4EKCDgcqnGiwocWLGDNC3KgQYcQGAQEAOw==) center no-repeat; 
+      }
+
+      span.Dimg {
+        display:inline;
+        padding:2px;
+        margin:1px;
+        border:0px;
+        background: url(data:image/gif;base64,R0lGODlhCgAKAPcAAPwCBNxmZORaXMS6vPwGBOReXMTCxAB8AN+TdCEZ5QCREgB8AACAZwDABBWX1wB8dxCY0ADltAA91AB3dwDA/wKL/wAY/wAA/wA4ywMAtAAA1AAAdyxUDOI/tRIY1AAAd+kAEOXwAIH9AHx/AADADwDiAAESAAAAAFYAAAAAAAAAAAAAADQcHOHjtRIS1AAAd3MIAADjAAASAAAAAFQ0AOKHABLUAAB3ABgaAO4HAJAGAHwBAHAPAAUAAJEAAHwAAP8AJP8A5P8AEv8AAG0A4wUA6pEAkHwAfIWYAOflAIE9FXx3AADNGACrABW6AADcAGAAUAMAbwAAfAAAALBEDz/jABoSAAAAAGCYAGzlABU9AAB3AABwAADjAAASAAAAAH4WmACI5QDUAcB3AAAAAgDwAAD9AAB/AP9wcP/j4/8SEv8AAP9aKv+I2P/U1P93dwAwZADj5AASEgAAAAAqGACI7gDUkAB3fAAAcAAABRUAkQAAfGQaYOIHnhIGgAABfNIAgObwxIEAF3wAAGAUAGwAABUAAAAAAEoBB+MAAIEAAHwAAMAAAHYAAFAAAAAAAGAAAGwAwAEAFwAAAGwQAAAAAAAAAAAAAKARAOHTABIAAAAAAAB8AADjAAASAAAAAJyFAPcrABKDAAB8ABgAaO4AnpAAgHwAfHAA/wUA/5EA/3wA//8AYP8Anv8AgP8AfG0pPAW3AJGSAHx8AEqAPPTEAIAXAHwAAAA07ABk6hWDEgB8AAD//wD//wD//wD//2AAAGwAABUAAAAAAABgqAHj5AASEgAAAAA0vgBkOwCDTAB8AFeciPT35IASEnwAAIwYd+PuEBKQTwB8AGAAvGy35BWSEgB8AAH/NAD/ZAD/gwD/fMCAaOLE5RIXEgAAAEY0wopk/wGD/wB8fwWkLADk5QASEgAAAPDngOFkxBKDFwB8AAOINABkZACDgwB8fNgBgOIAxBIAFwAAABgxEe4A05AwAHwAAHACAAUAAJEAAHwAAP8A6f8Azv8AR/8AACH5BAEAAAYALAAAAAAKAAoABwg1AA0INCBAwMCDBQAAKHDQQACFAAgEGFiAAESFDAVcvFhwI0SDFS8SYCgwpMKJCDE2FFjwYEAAOw==) center no-repeat; 
+      }
+
+      span.Himg {
+        display:inline;
+        padding:2px;
+        margin:1px;
+        border:0px;
+        background: url(data:image/gif;base64,R0lGODlhCgAJAPcAABQiNKwKFGwWHMwKDMQKDHwSHEQaLPQCBCweLJQSFGQWJLQKFHQWHPwCBBWX1wB8dxCY0ADltAA91AB3dwAQ/wIa/wAX/wAA/wA4ywMAtAAA1AAAdyzEDOJutRIY1AAAd+kAEOXwAIH9AHx/AADADwDiAAESAAAAAFYAAAAAAAAAAAAAADQcHOHjtRIS1AAAd3MIAADjAAASAAAAAFQ0AOKHABLUAAB3ABgaAO4HAJAHAHwBAHAPAAUAAJEAAHwAAP8AJP8A5P8AEv8AAG0A4wUA6pEAkHwAfIWYAOflAIE9FXx3AADNGACrABW6AADcAGAAUAMAbwAAfAAAAIBED2zjABYSAAAAAGCYAGzlABU9AAB3AABwAADjAAASAAAAAH4WmACI5QDUAcB3AAAAAgDwAAD9AAB/AP9wcP/j4/8SEv8AAP9aKv+I2P/U1P93dwAwZADj5AASEgAAAAAqGACI7gDUkAB3fAAAcAAABRUAkQAAfGQaYOIHnhIHgAABfNIAYObwdoEAGHwAAGAUAGwAABUAAAAAAEoBB+MAAIEAAHwAAMAAAHYAAFAAAAAAAGAAAGwAcAEAGAAAAGwQAAAAAAAAAAAAAKClAOFsABIAAAAAAAB8AADjAAASAAAAAJyFAPcrABKDAAB8ABgAaO4AnpAAgHwAfHAA/wUA/5EA/3wA//8AYP8Anv8AgP8AfG0pOgW3AJGSAHx8AEpgOvR2AIAYAHwAAAA07ABk6hWDEgB8AAD//wD//wD//wD//2AAAGwAABUAAAAAAABgqAHj5AASEgAAAAA0vgBkOwCDTAB8AFeciPT35IASEnwAAIwYd+PuEBKQTwB8AGAAvGy35BWSEgB8AAH/NAD/ZAD/gwD/fMBgZuJ25RIYEgAAAEY0xIpk/wGD/wB8fwWkLADk5QASEgAAAPDnYOFkdhKDGAB8AAOINABkZACDgwB8fNgBYOIAdhIAGAAAABgxpe4AbJAwAHwAAHACAAUAAJEAAHwAAP8A6f8Azv8AR/8AACH5BAEAACcALAAAAAAKAAkABwgsAE+caCBQIEGDDYYgJNigocOHECEOORDxgMIhERUKnOhQY0GMCQuKHOLxREAAOw==) center no-repeat; 
+      }
+      span.Simg {
+        display:inline;
+        padding:2px;
+        margin:1px;
+        border:0px;
+        background: url(data:image/gif;base64,R0lGODlhCgAKAPcAACQiJHR2dFxeXKyurDQ2NLy6vCQmJISChGxubERGRMTCxAAAAAAKBQAAABUAAAAAABB0AADjAAASAAAAAAAf0AIAXAAAgwAAAAAAAgMAAAAAAAAAAIi+BOKUABLUAAB3AOktRuW0AIHUAHx3AADG/AAHAwGVAAAAAFYg/AAAAgAAAAAAAJAaBOEHABIEAAABAHMBRgAAAAAAAAACALAA/OIAAxIAAAAAABie/O4CApAAAHwAAHABBAUAAJEAAHwAAP/YM//xAP8SAP8AAG0Q/AX3A5FFAHwAAIUg/OcAAoEAAHwAAAD0EABJABXaAAB0AGAaOgNKAADaAAB0AAAAmC0A5BcAEgAAAGBs22zlvxUS1AAAdwAA0AAAXAAAgwAAAH4VEAAAAAAAOsAAAAAV/AAA8gAAEgAAAP8AEP8A9/8ARf8AAP+QhP/jAP8SAP8AAACYAgDVAADUAAB3AADGaAAHAACVagAAAAAgAAAA/BUA/QAAf8AaYOIHnhIEgAABfNIB2OYAyYEAF3wCAGABAGwAABUAAAAAAErYB+PjAIESAHwAAMBFAHbVAFDUAAB3AGDGAGwHwAGVFwAAAGwgAAAAAAAAAAAAAPyAAOH+ABIAAAAAAADYAADjAAASAAAAAPiFAPcrABKDAAB8ABgAaO4AnpAAgHwAfHAA/wUA/5EA/3wA//8AYP8Anv8AgP8AfG0pOgW3AJGSAHx8AErYOvTJAIAXAHwAAAA0SABk6xWDEgB8AAD//wD//wD//wD//2AAAGwAABUAAAAAAAC8BAHj5QASEgAAAAA0vgBkOwCDTAB8AFf45PT35IASEnwAAOgYd+PuEBKQTwB8AGAAGGy35RWSEgB8ADT/NOj/ZBL/gwD/fAjYwujJ5RIXEgAAAKM0xAtk/wCD/wB8fw4AiLnl5WcSEvoAAOvn2FBkydeDF8Z8ABqINABkZACDgwB8fHQB2OMAyRIAFwAAAAoxgAAA/gAwAAAAADhcAOPkABISAAAAAB9c6QDkzgASRwAAACH5BAEAAAoALAAAAAAKAAoABwg8ABUIVCAAwcCDCAAAOHBQQUKFCxgKfKhQIUMBFTMCoKixowEDGRMoFLBgAUYACRQECKCgpEqWBwkQOBgQADs=) center no-repeat; 
+        display:expression(ieBox ? "inline" : "none");
+
+      }
+
+      .closex {
+        float:right;
+        cursor: pointer;
+        margin: 0;
+        color: #0a0;
+        font-size:small;
+        font-weight: bold;
+        font-family: sans-serif;
+      }
+
+      .players {
+        text-align:center;
+        width:auto;
+        margin: 0;
+        padding:0;
+        margin-left:auto;
+        margin-right:auto;
+      }
+
+      .players td {
+        padding:0.5em;
+      }
+
+      .hid
+      {
+        display:none;
+      }
+
+      div.popupvis
+      {
+        position:absolute; left:35%; right:30%; top:25%;
+
+        z-index:2;
+        border: 3px solid #0a0;
+        font-size: 14px;
+        background-color: #fff;
+        -moz-border-radius: 16;
+        text-align:center;
+        width: 20em;
+        height: auto;
+        padding: 1em;
+      }
+
+
+    </style>
+
+    <!-- YUI dragging scripts -->
+    <!-- Dependencies --> 
+		<script type="text/javascript" src="http://yui.yahooapis.com/2.8.0r4/build/yahoo-dom-event/yahoo-dom-event.js" ></script>
+    <!-- Drag and Drop source file --> 
+		<script type="text/javascript" src="http://yui.yahooapis.com/2.8.0r4/build/dragdrop/dragdrop-min.js" ></script>
+
+
+		<script language="JavaScript" type="text/javascript">
+
+			// by Paul Adams, notrump7@gmail.com
+			// scoring code by Andrew Purvis, author of BridgeKeeper, http://www.geocities.com/tlon_uqbar/bk.html
+
+		if (typeof YAHOO != 'undefined') {
+			var drag1 = new YAHOO.util.DDProxy("bidgrid");
+			var drag2 = new YAHOO.util.DDProxy("rubberwindow");
+			var drag3 = new YAHOO.util.DDProxy("playerpopup");
+		}
+
+var nv0 = new Array(50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650);
+var v0 = new Array(100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300);
+var nvx = new Array(100, 300, 500, 800, 1100, 1400, 1700, 2000, 2300, 2600, 2900, 3200, 3500);
+var vx = new Array(200, 500, 800, 1100, 1400, 1700, 2000, 2300, 2600, 2900, 3200, 3500, 3800);
+var nvxx = new Array(200, 600, 1000, 1600, 2200, 2800, 3400, 4000, 4600, 5200, 5800, 6400, 7000);
+var vxx = new Array(400, 1000, 1600, 2200, 2800, 3400, 4000, 4600, 5200, 5800, 6400, 7000, 7600);
+
+var suits = new Array('C', 'D', 'H', 'S', 'NT');
+
+var bidtrickminor = new Array(20, 40, 60, 80, 100, 120, 140);
+var bidtrickmajor = new Array(30, 60, 90, 120, 150, 180, 210);
+var bidtricknt = new Array(40, 70, 100, 130, 160, 190, 220);
+
+var resVal = new Array("down&nbsp;13", "down&nbsp;12", "down&nbsp;11", "down&nbsp;10","down&nbsp;9", "down&nbsp;8", "down&nbsp;7", "down&nbsp;6", "down&nbsp;5", "down&nbsp;4", "down&nbsp;3", "down&nbsp;2", "down&nbsp;1", "made&nbsp;it", "1&nbsp;over", "2&nbsp;over", "3&nbsp;over", "4&nbsp;over", "5&nbsp;over", "6&nbsp;over");
+
+var rubbernum = 1;
+
+var spacer = '&nbsp;&nbsp;&nbsp;';
+
+var imgarray = new Object();
+imgarray["C"]='<span class="Cimg" name="C">' + spacer + '</span>';
+imgarray["D"]='<span class="Dimg" name="D">' + spacer + '</span>';
+imgarray["H"]='<span class="Himg" name="H">' + spacer + '</span>';
+imgarray["S"]='<span class="Simg" name="S">' + spacer + '</span>';
+imgarray["NT"]='NT';
+
+rubberstring = '';
+
+players = new Object;
+
+function getplayers() {
+
+	document.getElementById("addpopup").className = "hid";
+	document.getElementById("bidgrid").className = "hid";
+
+	if (rubbernum > 1) {
+		wefield1='<select name="we1" id="we1">';
+		for (player in players) {
+			wefield1+='<option name="' + player + '" value="' + player + '">' + player;
+		}
+		wefield1+='</select>';
+
+		wefield2='<select name="we2">';
+		for (player in players) {
+			wefield2+='<option name="' + player + '" value="' + player + '">' + player;
+		}
+		wefield2+='</select>';
+
+		theyfield1='<select name="they1">';
+		for (player in players) {
+			theyfield1+='<option name="' + player + '" value="' + player + '">' + player;
+		}
+		theyfield1+='</select>';
+
+		theyfield2='<select name="they2">';
+		for (player in players) {
+			theyfield2+='<option name="' + player + '" value="' + player + '">' + player;
+		}
+		theyfield2+='</select>';
+
+		addbutton='<p><input type="button" value="Add new player" onClick="addnewplayer(); return false;"><p>';
+		intro ='';
+	}
+	else {
+
+		wefield1='<input type="text" name="we1" id="we1" size=10 maxlength=10>';
+		wefield2='<input type="text" name="we2" size=10 maxlength=10>';
+		theyfield1='<input type="text" name="they1" size=10 maxlength=10 onBlur="document.playerform.playersok.disabled=false;">';
+		theyfield2='<input type="text" name="they2" size=10 maxlength=10>';
+		addbutton='';
+		intro='<span class="title">Rubber Soul</span><br><span class="subtitle">The Rubber Bridge Scorer</span><p>';
+
+	}
+
+	playerform=intro + rubberstring + '<form name="playerform" class="players" onSubmit="setplayers(); return false;">';
+	playerform+='Who\'s playing this rubber?';
+	playerform+=addbutton;
+	playerform+='<table class="players">';
+	playerform+='<tr><td>WE</td>';
+	playerform+='<td>THEY</td>';
+	playerform+='</tr>';
+	playerform+='<tr><td>';
+
+	playerform+=wefield1;
+	playerform+='<p>';
+	playerform+=wefield2;
+	playerform+='</td><td>';
+	playerform+=theyfield1;
+	playerform+='<p>';
+	playerform+=theyfield2;
+	playerform+='</td></tr>';
+	playerform+='</table>';
+	playerform+='<input type="submit" id="playersok" value="OK" onClick="setplayers(); return false;" disabled="true">';
+	playerform+='</form>';
+
+	document.getElementById("playerpopup").innerHTML = playerform;
+
+	document.getElementById("playerpopup").className="popupvis";
+
+	if (rubbernum > 1 && navigator.appName != 'Microsoft Internet Explorer'){
+		document.playerform.we1.options[we1].selected=true;
+		document.playerform.we2.options[we2].selected=true;
+		document.playerform.they1.options[they1].selected=true;
+		document.playerform.they2.options[they2].selected=true;
+	}
+
+	if (rubbernum > 1 ) { document.playerform.playersok.disabled=false; }
+
+	document.getElementById("we1").focus();
+
+
+}
+
+function setplayers() {
+	document.getElementById("playerpopup").className="hid";
+	document.getElementById("bidgrid").className = "bidgrid";
+
+	we1 = document.playerform.we1.value.replace(/[^ \w]/g, '');
+	we2 = document.playerform.we2.value.replace(/[^ \w]/g, '');
+	they1 = document.playerform.they1.value.replace(/[^ \w]/g, '');
+	they2 = document.playerform.they2.value.replace(/[^ \w]/g, '');
+
+	if (!players[we1]) { players[we1] = 0 }
+	if (!players[we2]) { players[we2] = 0 }
+	if (!players[they1]) { players[they1] = 0 }
+	if (!players[they2]) { players[they2] = 0 }
+
+	//	players.sort();
+	//	for (var i=0; i < players.length - 1; i++) {
+	//		if (players[i] == players[i+1])
+	//		players[i+1] = '';
+	//	}
+	if (rubbernum > 1) {nextrubber(); }
+	ini();
+}
+
+function addnewplayer() {
+	addform = '<div class="closex" onClick="getplayers();">X</div>';
+	addform += 'New player:<p><form name="addform" onSubmit="addtoplayers(); return false;">';
+	addform += '<input type="text" name="newplayer" id="newplayer" value="" size=10 maxlength=10>';
+	addform += '<input type="button" value="OK" onClick="addtoplayers(); return false;">';
+	addform += '</form>';
+
+	document.getElementById("playerpopup").className = "hid";
+	document.getElementById("addpopup").className = "popupvis";
+	document.getElementById("addpopup").innerHTML = addform;
+	document.getElementById("newplayer").focus();
+}
+
+function addtoplayers() {
+	document.getElementById("addpopup").className = "hid";
+	newplayer = document.addform.newplayer.value.replace(/[^ \w]/g, '');
+	players[newplayer] = 0;
+	showtally();
+	getplayers();
+	document.getElementById("rubberresult").className = "hid";
+	return false;
+}
+
+function showtally() {
+	tallycontents = '';
+	for (player in players) {
+		tallycontents += player + ":&nbsp;" + players[player] + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+	}
+	document.getElementById("tallydiv").innerHTML=tallycontents;
+}
+
+
+function ini() {
+	rubberstring = '';
+	tcurscore = new Array(0,0);
+	wcurscore = new Array(0,0);
+	tgames = new Array(0,0);	
+	wgames = new Array(0,0);
+	wvul = new Array(0,0);
+	tvul = new Array(0,0);
+	hist = new Array();
+	document.getElementById("undo").innerHTML = ''; 
+	newrubber = '<div class="rubberwindow" id="rubberwindow"><table id="main" class="main"><tr><td class="header" colspan=4>Rubber #' + rubbernum + '</td></tr><tr id="header" class="header"><td class="annobelowblank"></td><td class="weheader">WE<br><div class="playerheader">' + we1 + '<br>' + we2 + '</div></td><td class="theyheader">THEY<br><div class="playerheader">' + they1 + '<br>' + they2 + '</div></td><td class="annobelowblank"></td></tr><tr id="above" class="above"><td id="annowabove" class="wannoabove"><div id="annowabovediv"></div></td><td id="wabove" class="wabove"><div id="wabovediv"></div></td><td id="tabove" class="tabove"><div id="tabovediv"></div></td><td id="tabove" class="tannoabove"><div id="annotabovediv"></div></td></tr><tr id="below" class="below"><td id="annowbelow0" class="wannobelow"><div id="annowbelowdiv0"></div></td><td id="wbelow0" class="wbelow"><div id="wbelowdiv0"></div></td><td id="tbelow0" class="tbelow"><div id="tbelowdiv0"></div></td><td id="annotbelow0" class="tannobelow"><div id="annotbelowdiv0"></div></td></tr><tr><td class="annobelowblank"></td><td id="game1" colspan=2 class="hiddenline"></td><td class="annobelowblank"></td></tr><tr id="below1" class="below"><td id="annowbelow1" class="wannobelow"><div id="annowbelowdiv1"></div></td><td id="wbelow1" class="wbelow"><div id="wbelowdiv1"></div></td><td id="tbelow1" class="tbelow"><div id="tbelowdiv1"></div></td><td id="annotbelow1" class="tannobelow"><div id="annotbelowdiv1"></div></td></tr><tr><td class="annobelowblank"></td><td id="game2" colspan=2 class="hiddenline"></td><td class="annobelowblank"></td></tr><tr id="below2" class="below"><td id="annowbelow2" class="wannobelow"><div id="annowbelowdiv2"></div></td><td id="wbelow2" class="wbelow"><div id="wbelowdiv2"></div></td><td id="tbelow2" class="tbelow"><div id="tbelowdiv2"></div></td><td id="annotbelow2" class="tannobelow"><div id="annotbelowdiv2"></div></td></tr><tr><td class="annobelowblank"></td><td id="game3" colspan=2 class="hiddenline"></td><td class="annobelowblank"></td></tr><tr><td class="annobelowblank"></td><td colspan=2 id="result" class="result"></td><td class="annobelowblank"></td></tr></table></div>';
+	document.getElementById("thisrubber").innerHTML = newrubber;
+	if (typeof YAHOO != 'undefined') {
+		var drag2 = new YAHOO.util.DDProxy("rubberwindow");
+	}
+	showtally();
+	cleartable();
+}
+
+function firstrubber() {
+	getplayers();
+	imgtoggle();
+	annotoggle();
+}
+
+function cleartable () {
+	document.getElementById("chooser").innerHTML = '';
+	document.getElementById("menu").innerHTML = '';
+	document.getElementById("double").innerHTML = '';
+	document.getElementById("honors").innerHTML = '';
+	document.info.X.value = 'n';
+	document.info.honors.value = '';
+	toggleButton('', /wethey/i);
+}
+
+function annotoggle() {
+	var arraySpans = document.body.getElementsByTagName("div");
+	if (document.getElementById("annotoggle").checked) {
+		for(var i = 0; i < arraySpans.length; i++) {
+			if(arraySpans[i].id.match(/anno.*below/))
+			{
+				arraySpans[i].className = 'annobelow';
+			}
+			if(arraySpans[i].id.match(/anno.*above/))
+			{
+				arraySpans[i].className = 'annoabove';
+			}
+		}
+	}
+	else {
+		for(var i = 0; i < arraySpans.length; i++) {
+			if(arraySpans[i].id.match(/anno/))
+			{
+				arraySpans[i].className = 'annohidden';
+			}
+		}
+	}
+}
+
+
+function imgtoggle () {
+
+	if (document.getElementById("imgtoggle").checked) {
+		for (var suit in suits) {
+			if (suits[suit] == "NT") {break;}
+			classtoggle = suits[suit] + 'img';
+			imgarray[suits[suit]] = '<span class="' + classtoggle + '" name="' +suits[suit] + '">' + spacer + '</span>'
+				var iconarray = document.getElementsByName(suits[suit]);
+			for (var i=0 ; i < iconarray.length; i++) { 
+				iconarray[i].innerHTML=spacer;
+				iconarray[i].className=classtoggle;
+			}
+		}		
+	}
+	else {
+		for (var suit in suits) {
+			if (suits[suit] == "NT") {break;}
+			imgarray[suits[suit]] = '<span class="suittxt" name="' + suits[suit] + '">' + suits[suit] + '</span>'
+				var iconarray = document.getElementsByName(suits[suit]);
+			for (var i=0 ; i < iconarray.length; i++) { 
+				iconarray[i].innerHTML=suits[suit];
+				iconarray[i].className="suittxt";
+
+			}
+		}
+	}
+}
+
+function undo() {
+	if (hist.length <= 2) {
+		document.getElementById("undo").innerHTML = ''; 
+	}
+	document.getElementById("main").innerHTML = hist.pop();
+	tcurscore.pop();
+	wcurscore.pop();	
+	tgames.pop();	
+	wgames.pop();	
+	tvul.pop();	
+	wvul.pop();	
+	cleartable();
+}
+
+
+function hilite(bidd) {
+	bid = bidd;
+	colortable();
+	if (contractor == "we") {var prtl = wcurscore[wcurscore.length - 1]}
+	if (contractor == "they") {var prtl = tcurscore[tcurscore.length - 1]}
+	level = bid.substring(0,1);
+	suit = bid.substring(1)
+		var isgame = isagame(level, suit, prtl);
+	isgame += "pick";
+	document.getElementById(bid).className=isgame;
+}
+
+function setcont(contractor) {
+	document.info.contractor.value=contractor;
+	document.getElementById("wetheywe").className = 'raised';
+	document.getElementById("wetheythey").className = 'raised';
+	document.getElementById("wethey" + contractor).className = 'depressed';
+	colortable();
+}
+
+function setdouble(doubleObj,doub) {
+	var status = doubleObj.className;
+	document.getElementById("doublex").className = 'raised';
+	document.getElementById("doublexx").className = 'raised';	
+	if (status == 'depressed' ) {doub = 0;}
+	else {doubleObj.className = 'depressed';}
+	if (doub == 1) { document.info.X.value='x';}
+	else if (doub == 2) { document.info.X.value='xx';}
+	else { document.info.X.value='n';}
+	hilite(bid);
+}
+
+function sethonors(honorsObj, honors) {
+	var status = honorsObj.className;
+	if (document.getElementById("honors100")) {document.getElementById("honors100").className = 'raised';}
+	document.getElementById("honors150").className = 'raised';	
+	if (status == 'depressed' ) {honors = 0}
+	else {honorsObj.className = 'depressed';}
+	document.info.honors.value=honors;
+}
+
+function isagame(level, suit, prtl) {
+	denom = '';
+	if (suit == "C" || suit == "D") {points = bidtrickminor[level - 1] ; denom = "minor" }
+	if (suit == "H" || suit == "S") {points = bidtrickmajor[level - 1] ; denom = "major" }
+	else if (suit == "NT") {points = bidtricknt[level - 1] ; denom = "nt" }
+	if  (document.info.X.value == 'x') {points = points * 2} 
+	else if  (document.info.X.value == 'xx') {points = points * 4} 
+	if (prtl + points >= 100) { return "game"}
+	else { return "notgame"}
+
+}
+
+function colortable() {
+	contractor=document.info.contractor.value;
+	if (contractor == "we") {var prtl = wcurscore[wcurscore.length - 1]}
+	if (contractor == "they") {var prtl = tcurscore[tcurscore.length - 1]}
+	points = 0;
+	denom = '';
+	tablecontents = '<table class="chooser">';
+	for (level = 1; level <= 7 ; level++) {
+		tablecontents += '<tr>'
+			for (suit in suits) {
+				suit = suits[suit];
+				tdclass = isagame(level, suit, prtl);		
+				tablecontents += '<td id="' + level + suit + '" class="' + tdclass +
+					'"><span class="contract" onclick="hilite(\'' + level + suit + '\'); menu(\'' + level + suit + '\');">'+ level + imgarray[suit] + '</span></td>';
+			}
+		tablecontents += '</tr>';
+	}
+	tablecontents += '</table>';
+	if (hist.length == 0) {hist.push(document.getElementById("main").innerHTML);}
+	document.getElementById("chooser").innerHTML = tablecontents;
+
+}
+
+function drawxh() {
+	document.info.X.value = 'n';
+	var xcontents = '<span id="doublex" class="raised" onclick="setdouble(this,1);">Doubled</span> <span id="doublexx" class="raised" onclick="setdouble(this,2);">Redoubled</span>';
+	var suithonorscontents = '<span id="honors100" class="raised" onclick="sethonors(this, 100);">100&nbsp;honors</span>&nbsp;';
+	var honorscontents = '<span id="honors150" class="raised" onclick="sethonors(this, 150);">150&nbsp;honors</span>';
+	if (denom != 'nt') {honorscontents = suithonorscontents + honorscontents}
+
+	document.getElementById("double").innerHTML = xcontents;
+	document.getElementById("honors").innerHTML = honorscontents;
+}
+
+function menu(bid) {
+	level = bid.match(/\d/);
+	menucontents = 'Result: <select name="result">';
+	i2 = 14;
+	for (i=0; i < 14; i++) {
+		i2--;
+		var resultstring = resVal[(20 - i) - level];
+		menucontents += '<option value=' + i2 + '>' +  resultstring;
+	}
+	if (document.info.X.value == 'n' && ( document.info.honors.value == '0' || document.info.honors.value == '')) {drawxh(); }
+
+	menucontents += '</select><p><input type="button" id="submit" value ="Score" onClick="score(); return false;">';
+	document.getElementById("menu").innerHTML = menucontents;
+	document.getElementById("submit").focus();
+	sel = 7-(level-0);
+	res = document.info.result.options;
+	res[sel].selected = true;
+}
+
+
+
+function score() {
+	hist.push(document.getElementById("main").innerHTML);
+	document.getElementById("undo").innerHTML = '<input type="button" onclick="undo();" value="Undo last score">';
+	contractor=document.info.contractor.value;
+	var X = document.info.X.value;
+	var honors = document.info.honors.value;
+	var result = document.info.result.value;
+	setTimeout('cleartable()',1000);
+	if (result < ((level-0)+6)) {
+		down(result, X, contractor);
+	}
+	else {
+		made(X, result, contractor, honors); 
+	}
+
+}
+
+function down(result, X, contractor) {
+	resultstring = document.info.result.options[(13 - result)].text;
+	if (contractor == "we" ) { side = "tabovediv" ; vul = wvul[wvul.length - 1];}
+	else { side = "wabovediv" ; vul = tvul[tvul.length - 1];}
+	annoside = "anno" + side;
+	oldscore = document.getElementById(side).innerHTML;
+	oldanno = document.getElementById(annoside).innerHTML;
+	if (vul=="0" && X=="n")
+		downscore = nv0[(level-0)-(result-5)];
+	else if (vul=="0" && X=="x")
+		downscore = nvx[(level-0)-(result-5)];
+	else if (vul=="0" && X=="xx")
+		downscore = nvxx[(level-0)-(result-5)];
+	else if (vul=="1" && X=="n")
+		downscore = v0[(level-0)-(result-5)];
+	else if (vul=="1" && X=="x")
+		downscore = vx[(level-0)-(result-5)];
+	else
+		downscore = vxx[(level-0)-(result-5)];
+
+	var xstring = '';
+	if (X == 'x') {var xstring = ' dbl'} 
+	else if (X == 'xx') {var xstring = ' rdbl'} 
+	var annolevel = bid.substring(0,1);
+	var annosuit = imgarray[bid.substring(1)];
+	var annobid = annolevel + annosuit;
+
+	annocontents = '<br />' + annobid + '&nbsp;' + resultstring + xstring +  oldanno;
+	contents = '<br />' + downscore + oldscore;
+	document.getElementById(side).innerHTML = contents;
+	document.getElementById(annoside).innerHTML = annocontents;
+
+	wvul.push(wvul[wvul.length - 1]);
+	tvul.push(tvul[tvul.length - 1]);
+	wgames.push(wgames[wgames.length - 1]);
+	tgames.push(tgames[tgames.length - 1]);
+	wcurscore.push(wcurscore[wcurscore.length - 1]);
+	tcurscore.push(tcurscore[tcurscore.length - 1]);
+}
+
+function made(X,result, contractor, honors) {
+
+	if (contractor == "we" ) { vul = wvul[wvul.length - 1]; var curscore = wcurscore[wcurscore.length - 1];}
+	else { vul = tvul[tvul.length - 1]; var curscore = tcurscore[tcurscore.length - 1];}
+
+	if (denom=="minor")
+		den = bidtrickminor;
+	else if (denom=="major")
+		den = bidtrickmajor;
+	else
+		den = bidtricknt;
+
+	if (X=="n") { base = den[level - 1]; xbonus = 0}
+	else if (X=="x") { base = 2 * (den[level - 1]); xbonus = 50 }
+	else { base = 4 * (den[level - 1]); xbonus = 100}
+
+	if (X=="n" && denom=="minor")
+		ot = (result -((level-0)+6)) * 20;
+  else if (X=="n" && (denom=="major" || denom=="nt"))
+    ot = (result -((level-0)+6)) * 30;
+  else if (vul=="0" && X=="x")
+    ot = (result -((level-0)+6)) * 100;
+  else if ((vul=="1" && X=="x") || (vul=="0" && X=="xx"))
+    ot = (result -((level-0)+6)) * 200;
+  else
+    ot = (result -((level-0)+6)) * 400;
+
+  if (level == 6 && vul=="0")
+    slambonus = 500;
+  else if (level == 6 && vul=="1")
+    slambonus = 750;
+  else if (level == 7 && vul=="0")
+    slambonus = 1000;
+  else if (level == 7 && vul=="1")
+    slambonus = 1500;
+  else
+    slambonus = 0;
+
+  madescore = (base);
+
+  if (contractor == "we" ) { side = "wbelowdiv"; aboveside = "wabovediv"; wcurscore.push(madescore + wcurscore[wcurscore.length - 1]); }
+  else { side = "tbelowdiv"; aboveside = "tabovediv"; tcurscore.push(madescore + tcurscore[tcurscore.length - 1]) }
+
+  games = (wgames[wgames.length - 1] + tgames[tgames.length - 1]);
+  side += games;
+
+  annoside = "anno" + side;
+  annoaboveside = "anno" + aboveside;
+
+  if (curscore == 0) {var br = ' '}
+  else {var br = '<br>'}
+
+  var xstring = '';
+  if (X == 'x') {var xstring = ' dbl'} 
+  else if (X == 'xx') {var xstring = ' rdbl'} 
+
+  var annolevel = bid.substring(0,1);
+  var annosuit = imgarray[bid.substring(1)];
+  var annobid = annolevel + annosuit + xstring;
+
+  var oldabove = document.getElementById(aboveside).innerHTML;
+  var oldscore = document.getElementById(side).innerHTML;
+  var oldannoabove = document.getElementById(annoaboveside).innerHTML;
+  var oldannobelow = document.getElementById(annoside).innerHTML;
+
+  var contents = oldscore + br + madescore;
+  var annobelowcontents = oldannobelow + br  + annobid;
+
+  document.getElementById(side).innerHTML = contents;
+  document.getElementById(annoside).innerHTML = annobelowcontents;
+
+  var abovecontents = '';
+  var annoabovecontents = '';
+  var otnum = (result -((level-0)+6));
+  if (otnum == 1) {var otplural = '' }
+  else { var otplural = 's' }
+
+  var abovescore = new Object();
+  abovescore["slam"] =slambonus;
+  abovescore["insult"]=xbonus;
+  abovescore[otnum + " overtrick" + otplural]=ot;
+  abovescore["honors"]=honors;
+
+  for (i in abovescore) {
+    bonus = abovescore[i];
+    if (bonus != '' && bonus > 0 ) { 
+      abovecontents += '<br />' + bonus; 
+      annoabovecontents += '<br />' + i;
+    }
+  }
+
+  abovecontents += oldabove;
+  annoabovecontents += oldannoabove;
+
+  document.getElementById(aboveside).innerHTML = abovecontents;
+  document.getElementById(annoaboveside).innerHTML = annoabovecontents;
+
+  if (tcurscore[tcurscore.length - 1] >= 100) {
+    document.getElementById(side).className="tbelowwon";
+    tgames.push(tgames[tgames.length - 1] + 1);
+    tvul.push(1);
+    wgames.push(wgames[wgames.length - 1]);
+    wvul.push(wvul[wvul.length - 1]);
+    games = (wgames[wgames.length - 1] + tgames[tgames.length - 1]);
+    line = "game" + games;
+    document.getElementById(line).className = "gameline"
+
+      if (tgames[tgames.length - 1] == 2) { rubber('THEY'); }
+    tcurscore[tcurscore.length - 1] = 0;
+    wcurscore[wcurscore.length - 1] = 0;
+  }
+
+  else if (wcurscore[wcurscore.length - 1] >= 100) {
+    document.getElementById(side).className="wbelowwon";
+    wgames.push(wgames[wgames.length - 1] + 1);
+    wvul.push(1);
+    tgames.push(tgames[tgames.length - 1]);
+    tvul.push(tvul[tvul.length - 1]);
+    games = (wgames[wgames.length - 1] + tgames[tgames.length - 1]);
+    line = "game" + games;
+    document.getElementById(line).className = "gameline"
+
+      if (wgames[wgames.length -1] == 2) { rubber('WE'); }
+    tcurscore[tcurscore.length - 1] = 0;
+    wcurscore[wcurscore.length - 1] = 0;
+  }
+  else {
+    wvul.push(wvul[wvul.length - 1]);
+    tvul.push(tvul[tvul.length - 1]);
+    wgames.push(wgames[wgames.length - 1]);
+    tgames.push(tgames[tgames.length - 1]);
+  }
+
+
+}
+
+function rubber(who) {
+
+  games = (wgames[wgames.length - 1] + tgames[tgames.length - 1]);
+  if (who == "WE" ) { aboveside = "wabovediv"; }
+  else { aboveside = "tabovediv"; }
+
+  annoaboveside = "anno" + aboveside;
+
+  if (games == 2) { var rubberbonus = 700; }
+  else { var rubberbonus = 500; }
+
+  var oldabove = document.getElementById(aboveside).innerHTML;
+  var oldannoabove = document.getElementById(annoaboveside).innerHTML;
+
+  abovecontents = rubberbonus ;
+  annoabovecontents = games + "-game rubber";
+
+  abovecontents += oldabove;
+  annoabovecontents += oldannoabove;
+
+  document.getElementById(aboveside).innerHTML = abovecontents;
+  document.getElementById(annoaboveside).innerHTML = annoabovecontents;
+
+
+  wtotal = document.getElementById("wabovediv").innerHTML + ' ' + document.getElementById("wbelowdiv0").innerHTML +  ' ' + document.getElementById("wbelowdiv1").innerHTML + ' ' + document.getElementById("wbelowdiv2").innerHTML; 
+
+  var wtotalarray = wtotal.split(/\D/);
+  var wsum = 0;
+  var wscores = '';
+  for (var i = 0; i < wtotalarray.length ; i++) {
+    wsum += parseInt((wtotalarray[i].replace(/\D/, "") * 1));
+  }
+  ttotal = document.getElementById("tabovediv").innerHTML + ' ' + document.getElementById("tbelowdiv0").innerHTML + ' ' + document.getElementById("tbelowdiv1").innerHTML + ' ' + document.getElementById("tbelowdiv2").innerHTML; 
+  var ttotalarray = ttotal.split(/\D/);
+  var tsum = 0;
+  for (var i = 0; i < ttotalarray.length ; i++) {
+    tsum += parseInt((ttotalarray[i].replace(/\D/, "") * 1));
+  }
+  var endscore = Math.abs(wsum-tsum);
+  if (wsum > tsum) { var winner = "WE"; players[we1] += endscore; players[we2] += endscore; players[they1] -= endscore; players[they2] -= endscore; }
+  else if (tsum > wsum) { var winner = "THEY"; players[we1] -= endscore; players[we2] -= endscore; players[they1] += endscore; players[they2] += endscore; }
+
+  if (who == winner) { var conjunction = "<br>and "; }
+  else {var conjunction = "<br>but "; }
+
+  if (wsum == tsum) { rubberstring = "The rubber was tied!"; } 
+  else {rubberstring = '<div class="results" id="rubberresult">' + who + ' won the rubber \n' + conjunction + winner + ' win with a net score of ' + endscore + '!</div>'; 
+    document.getElementById("result").innerHTML = winner + ":&nbsp;" + endscore;
+  }
+  document.getElementById("undo").innerHTML = '';
+  rubbernum++;
+  showtally();
+  getplayers(rubberstring);
+  return false;
+
+}
+
+function nextrubber() {
+  var prevrubber = document.getElementById("rubberwindow").innerHTML;
+  numid = 'id="' + rubbernum;
+  prevrubber = prevrubber.replace(/id=\"/g, numid);
+  prevrubber += document.getElementById("oldrubbers").innerHTML;
+  var prevmain = rubbernum + "main";
+  document.getElementById("oldrubbers").innerHTML = prevrubber;
+  document.getElementById("thisrubber").innerHTML = newrubber;
+  //	document.getElementById(prevmain).className = "oldmain";
+  return false;
+}
+
+
+
+function toggleButton(elementObj, idRegex) {
+  var arraySpans = document.body.getElementsByTagName("SPAN");
+
+  for(var i = 0; i < arraySpans.length; i++)
+  {
+    if(arraySpans[i].id.match(idRegex))
+    {
+      arraySpans[i].className = 'raised';
+    }
+  }
+
+  elementObj.className = 'depressed';
+}
+
+
+
+
+function pop() {
+  var newwindow=window.open('','About','height=350,width=400');
+  var aboutpage = '<html><head><title>About</title></head><style type="text/css">body { height: auto; border: 2px solid black;	padding: 2em;font-size: 14px;	background-color: #fff;	-moz-border-radius: 16;	text-align:center;}</style><body>Rubber Soul is a score-keeping application for rubber bridge. You can use it on the web or <a href="' + location.search + '">right-click here</a> to download a copy of the page to your computer</a>.<p>It was written by <a href="mailto:notrump7@gmail.com">Paul Adams</a> in September 2006 because I wasn\'t seeing anything else in existence that filled the role, and because I was bored. Comments, questions, and suggestions are very welcome. Certain features don\'t work on Internet Explorer -- anyone who wants to help them do so, feel free. The scoring math is based on code by <a href="http://www.geocities.com/tlon_uqbar/bk.html">Andrew Purvis</a>.<p>Rubber Soul is free to use, distribute, and modify, but please credit the authors.</body></html>';
+
+  if (window.focus) {newwindow.focus()}
+  newwindow.document.write(aboutpage);
+  newwindow.document.close();
+}
+
+</script>
+
+</head>
+
+<body onload="firstrubber();">
+
+  <div id="playerpopup" class="popupvis">
+  </div>
+  <div id="addpopup" class="hid">
+  </div>
+
+  <div class="tools">
+    <a href="javascript:pop();">about</a><br>
+    <div id="undo" class="undo"></div>
+
+    <div class="annotoggle">
+      <![if !IE]>
+      Images:<input type="checkbox" onChange="imgtoggle()" id="imgtoggle" checked> <br>
+      Annotations:<input type="checkbox" onChange="annotoggle()" id="annotoggle" checked>
+      <![endif]>
+      <![if IE]>
+      <input type="hidden" id="imgtoggle"><br>
+      <input type="hidden" id="annotoggle" checked>
+      <![endif]>
+    </div>
+
+    <div id="tallydiv" class="tally">
+    </div>
+  </div>
+
+  <div class="mainbody">
+
+    <div class="hid" id="bidgrid">
+      <form name="info">
+        <div class="wethey">
+          <span id="wetheywe" class="raised" onclick="setcont('we');">WE</span> 
+          <span id="wetheythey" class="raised" onclick="setcont('they');">THEY</span>
+          <input type="hidden" name="contractor" value="">
+        </div>
+        <p>
+        <div class="chooser" id="chooser">
+        </div>
+        <p>
+        <div id="double">
+        </div>
+        <input type="hidden" name="X" value="n">
+        <p>
+        <div id="honors">
+        </div>
+        <input type="hidden" name="honors" value="">
+        <p>
+        <div id='menu'>
+        </div>
+      </form>
+    </div>
+    <div class="allrubbers"><div class="thisrubber" id="thisrubber"></div><div class="oldrubbers" id="oldrubbers"></div></div>
+
+  </div>
+</div>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript" language="javascript">
+  var sc_project=1943374; 
+  var sc_invisible=1; 
+  var sc_partition=17; 
+  var sc_security="632572c1"; 
+  var sc_remove_link=1; 
+</script>
+
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><img  src="http://c18.statcounter.com/counter.php?sc_project=1943374&java=0&security=632572c1&invisible=1" alt="free web tracker" border="0"> </noscript>
+<!-- End of StatCounter Code -->
+</body>
+</html>
+
+
+

@@ -48,17 +48,7 @@
         
         /* reset buttons to behave visually like spans and remove 300ms mobile tap delay */
         button { border: none; background: none; padding: 0; outline: none; color: inherit; touch-action: manipulation; }
-        input[type="text"], input[type="search"] { 
-            font-size: 16px; 
-            padding: 4px; 
-            -webkit-appearance: none; 
-        }
-
-        /* Hide the 'x' clear button that some browsers add to search inputs */
-        input[type="search"]::-webkit-search-decoration,
-        input[type="search"]::-webkit-search-cancel-button,
-        input[type="search"]::-webkit-search-results-button,
-        input[type="search"]::-webkit-search-results-decoration { display: none; }
+        input[type="text"] { font-size: 16px; padding: 4px; }
 
         body { 
             background-color: var(--bg); margin: 0 auto; padding: 10px; 
@@ -942,12 +932,12 @@
                     <table class="popgrid">
                         <tr><th>WE</th><th>THEY</th></tr>
                         <tr>
-                            <td><input type="search" id="p1" value="${we1 || ''}" size="10" tabindex="1" ${listAttr}></td>
-                            <td><input type="search" id="p3" value="${they1 || ''}" size="10" tabindex="3" ${listAttr}></td>
+                            <td><input type="text" id="p1" value="${we1 || ''}" size="10" tabindex="1" ${listAttr}></td>
+                            <td><input type="text" id="p3" value="${they1 || ''}" size="10" tabindex="3" ${listAttr}></td>
                         </tr>
                         <tr>
-                            <td><input type="search" id="p2" value="${we2 || ''}" size="10" tabindex="2" ${listAttr}></td>
-                            <td><input type="search" id="p4" value="${they2 || ''}" size="10" tabindex="4" ${listAttr}></td>
+                            <td><input type="text" id="p2" value="${we2 || ''}" size="10" tabindex="2" ${listAttr}></td>
+                            <td><input type="text" id="p4" value="${they2 || ''}" size="10" tabindex="4" ${listAttr}></td>
                         </tr>
                     </table>
                     <div style="margin-top:15px;"><button type="button" id="start-match-btn" tabindex="5" data-action="startMatch" disabled>OK</button></div>
@@ -1223,7 +1213,7 @@
         
     })();
     </script>
-    <script>
+<script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').catch(err => {
@@ -1234,4 +1224,3 @@
     </script>
 </body>
 </html>
-
