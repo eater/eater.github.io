@@ -2,8 +2,10 @@
   "id": "/",
   "name": "Rubber Soul",
   "short_name": "Rubber Soul",
+  "description": "The rubber bridge scorer",
   "start_url": "/",
   "display": "standalone",
+  "categories": ["games", "utilities"],
   "background_color": "#1b5e20",
   "theme_color": "#1b5e20",
   "icons": [
