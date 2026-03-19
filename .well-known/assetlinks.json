@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.rubbersoul.bridge",
+        "sha256_cert_fingerprints": ["0F:B5:6D:B9:DA:6D:FA:B7:7E:22:1B:55:5E:72:04:F5:05:58:E6:BA:3D:D8:9D:CE:8C:7A:46:3F:FF:49:51:CC"]
+      }
+    }]
