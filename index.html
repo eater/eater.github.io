@@ -183,11 +183,12 @@
         .wbelow, .tbelow { vertical-align: top; height: 3em; text-align: right; }
         tr.gamewon-row td.wbelow, tr.gamewon-row td.tbelow { border-bottom: 1px solid black !important; height: auto !important; }
         .tabove, .tbelow { text-align: left; border-right: none; }
-        td.anno { vertical-align: top; width: 22.5%; padding: 0 0.25em; font-size: var(--anno-font); line-height: var(--lh); }
+        td.anno { vertical-align: top; width: 28.5%; padding: 0 0.25em; font-size: var(--anno-font); line-height: var(--lh); }
         td.anno.left { text-align: right; } td.anno.right { text-align: left; } td.anno.btm { vertical-align: bottom; }
 
         /* --- Enhanced Mobile Readability --- */
         @media (max-width: 800px) {
+        #big-btn { display: none !important; }
             :root {
                 /* NEW 'Small' Mode (was 16px/12px) */
                 --score-font: 22px; 
@@ -201,7 +202,9 @@
                 --player-font: 20px;
                 --anno-font: 22px; 
                 --lh: 38px;
-            }
+                }
+
+                
             /* ... rest of your mobile CSS remains the same ... */
             .main-container { flex-direction: column; align-items: center; padding-right: 0; gap: 20px; }
             .bid-spacer { width: 90vw; min-height: auto; }
@@ -529,12 +532,12 @@
                 const btn = UI.get('big-btn');
                 if (STATE.isBig) {
                     document.body.classList.add('big-mode');
-                    if (btn) btn.innerText = "small"; 
+                    if (btn) btn.innerText = "small"; // This changes the button text
                 } else {
                     document.body.classList.remove('big-mode');
                     if (btn) btn.innerHTML = "<u>b</u>ig"; 
                 }
-            },
+             },
             
             validateNames: () => {
                 const btn = UI.get('start-match-btn');
