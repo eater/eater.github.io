@@ -1,5 +1,5 @@
 // Bump the version number to force phones to clear their old cache
-const CACHE_NAME = 'rubbersoul-v2';
+const CACHE_NAME = 'rubbersoul-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

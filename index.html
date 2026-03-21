@@ -186,20 +186,23 @@
         td.anno { vertical-align: top; width: 22.5%; padding: 0 0.25em; font-size: var(--anno-font); line-height: var(--lh); }
         td.anno.left { text-align: right; } td.anno.right { text-align: left; } td.anno.btm { vertical-align: bottom; }
 
-        /* --- Mobile Breakpoints & Dropdown Menu --- */
+        /* --- Enhanced Mobile Readability --- */
         @media (max-width: 800px) {
             :root {
-                --score-font: 16px; 
-                --player-font: 12px;
-                --anno-font: 12px; 
-                --lh: 18px;
+                /* NEW 'Small' Mode (was 16px/12px) */
+                --score-font: 22px; 
+                --player-font: 16px;
+                --anno-font: 15px; 
+                --lh: 24px;
             }
             body.big-mode {
-                --score-font: 24px; 
-                --player-font: 14px;
-                --anno-font: 16px; 
-                --lh: 26px;
+                /* NEW 'Big' Mode (was 24px/14px) */
+                --score-font: 34px; 
+                --player-font: 20px;
+                --anno-font: 22px; 
+                --lh: 38px;
             }
+            /* ... rest of your mobile CSS remains the same ... */
             .main-container { flex-direction: column; align-items: center; padding-right: 0; gap: 20px; }
             .bid-spacer { width: 90vw; min-height: auto; }
             .bidgrid.expanded, .rubberwindow { width: 90vw; max-width: 90vw; }
