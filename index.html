@@ -211,15 +211,16 @@
                 --lh: 38px;
                 }
 
-            /* Make bid buttons wider, larger, and fix NT alignment */
+/* Make bid buttons wider, larger, and scale perfectly with the screen */
             table.chooser { width: 100%; border-spacing: 4px; }
             table.chooser td .contract { 
-                padding: 6px 0; 
-                font-size: 26px; 
+                padding: 0; 
+                font-size: 7.5vw; /* The text will always be exactly proportional to the screen/button width */
                 display: flex; 
                 justify-content: center; 
                 align-items: center; 
-                height: 48px; /* Keeps the height consistent across the row */
+                height: 14vw; /* The button height grows proportionally with the width */
+                min-height: 48px; /* Safety net so they never get too short on tiny screens */
             }
                 
             /* ... rest of your mobile CSS remains the same ... */
