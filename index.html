@@ -211,10 +211,15 @@
                 --lh: 38px;
                 }
 
-            /* Make bid buttons larger and easier to tap on phones */
+            /* Make bid buttons wider, larger, and fix NT alignment */
+            table.chooser { width: 100%; border-spacing: 4px; }
             table.chooser td .contract { 
-                padding: 12px 8px; 
-                font-size: 22px; 
+                padding: 6px 0; 
+                font-size: 26px; 
+                display: flex; 
+                justify-content: center; 
+                align-items: center; 
+                height: 48px; /* Keeps the height consistent across the row */
             }
                 
             /* ... rest of your mobile CSS remains the same ... */
@@ -1098,25 +1103,20 @@
                 const wePart = STATE.ledger.we.partial;
                 const theyPart = STATE.ledger.they.partial;
                 
-                let bonusMsg = [];
                 let weBonus = 0;
                 let theyBonus = 0;
 
                 // Rule 1: Only one game completed (300 pts)
-                if (weGames === 1 && theyGames === 0) { weBonus += 300; bonusMsg.push("WE: 300 (1 game)"); }
-                else if (theyGames === 1 && weGames === 0) { theyBonus += 300; bonusMsg.push("THEY: 300 (1 game)"); }
+                if (weGames === 1 && theyGames === 0) weBonus += 300;
+                else if (theyGames === 1 && weGames === 0) theyBonus += 300;
 
                 // Rule 2: Only one side has a partscore (100 pts)
-                if (wePart > 0 && theyPart === 0) { weBonus += 100; bonusMsg.push("WE: 100 (partscore)"); }
-                else if (theyPart > 0 && wePart === 0) { theyBonus += 100; bonusMsg.push("THEY: 100 (partscore)"); }
+                if (wePart > 0 && theyPart === 0) weBonus += 100;
+                else if (theyPart > 0 && wePart === 0) theyBonus += 100;
 
-                // Prompt user to apply official rules if applicable
-                if (weBonus > 0 || theyBonus > 0) {
-                    if (confirm(`Apply standard unfinished rubber bonuses?\n\n${bonusMsg.join("\n")}`)) {
-                        if (weBonus > 0) STATE.hands.push({ s: 'we', t: 'rub', sc: weBonus });
-                        if (theyBonus > 0) STATE.hands.push({ s: 'they', t: 'rub', sc: theyBonus });
-                    }
-                }
+                // Auto-apply official rules without asking
+                if (weBonus > 0) STATE.hands.push({ s: 'we', t: 'rub', sc: weBonus });
+                if (theyBonus > 0) STATE.hands.push({ s: 'they', t: 'rub', sc: theyBonus });
                 
                 Game.closeOutRubber("Rubber ended.");
             },
