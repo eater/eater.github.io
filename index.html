@@ -150,7 +150,7 @@
             cursor: pointer; line-height: 1; padding: 5px; z-index: 10;
         }
         #close-bid-btn:active { color: #000; }
-        
+
         .rubberwindow { background-color: #fff; border: 3px solid black; border-radius: 16px; padding: 1em; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); margin-bottom: 20px; width: var(--card-width); border-collapse: collapse; box-sizing: border-box; }
         .wethey { display: flex; justify-content: center; align-items: center; gap: 10px; min-height: 50px; margin-top: auto; margin-bottom: auto; padding: 5px 0; }
 
@@ -195,6 +195,7 @@
 
         /* --- Enhanced Mobile Readability --- */
         @media (max-width: 800px) {
+        #big-btn { display: none !important; }
             :root {
                 /* NEW 'Small' Mode (was 16px/12px) */
                 --score-font: 22px; 
@@ -208,32 +209,14 @@
                 --player-font: 20px;
                 --anno-font: 22px; 
                 --lh: 38px;
-            }
-                
-            /* Hide the 'big' mode button on phones entirely */
-            #big-btn { display: none !important; }
+                }
 
-            /* Fix the overlap without changing any button text */
-            td.anno .anno-text { 
-                white-space: normal; 
-                display: block; 
-                margin: 0;
-            }
-
-            /* Move WE annotations to the far left edge, THEY to the far right */
-            td.anno.left { text-align: left; }
-            td.anno.right { text-align: right; }
-
-            /* Re-balance the columns so scores have 20% and annotations have 30% */
-            td.anno { width: 30%; overflow-wrap: break-word; }
-            .sc-cell, .weheader, .theyheader { width: 20%; }
-            
             /* Make bid buttons larger and easier to tap on phones */
             table.chooser td .contract { 
                 padding: 12px 8px; 
                 font-size: 22px; 
             }
-
+                
             /* ... rest of your mobile CSS remains the same ... */
             .main-container { flex-direction: column; align-items: center; padding-right: 0; gap: 20px; }
             .bid-spacer { width: 90vw; min-height: auto; }
