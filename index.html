@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <!-- Rubber Soul, by Paul Adams. v26.03.1  -->
-    <meta charset="UTF-8">
+        <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#1b5e20">
@@ -144,6 +143,14 @@
         .bidgrid.collapsed { width: 180px; min-height: 0; padding: 15px; }
         .bidgrid.expanded { width: 100%; min-height: 220px; }
         
+        /* Close Button Styling */
+        #close-bid-btn {
+            position: absolute; top: 10px; right: 15px;
+            font-size: 32px; font-family: sans-serif; color: #999; 
+            cursor: pointer; line-height: 1; padding: 5px; z-index: 10;
+        }
+        #close-bid-btn:active { color: #000; }
+        
         .rubberwindow { background-color: #fff; border: 3px solid black; border-radius: 16px; padding: 1em; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); margin-bottom: 20px; width: var(--card-width); border-collapse: collapse; box-sizing: border-box; }
         .wethey { display: flex; justify-content: center; align-items: center; gap: 10px; min-height: 50px; margin-top: auto; margin-bottom: auto; padding: 5px 0; }
 
@@ -188,7 +195,6 @@
 
         /* --- Enhanced Mobile Readability --- */
         @media (max-width: 800px) {
-        #big-btn { display: none !important; }
             :root {
                 /* NEW 'Small' Mode (was 16px/12px) */
                 --score-font: 22px; 
@@ -202,9 +208,32 @@
                 --player-font: 20px;
                 --anno-font: 22px; 
                 --lh: 38px;
-                }
-
+            }
                 
+            /* Hide the 'big' mode button on phones entirely */
+            #big-btn { display: none !important; }
+
+            /* Fix the overlap without changing any button text */
+            td.anno .anno-text { 
+                white-space: normal; 
+                display: block; 
+                margin: 0;
+            }
+
+            /* Move WE annotations to the far left edge, THEY to the far right */
+            td.anno.left { text-align: left; }
+            td.anno.right { text-align: right; }
+
+            /* Re-balance the columns so scores have 20% and annotations have 30% */
+            td.anno { width: 30%; overflow-wrap: break-word; }
+            .sc-cell, .weheader, .theyheader { width: 20%; }
+            
+            /* Make bid buttons larger and easier to tap on phones */
+            table.chooser td .contract { 
+                padding: 12px 8px; 
+                font-size: 22px; 
+            }
+
             /* ... rest of your mobile CSS remains the same ... */
             .main-container { flex-direction: column; align-items: center; padding-right: 0; gap: 20px; }
             .bid-spacer { width: 90vw; min-height: auto; }
@@ -365,6 +394,8 @@
             </div>
 
             <div id="bidgrid" class="bidgrid collapsed" hidden>
+                <button type="button" id="close-bid-btn" data-action="closeBid" hidden>&times;</button>
+                
                 <div id="live-contract" class="live-contract" hidden></div>
                 
                 <div class="wethey">
@@ -582,12 +613,14 @@
                     box.classList.add('expanded');
                     UI.show('live-contract'); 
                     UI.show('chooser_master');
+                    UI.show('close-bid-btn'); // Show X
                     UI.renderGrid();
                 } else {
                     box.classList.remove('expanded');
                     box.classList.add('collapsed');
                     UI.hide('chooser_master'); 
                     UI.hide('live-contract');
+                    UI.hide('close-bid-btn'); // Hide X
                 }
                 UI.updateDisplay();
             },
@@ -1076,6 +1109,32 @@
             
             forceNewRubber: () => {
                 if (!confirm("End current rubber and start a new one?")) return;
+                
+                const weGames = STATE.ledger.we.games;
+                const theyGames = STATE.ledger.they.games;
+                const wePart = STATE.ledger.we.partial;
+                const theyPart = STATE.ledger.they.partial;
+                
+                let bonusMsg = [];
+                let weBonus = 0;
+                let theyBonus = 0;
+
+                // Rule 1: Only one game completed (300 pts)
+                if (weGames === 1 && theyGames === 0) { weBonus += 300; bonusMsg.push("WE: 300 (1 game)"); }
+                else if (theyGames === 1 && weGames === 0) { theyBonus += 300; bonusMsg.push("THEY: 300 (1 game)"); }
+
+                // Rule 2: Only one side has a partscore (100 pts)
+                if (wePart > 0 && theyPart === 0) { weBonus += 100; bonusMsg.push("WE: 100 (partscore)"); }
+                else if (theyPart > 0 && wePart === 0) { theyBonus += 100; bonusMsg.push("THEY: 100 (partscore)"); }
+
+                // Prompt user to apply official rules if applicable
+                if (weBonus > 0 || theyBonus > 0) {
+                    if (confirm(`Apply standard unfinished rubber bonuses?\n\n${bonusMsg.join("\n")}`)) {
+                        if (weBonus > 0) STATE.hands.push({ s: 'we', t: 'rub', sc: weBonus });
+                        if (theyBonus > 0) STATE.hands.push({ s: 'they', t: 'rub', sc: theyBonus });
+                    }
+                }
+                
                 Game.closeOutRubber("Rubber ended.");
             },
             
@@ -1118,6 +1177,7 @@
                 case 'forceNew': Game.forceNewRubber(); break;
                 case 'showSettings': UI.showSettings(); break;
                 case 'closeSettings': UI.closeSettings(); break;
+                case 'closeBid': UI.resetBiddingUI(); break;
                 case 'toggleSetting':
                     const key = trigger.dataset.key;
                     STATE.settings[key] = trigger.checked;
