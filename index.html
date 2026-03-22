@@ -193,6 +193,25 @@
         td.anno { vertical-align: top; width: 28.5%; padding: 0 0.25em; font-size: var(--anno-font); line-height: var(--lh); }
         td.anno.left { text-align: right; } td.anno.right { text-align: left; } td.anno.btm { vertical-align: bottom; }
 
+
+        /* standard ui buttons */
+        .std-btn { display: inline-block; padding: 2px 8px; margin: 2px; cursor: pointer; min-width: 3em; font-size: 16px; color: black; box-sizing: border-box; text-align: center; border-radius: 3px; }
+        .raised { background-color: #eee; border: 1px solid #999; }
+        .depressed { background-color: #ccc; border: 1px solid #666; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3); filter: brightness(0.95); }
+
+        button#scorebtn { font-weight: bold; font-size: 20px; padding: 5px 15px; background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00; margin-left: 10px; cursor: pointer; font-family: var(--serif); border-radius: 3px; }
+        button#scorebtn:active { background-color: #c8e6c9; box-shadow: inset 2px 2px 5px rgba(0,50,0,0.3); }
+        button#scorebtn:disabled { opacity: 0.6; cursor: default; box-shadow: none; }
+        #btn-we, #btn-they { font-weight: normal; color: black; margin: 0; }
+        #res { font-size: 16px !important; padding: 3px; }
+
+        table.chooser { border-collapse: separate; border-spacing: 2px; margin: 0 auto; }
+        table.chooser td .contract { display: block; padding: 4px 8px; border: 1px solid #bbb; cursor: pointer; font-size: 18px; font-weight: normal; color: black; text-align: center; border-radius: 3px; width: 100%; box-sizing: border-box; }
+        table.chooser td.notgame .contract { background-color: #e3f2fd; } 
+        table.chooser td.game .contract { background-color: #ffebee; }
+        table.chooser td .contract.depressed { border: 1px solid #666; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2); filter: brightness(0.92); }
+
+
         /* --- Enhanced Mobile Readability --- */
         @media (max-width: 800px) {
         #big-btn { display: none !important; }
@@ -211,19 +230,47 @@
                 --lh: 38px;
                 }
 
-/* Make bid buttons wider, larger, and scale perfectly with the screen */
+            /* Make bid buttons wider, larger, and scale perfectly with the screen */
             table.chooser { width: 100%; border-spacing: 4px; }
             table.chooser td .contract { 
                 padding: 0; 
-                font-size: 7.5vw; /* The text will always be exactly proportional to the screen/button width */
+                font-size: 6vmin; /* The text will always be exactly proportional to the screen/button width */
                 display: flex; 
                 justify-content: center; 
                 align-items: center; 
-                height: 14vw; /* The button height grows proportionally with the width */
-                min-height: 48px; /* Safety net so they never get too short on tiny screens */
+                height: 10vmin; /* The button height grows proportionally with the width */
+                min-height: 40px; /* Safety net so they never get too short on tiny screens */
             }
-                
-            /* ... rest of your mobile CSS remains the same ... */
+
+                /* Enlarge the auxiliary bidding box controls for mobile */
+            .bidgrid .std-btn {
+                font-size: 18px; /* Bigger text for WE/THEY, Doubled, Honors */
+                padding: 8px 16px; /* Taller and wider touch targets */
+                margin: 4px;
+            }
+            
+            #live-contract {
+                font-size: 36px; /* Make the active bid display much larger */
+                height: 40px;
+                line-height: 40px;
+                margin-bottom: 15px;
+            }
+            
+            #menu {
+                font-size: 18px; /* Make the "Result:" text larger */
+            }
+            
+            #res {
+                font-size: 18px !important; /* Bigger text inside the dropdown */
+                padding: 6px;
+            }
+            
+            button#scorebtn {
+                font-size: 24px; /* A massive, satisfying Score button */
+                padding: 10px 24px;
+                margin-top: 10px;
+            }
+            
             .main-container { flex-direction: column; align-items: center; padding-right: 0; gap: 20px; }
             .bid-spacer { width: 90vw; min-height: auto; }
             .bidgrid.expanded, .rubberwindow { width: 90vw; max-width: 90vw; }
@@ -271,23 +318,6 @@
             body.high-contrast #menu-buttons .tool-link { border-bottom: 2px solid #000 !important; }
             body.high-contrast #menu-buttons .tool-link:last-child { border-bottom: none !important; }
         }
-
-        /* standard ui buttons */
-        .std-btn { display: inline-block; padding: 2px 8px; margin: 2px; cursor: pointer; min-width: 3em; font-size: 16px; color: black; box-sizing: border-box; text-align: center; border-radius: 3px; }
-        .raised { background-color: #eee; border: 1px solid #999; }
-        .depressed { background-color: #ccc; border: 1px solid #666; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3); filter: brightness(0.95); }
-
-        button#scorebtn { font-weight: bold; font-size: 20px; padding: 5px 15px; background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00; margin-left: 10px; cursor: pointer; font-family: var(--serif); border-radius: 3px; }
-        button#scorebtn:active { background-color: #c8e6c9; box-shadow: inset 2px 2px 5px rgba(0,50,0,0.3); }
-        button#scorebtn:disabled { opacity: 0.6; cursor: default; box-shadow: none; }
-        #btn-we, #btn-they { font-weight: normal; color: black; margin: 0; }
-        #res { font-size: 16px !important; padding: 3px; }
-
-        table.chooser { border-collapse: separate; border-spacing: 2px; margin: 0 auto; }
-        table.chooser td .contract { display: block; padding: 4px 8px; border: 1px solid #bbb; cursor: pointer; font-size: 18px; font-weight: normal; color: black; text-align: center; border-radius: 3px; width: 100%; box-sizing: border-box; }
-        table.chooser td.notgame .contract { background-color: #e3f2fd; } 
-        table.chooser td.game .contract { background-color: #ffebee; }
-        table.chooser td .contract.depressed { border: 1px solid #666; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2); filter: brightness(0.92); }
     </style>
 </head>
 <body>
