@@ -1,8 +1,12 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "app.rubbersoul.bridge",
-        "sha256_cert_fingerprints": ["0F:B5:6D:B9:DA:6D:FA:B7:7E:22:1B:55:5E:72:04:F5:05:58:E6:BA:3D:D8:9D:CE:8C:7A:46:3F:FF:49:51:CC"]
-      }
-    }]
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "us.eater.rubbersoul",
+      "sha256_cert_fingerprints": [
+        "49:1B:3D:2A:47:37:5A:99:7F:2B:90:CC:AA:A4:DC:E9:04:85:75:D2:AF:0B:76:95:D3:C8:1D:00:BF:55:73:A4"
+      ]
+    }
+  }
+]
