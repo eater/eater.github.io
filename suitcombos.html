@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridge Suit Visualizer</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'><text x='40' y='68' font-size='80' text-anchor='middle' fill='%23000'>♣</text></svg>">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #2c3e50; margin: 0; padding: 15px; display: flex; justify-content: center; overflow: hidden; }
+        
+        /* SCALED UP CONTAINER */
+        .container { background-color: #f4f4f4; border-radius: 10px; padding: 20px; width: 100%; max-width: 1130px; box-shadow: 0 6px 25px rgba(0,0,0,0.5); }
+        h2 { text-align: center; color: #1b5e20; margin: 0 0 16px 0; font-size: 1.45rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* SCALED TOP ROW */
+        .top-row { display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+        .input-group { display: flex; align-items: center; gap: 6px; font-weight: bold; color: #1b5e20; font-size: 1.2rem;}
+        input[type="text"] { padding: 8px; font-size: 1.3rem; border: 1px solid #a5d6a7; border-radius: 5px; width: 120px; text-align: center; outline: none; }
+
+        .btn-action { 
+            background-color: #1b5e20; color: white; border: none; border-radius: 5px; 
+            cursor: pointer; font-weight: bold; transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2); text-transform: uppercase;
+            padding: 10px 20px; font-size: 1.05rem; white-space: nowrap;
+        }
+        .btn-action:hover { background-color: #2e7d32; }
+        .btn-action:active { transform: translateY(2px); box-shadow: none; }
+
+        .main-content { display: flex; gap: 26px; align-items: flex-start; justify-content: center; margin-bottom: 20px; }
+
+        /* SCALED BRIDGE TABLE */
+        .bridge-table {
+            display: grid; grid-template-areas: ". north ." "west center east" ". south .";
+            grid-template-columns: 1fr 1.2fr 1fr; grid-template-rows: 1fr 1fr 1fr;
+            gap: 8px; background: #2e7d32; padding: 16px; border-radius: 6px; color: white; border: 10px solid #3e2723;
+            width: 425px; height: 425px; box-sizing: border-box; flex-shrink: 0;
+        }
+        
+        .seat {
+            background: white; color: #333; padding: 4px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 1.45rem;
+            display: flex; flex-direction: column; justify-content: center; box-shadow: 0 3px 6px rgba(0,0,0,0.2); width: 100%; height: 100%; box-sizing: border-box;
+            position: relative; /* Added for the absolute positioned badge */
+        }
+        
+        /* NEW SUBTLE CARD COUNT BADGE */
+        .card-count { position: absolute; top: 6px; right: 8px; font-size: 0.9rem; color: #81c784; font-weight: bold; }
+
+        .seat span { font-size: 0.8rem; color: #999; text-transform: uppercase; margin-bottom: 3px; }
+        .seat-n { grid-area: north; } .seat-s { grid-area: south; } .seat-w { grid-area: west; } .seat-e { grid-area: east; }
+        .table-center { grid-area: center; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border: 1px dashed rgba(255,255,255,0.3); }
+        .missing-text { font-size: 1.05rem; font-weight: bold; color: #fff; line-height: 1.2; }
+
+        /* SCALED HONOR PROB BOX */
+        .honor-prob-box { 
+            background: white; border: 1px solid #ccc; border-radius: 6px; padding: 16px; 
+            font-size: 1rem; min-width: 385px; align-self: stretch; display: flex; flex-direction: column;
+        }
+        .honor-prob-title { font-size: 1.1rem; font-weight: bold; color: #1b5e20; text-align: center; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+        .honor-table { width: 100%; border-collapse: collapse; }
+        .honor-table th { color: #999; font-size: 0.85rem; padding-bottom: 8px; text-transform: uppercase; }
+        .th-west { text-align: right; padding-right: 20px; } .th-prob { text-align: center; } .th-east { text-align: left; padding-left: 20px; }
+        .honor-table td { padding: 6px 0; border-bottom: 1px solid #f9f9f9; }
+        .cell-west { text-align: right; width: 40%; font-weight: bold; padding-right: 20px !important; }
+        .cell-east { text-align: left; width: 40%; font-weight: bold; padding-left: 20px !important; }
+        .cell-prob { text-align: center; width: 20%; }
+        .prob-pill { background: #e8f5e9; color: #1b5e20; padding: 3px 10px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; border: 1px solid #c8e6c9; }
+
+        /* SCALED CONTROLS PANEL */
+        .controls-panel { background: #fff3e0; padding: 16px; border-radius: 6px; text-align: center; }
+        .split-buttons { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+        .btn-split { background-color: #ffb74d; color: #333; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: background 0.2s; }
+        .btn-split:hover { background-color: #ff9800; }
+        .btn-split.active { background-color: #e65100; color: white; }
+        .annotation { font-size: 0.9rem; color: #7f8c8d; font-weight: bold; letter-spacing: 0.5px; margin-top: 6px; opacity: 0.8; }
+        #probText { font-size: 0.85rem; color: #a5d6a7; margin-top:4px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Suit Combination Visualizer</h2>
+    
+    <div class="top-row">
+        <div class="input-group">N: <input type="text" id="northHand" value="AQxx" oninput="analyzeHands()"></div>
+        <div class="input-group">S: <input type="text" id="southHand" value="Jxxx" oninput="analyzeHands()"></div>
+        <button class="btn-action" onclick="generateRandomNS()">Random Deal</button>
+        <button class="btn-action" onclick="dealRandomByProbability()">Reshuffle E/W</button>
+    </div>
+
+    <div class="main-content">
+        <div class="bridge-table">
+            <div class="seat seat-n">
+                <div class="card-count" id="countN"></div>
+                <span>Dummy</span>
+                <div id="dispN"></div>
+            </div>
+            <div class="seat seat-w">
+                <div class="card-count" id="countW"></div>
+                <span>West</span>
+                <div id="dispW"></div>
+            </div>
+            <div class="table-center">
+                <div class="missing-text" id="missingCardsText"></div>
+                <div id="probText"></div>
+            </div>
+            <div class="seat seat-e">
+                <div class="card-count" id="countE"></div>
+                <span>East</span>
+                <div id="dispE"></div>
+            </div>
+            <div class="seat seat-s">
+                <div class="card-count" id="countS"></div>
+                <span>Declarer</span>
+                <div id="dispS"></div>
+            </div>
+        </div>
+
+        <div class="honor-prob-box" id="honorProbResult" style="display:none;">
+            <div class="honor-prob-title">Honor Probability</div>
+            <table class="honor-table">
+                <thead>
+                    <tr>
+                        <th class="th-west">West</th>
+                        <th class="th-prob">Prob</th>
+                        <th class="th-east">East</th>
+                    </tr>
+                </thead>
+                <tbody id="honorProbBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="controls-panel">
+        <div class="split-buttons" id="splitButtonsArea"></div>
+        <div id="annotationArea" class="annotation"></div>
+    </div>
+</div>
+
+<script>
+    const splitOdds = {
+        2: [{w: 1, e: 1, p: 52}, {w: 2, e: 0, p: 24}, {w: 0, e: 2, p: 24}],
+        3: [{w: 2, e: 1, p: 39}, {w: 1, e: 2, p: 39}, {w: 3, e: 0, p: 11}, {w: 0, e: 3, p: 11}],
+        4: [{w: 2, e: 2, p: 40}, {w: 3, e: 1, p: 25}, {w: 1, e: 3, p: 25}, {w: 4, e: 0, p: 5}, {w: 0, e: 4, p: 5}],
+        5: [{w: 3, e: 2, p: 34}, {w: 2, e: 3, p: 34}, {w: 4, e: 1, p: 14}, {w: 1, e: 4, p: 14}, {w: 5, e: 0, p: 2}, {w: 0, e: 5, p: 2}],
+        6: [{w: 3, e: 3, p: 36}, {w: 4, e: 2, p: 24}, {w: 2, e: 4, p: 24}, {w: 5, e: 1, p: 7.5}, {w: 1, e: 5, p: 7.5}, {w: 6, e: 0, p: 0.5}, {w: 0, e: 6, p: 0.5}],
+        7: [{w: 4, e: 3, p: 31}, {w: 3, e: 4, p: 31}, {w: 5, e: 2, p: 15.5}, {w: 2, e: 5, p: 15.5}, {w: 6, e: 1, p: 3}, {w: 1, e: 6, p: 3}, {w: 7, e: 0, p: 0.5}, {w: 0, e: 7, p: 0.5}],
+        8: [{w: 4, e: 4, p: 33}, {w: 5, e: 3, p: 23.5}, {w: 3, e: 5, p: 23.5}, {w: 6, e: 2, p: 8.5}, {w: 2, e: 6, p: 8.5}, {w: 7, e: 1, p: 1.5}, {w: 1, e: 7, p: 1.5}, {w: 8, e: 0, p: 0.25}, {w: 0, e: 8, p: 0.25}],
+        9: [{w: 5, e: 4, p: 29.5}, {w: 4, e: 5, p: 29.5}, {w: 6, e: 3, p: 15.5}, {w: 3, e: 6, p: 15.5}, {w: 7, e: 2, p: 4.5}, {w: 2, e: 7, p: 4.5}, {w: 8, e: 1, p: 0.5}, {w: 1, e: 8, p: 0.5}],
+        10: [{w: 5, e: 5, p: 33}, {w: 6, e: 4, p: 24.5}, {w: 4, e: 6, p: 24.5}, {w: 7, e: 3, p: 7.5}, {w: 3, e: 7, p: 7.5}, {w: 8, e: 2, p: 1.5}, {w: 2, e: 8, p: 1.5}],
+        11: [{w: 6, e: 5, p: 27}, {w: 5, e: 6, p: 27}, {w: 7, e: 4, p: 15.5}, {w: 4, e: 7, p: 15.5}, {w: 8, e: 3, p: 6}, {w: 3, e: 8, p: 6}, {w: 9, e: 2, p: 1.5}, {w: 2, e: 9, p: 1.5}]
+    };
+    
+    let currentMissing = [];
+
+    function loadFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('n')) document.getElementById('northHand').value = urlParams.get('n');
+        if (urlParams.has('s')) document.getElementById('southHand').value = urlParams.get('s');
+    }
+
+    function updateURL(n, s) {
+        const url = new URL(window.location);
+        url.searchParams.set('n', n);
+        url.searchParams.set('s', s);
+        window.history.replaceState({}, '', url);
+    }
+
+    function shuffleArray(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    function formatCardHTML(cardArray) {
+        if (cardArray.length === 0) return "<span style='color:#ccc; font-size:0.9rem;'>VOID</span>";
+        return cardArray.map(c => c === 'T' ? '10' : (c === 'x' ? 'x' : c.toUpperCase())).join(' ');
+    }
+
+    function generateRandomNS() {
+        let deck = Array.from({length: 52}, (_, i) => i);
+        shuffleArray(deck);
+
+        let northRanks = [];
+        let southRanks = [];
+        const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+        const honors = ['A', 'K', 'Q', 'J', 'T'];
+
+        for (let i = 0; i < 13; i++) {
+            if (deck[i] < 13) northRanks.push(ranks[deck[i]]);
+        }
+        for (let i = 13; i < 26; i++) {
+            if (deck[i] < 13) southRanks.push(ranks[deck[i]]);
+        }
+
+        const rankSort = (a, b) => ranks.indexOf(a) - ranks.indexOf(b);
+        northRanks.sort(rankSort);
+        southRanks.sort(rankSort);
+
+        let nHand = northRanks.map(r => honors.includes(r) ? r : 'x').join('');
+        let sHand = southRanks.map(r => honors.includes(r) ? r : 'x').join('');
+
+        document.getElementById('northHand').value = nHand;
+        document.getElementById('southHand').value = sHand;
+        analyzeHands();
+    }
+
+    function analyzeHands() {
+        let nInput = document.getElementById('northHand').value, sInput = document.getElementById('southHand').value;
+        
+        updateURL(nInput, sInput);
+
+        document.getElementById('dispW').innerHTML = '?';
+        document.getElementById('dispE').innerHTML = '?';
+        document.getElementById('countW').innerText = '';
+        document.getElementById('countE').innerText = '';
+
+        let nClean = nInput.replace(/[^AKQJT98765432xX]/gi, '').replace(/10/g, 'T'), sClean = sInput.replace(/[^AKQJT98765432xX]/gi, '').replace(/10/g, 'T');
+        const allRanks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+        let explicit = (nClean + sClean).toUpperCase().replace(/[X]/g, '');
+        let pool = allRanks.filter(r => !explicit.includes(r));
+        let nXCount = (nClean.match(/x/gi) || []).length, sXCount = (sClean.match(/x/gi) || []).length;
+        let nCards = nClean.toUpperCase().replace(/X/g, '').split(''), sCards = sClean.toUpperCase().replace(/X/g, '').split('');
+        
+        const honors = ['A', 'K', 'Q', 'J', 'T'];
+        let poolHonors = pool.filter(c => honors.includes(c));
+        let poolSpots = pool.filter(c => !honors.includes(c));
+        
+        shuffleArray(poolSpots);
+        let prioritizedPool = [...poolHonors, ...poolSpots];
+        
+        for(let i=0; i<nXCount; i++) if(prioritizedPool.length) nCards.push(prioritizedPool.pop());
+        for(let i=0; i<sXCount; i++) if(prioritizedPool.length) sCards.push(prioritizedPool.pop());
+        
+        const rankSort = (a,b) => allRanks.indexOf(a) - allRanks.indexOf(b);
+        nCards.sort(rankSort); sCards.sort(rankSort);
+        document.getElementById('dispN').innerHTML = formatCardHTML(nCards);
+        document.getElementById('dispS').innerHTML = formatCardHTML(sCards);
+        
+        // Update N/S dynamic card counts
+        document.getElementById('countN').innerText = nCards.length;
+        document.getElementById('countS').innerText = sCards.length;
+        
+        currentMissing = prioritizedPool;
+        document.getElementById('missingCardsText').innerHTML = "Missing:<br>" + formatCardHTML(currentMissing.slice().sort(rankSort));
+        calculateTotalHonorOdds();
+        generateSplitButtons(currentMissing.length);
+    }
+
+    function calculateTotalHonorOdds() {
+        const hToT = ['A', 'K', 'Q', 'J', 'T'];
+        let mH = currentMissing.filter(c => hToT.includes(c)).map(c => c === 'T' ? '10' : c);
+        
+        const rankSort = (a,b) => {
+            const ranks = ['A', 'K', 'Q', 'J', '10'];
+            return ranks.indexOf(a) - ranks.indexOf(b);
+        };
+        mH.sort(rankSort);
+        
+        if (mH.length < 1) { document.getElementById('honorProbResult').style.display = 'none'; return; }
+        document.getElementById('honorProbResult').style.display = 'flex';
+        let probBody = document.getElementById('honorProbBody');
+        let html = "";
+        
+        if (mH.length === 1) {
+            html += `<tr><td class="cell-west">${mH[0]}</td><td class="cell-prob"><span class="prob-pill">50%</span></td><td class="cell-east">—</td></tr>`;
+            html += `<tr><td class="cell-west">—</td><td class="cell-prob"><span class="prob-pill">50%</span></td><td class="cell-east">${mH[0]}</td></tr>`;
+        } else if (mH.length === 2) {
+            html += `<tr><td class="cell-west">${mH[0]}${mH[1]}</td><td class="cell-prob"><span class="prob-pill">24%</span></td><td class="cell-east">—</td></tr>`;
+            html += `<tr><td class="cell-west">${mH[0]}</td><td class="cell-prob"><span class="prob-pill">26%</span></td><td class="cell-east">${mH[1]}</td></tr>`;
+            html += `<tr><td class="cell-west">${mH[1]}</td><td class="cell-prob"><span class="prob-pill">26%</span></td><td class="cell-east">${mH[0]}</td></tr>`;
+            html += `<tr><td class="cell-west">—</td><td class="cell-prob"><span class="prob-pill">24%</span></td><td class="cell-east">${mH[0]}${mH[1]}</td></tr>`;
+        } else if (mH.length >= 3) {
+            let t = mH.slice(0, 3);
+            html += `<tr><td class="cell-west">${t[0]}${t[1]}${t[2]}</td><td class="cell-prob"><span class="prob-pill">11%</span></td><td class="cell-east">—</td></tr>`;
+            html += `<tr><td class="cell-west">${t[0]}${t[1]}</td><td class="cell-prob"><span class="prob-pill">13%</span></td><td class="cell-east">${t[2]}</td></tr>`;
+            html += `<tr><td class="cell-west">${t[0]}${t[2]}</td><td class="cell-prob"><span class="prob-pill">13%</span></td><td class="cell-east">${t[1]}</td></tr>`;
+            html += `<tr><td class="cell-west">${t[1]}${t[2]}</td><td class="cell-prob"><span class="prob-pill">13%</span></td><td class="cell-east">${t[0]}</td></tr>`;
+            html += `<tr><td class="cell-west">${t[0]}</td><td class="cell-prob"><span class="prob-pill">13%</span></td><td class="cell-east">${t[1]}${t[2]}</td></tr>`;
+            html += `<tr><td class="cell-west">${t[1]}</td><td class="cell-prob"><span class="prob-pill">13%</span></td><td class="cell-east">${t[0]}${t[2]}</td></tr>`;
+            html += `<tr><td class="cell-west">${t[2]}</td><td class="cell-prob"><span class="prob-pill">13%</span></td><td class="cell-east">${t[0]}${t[1]}</td></tr>`;
+            html += `<tr><td class="cell-west">—</td><td class="cell-prob"><span class="prob-pill">11%</span></td><td class="cell-east">${t[0]}${t[1]}${t[2]}</td></tr>`;
+        }
+        probBody.innerHTML = html;
+    }
+
+    function generateSplitButtons(mCount) {
+        const btnArea = document.getElementById('splitButtonsArea'), annoArea = document.getElementById('annotationArea');
+        btnArea.innerHTML = ''; annoArea.innerHTML = '';
+        if (splitOdds[mCount]) {
+            splitOdds[mCount].forEach(opt => {
+                let btn = document.createElement('button');
+                btn.className = 'btn-split'; btn.id = `split-btn-${opt.w}-${opt.e}`; btn.innerText = `${opt.w}-${opt.e} (${opt.p}%)`;
+                btn.onclick = () => { setActiveBtn(btn); dealCards(opt.w, opt.e); };
+                btnArea.appendChild(btn);
+            });
+            let summaries = {};
+            splitOdds[mCount].forEach(opt => { let k = [opt.w, opt.e].sort((a,b)=>b-a).join('-'); summaries[k] = (summaries[k]||0)+opt.p; });
+            annoArea.innerText = Object.entries(summaries).sort((a,b)=>b[1]-a[1]).map(i=>`Total ${i[0]}: ${i[1].toFixed(0)}%`).join('  |  ');
+            if (btnArea.firstChild) btnArea.firstChild.click();
+        } else {
+            document.getElementById('probText').innerText = "Requires 2-11 missing cards to calculate odds";
+        }
+    }
+    
+    function setActiveBtn(btn) { document.querySelectorAll('.btn-split').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.getElementById('probText').innerText = "Layout: " + btn.innerText; }
+    
+    function dealCards(wCount, eCount) {
+        if (currentMissing.length !== wCount + eCount) return;
+        let shuffled = [...currentMissing];
+        shuffleArray(shuffled);
+        
+        let wH = shuffled.slice(0, wCount).sort((a,b) => "AKQJT98765432".indexOf(a) - "AKQJT98765432".indexOf(b));
+        let eH = shuffled.slice(wCount).sort((a,b) => "AKQJT98765432".indexOf(a) - "AKQJT98765432".indexOf(b));
+        document.getElementById('dispW').innerHTML = formatCardHTML(wH);
+        document.getElementById('dispE').innerHTML = formatCardHTML(eH);
+        
+        // Update E/W dynamic card counts
+        document.getElementById('countW').innerText = wCount;
+        document.getElementById('countE').innerText = eCount;
+    }
+    
+    function dealRandomByProbability() {
+        let count = currentMissing.length; if (!splitOdds[count]) return;
+        let roll = Math.random() * 100, cumulative = 0, selected = splitOdds[count][0];
+        for (let opt of splitOdds[count]) { cumulative += opt.p; if (roll <= cumulative) { selected = opt; break; } }
+        let btn = document.getElementById(`split-btn-${selected.w}-${selected.e}`); if (btn) setActiveBtn(btn);
+        dealCards(selected.w, selected.e);
+    }
+
+    loadFromURL();
+    analyzeHands();
+</script>
+</body>
+</html>
