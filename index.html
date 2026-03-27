@@ -102,6 +102,7 @@
         #force-btn { color: #008000; border-color: #008000; }
         #settings-btn { color: #4B5563; border-color: #4B5563; }
         #share-btn { color: #008B8B; border-color: #008B8B; }
+        #history-btn { color: #6a1b9a; border-color: #6a1b9a; }
         #about-btn { color: #0047AB; border-color: #0047AB; }
         #reset-btn { color: #cc0000; border-color: #cc0000; }
 
@@ -164,7 +165,7 @@
         table.popgrid { margin: 0 auto; border-spacing: 5px; border-collapse: separate; color: #000;}
         table.popgrid td { text-align: center; vertical-align: middle; }
         table.popgrid th { font-weight: bold; font-size: 18px; padding-bottom: 5px; font-family: "Times New Roman", serif; }
-        .popgrid input[type="text"] { width: 100%; box-sizing: border-box; }
+        .popgrid input[type="search"] { width: 100%; box-sizing: border-box; }
         
         .popupvis button { font-size: 18px; padding: 8px 30px; cursor: pointer; margin-top: 10px; font-family: var(--serif); color: #000; border: 1px solid #999; border-radius: 3px; background-color: #f0f0f0; transition: background-color 0.2s; }
         .popupvis button:active { background-color: #e0e0e0; }
@@ -193,7 +194,6 @@
         td.anno { vertical-align: top; width: 28.5%; padding: 0 0.25em; font-size: var(--anno-font); line-height: var(--lh); }
         td.anno.left { text-align: right; } td.anno.right { text-align: left; } td.anno.btm { vertical-align: bottom; }
 
-
         /* standard ui buttons */
         .std-btn { display: inline-block; padding: 2px 8px; margin: 2px; cursor: pointer; min-width: 3em; font-size: 16px; color: black; box-sizing: border-box; text-align: center; border-radius: 3px; }
         .raised { background-color: #eee; border: 1px solid #999; }
@@ -211,10 +211,9 @@
         table.chooser td.game .contract { background-color: #ffebee; }
         table.chooser td .contract.depressed { border: 1px solid #666; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2); filter: brightness(0.92); }
 
-
         /* --- Enhanced Mobile Readability --- */
         @media (max-width: 800px) {
-        #big-btn { display: none !important; }
+            #big-btn { display: none !important; }
             :root {
                 /* NEW 'Small' Mode (was 16px/12px) */
                 --score-font: 22px; 
@@ -228,49 +227,32 @@
                 --player-font: 20px;
                 --anno-font: 22px; 
                 --lh: 38px;
-                }
+            }
 
-            /* Make bid buttons wider, larger, and scale perfectly with the screen */
+            /* Make bid buttons wider, larger, and fix NT alignment using vmin */
             table.chooser { width: 100%; border-spacing: 4px; }
             table.chooser td .contract { 
                 padding: 0; 
-                font-size: 6vmin; /* The text will always be exactly proportional to the screen/button width */
+                font-size: 6vmin; 
                 display: flex; 
                 justify-content: center; 
                 align-items: center; 
-                height: 10vmin; /* The button height grows proportionally with the width */
-                min-height: 40px; /* Safety net so they never get too short on tiny screens */
+                height: 10vmin; 
+                min-height: 40px; 
             }
-
-                /* Enlarge the auxiliary bidding box controls for mobile */
+            
+            /* Enlarge the auxiliary bidding box controls for mobile */
             .bidgrid .std-btn {
-                font-size: 18px; /* Bigger text for WE/THEY, Doubled, Honors */
-                padding: 8px 16px; /* Taller and wider touch targets */
+                font-size: 18px;
+                padding: 8px 16px; 
                 margin: 4px;
             }
-            
-            #live-contract {
-                font-size: 36px; /* Make the active bid display much larger */
-                height: 40px;
-                line-height: 40px;
-                margin-bottom: 15px;
-            }
-            
-            #menu {
-                font-size: 18px; /* Make the "Result:" text larger */
-            }
-            
-            #res {
-                font-size: 18px !important; /* Bigger text inside the dropdown */
-                padding: 6px;
-            }
-            
-            button#scorebtn {
-                font-size: 24px; /* A massive, satisfying Score button */
-                padding: 10px 24px;
-                margin-top: 10px;
-            }
-            
+            #live-contract { font-size: 36px; height: 40px; line-height: 40px; margin-bottom: 15px; }
+            #menu { font-size: 18px; }
+            #res { font-size: 18px !important; padding: 6px; }
+            button#scorebtn { font-size: 24px; padding: 10px 24px; margin-top: 10px; }
+
+            /* ... rest of your mobile CSS remains the same ... */
             .main-container { flex-direction: column; align-items: center; padding-right: 0; gap: 20px; }
             .bid-spacer { width: 90vw; min-height: auto; }
             .bidgrid.expanded, .rubberwindow { width: 90vw; max-width: 90vw; }
@@ -331,6 +313,7 @@
                 <button type="button" id="force-btn" class="tool-link" data-action="forceNew" hidden>new</button>
                 <button type="button" id="settings-btn" class="tool-link" data-action="showSettings">settings</button>
                 <button type="button" id="share-btn" class="tool-link" data-action="share" hidden>link</button>
+                <button type="button" id="history-btn" class="tool-link" data-action="showHistory">history</button>
                 <button type="button" id="about-btn" class="tool-link" data-action="showAbout">about</button>
                 <button type="button" id="reset-btn" class="tool-link" data-action="reset" hidden>reset</button>
             </div>
@@ -355,6 +338,29 @@
                 <div style="display:flex; justify-content:center; gap:10px;">
                     <button type="button" id="copy-btn" style="background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00;" data-action="copyShare">Copy</button>
                     <button type="button" data-action="closeShare">Close</button>
+                </div>
+            </div>
+
+            <div id="historypopup" class="popupvis bid-area" hidden>
+                <div class="title">Session History</div>
+                <div id="vault-list" style="max-height: 50vh; overflow-y: auto; text-align: left; margin: 15px 0; padding-right: 5px;"></div>
+                <div style="display:flex; justify-content:center; gap:10px;">
+                    <button type="button" data-action="closeHistory">Close</button>
+                </div>
+            </div>
+
+            <div id="vaultdetailpopup" class="popupvis bid-area" hidden>
+                <div class="title" id="vault-detail-title" style="margin: 0 0 15px 0; font-size: 22px;">Session</div>
+                <div id="vault-detail-summary" style="margin-bottom: 20px; color: #333; line-height: 1.4;"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button type="button" data-action="viewFullscreen" style="background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00; padding: 8px; font-size: 16px; margin: 0;">View</button>
+                    <button type="button" data-action="resumeVault" style="background-color: #f3e5f5; border: 1px solid #9c27b0; color: #6a1b9a; padding: 8px; font-size: 16px; margin: 0;">Resume</button>
+                    <button type="button" data-action="renameVault" style="background-color: #fff3e0; border: 1px solid #ff9800; color: #e65100; padding: 8px; font-size: 16px; margin: 0;">Name</button>
+                    <button type="button" data-action="shareVaultLink" style="background-color: #e3f2fd; border: 1px solid #1E90FF; color: #0047AB; padding: 8px; font-size: 16px; margin: 0;">Share</button>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; border-top: 1px solid #eee; padding-top: 15px;">
+                    <button type="button" data-action="deleteVaultItem" style="background-color: #ffebee; border: 1px solid #c00; color: #c00; padding: 8px; font-size: 16px; margin: 0;">Delete</button>
+                    <button type="button" data-action="closeVaultDetail" style="padding: 8px; font-size: 16px; background-color: #f0f0f0; border: 1px solid #999; margin: 0;">Back</button>
                 </div>
             </div>
 
@@ -444,10 +450,21 @@
             <div id="oldrubbers"></div>
         </div>
     </div>
+    
+    <div id="fullscreen-viewer" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg); z-index: 9999; overflow-y: auto; box-sizing: border-box;" hidden>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background-color: var(--bg); position: sticky; top: 0; z-index: 10000; border-bottom: 1px solid rgba(255,255,255,0.1); box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+            <div id="fullscreen-title" style="color: #fff; font-size: 18px; font-weight: bold; font-family: sans-serif;"></div>
+            <button type="button" data-action="closeFullscreen" style="background: #fff; border: 1px solid #999; border-radius: 4px; padding: 6px 16px; font-size: 14px; font-family: sans-serif; cursor: pointer; color: #000;">Close</button>
+        </div>
+        <div id="fullscreen-content" style="padding: 20px 10px; display: flex; flex-direction: column; align-items: center; max-width: 600px; margin: 0 auto;"></div>
+    </div>
 
     <script type="text/javascript">
     // protects variables from global scope collisions
     (() => {
+        /* --- Embedded LZ-String Library (Minified) --- */
+        const LZString={compressToEncodedURIComponent:function(a){if(null==a)return"";var b=LZString._compress(a,6,function(a){return LZString._keyStrUri.charAt(a)});return b},decompressFromEncodedURIComponent:function(a){return null==a?"":""==a?null:LZString._decompress(a.length,32,function(b){return LZString._getBaseValue(LZString._keyStrUri,a.charAt(b))})},_keyStrUri:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$",_getBaseValue:function(a,b){if(!LZString._baseReverseDic)LZString._baseReverseDic={};if(!LZString._baseReverseDic[a]){LZString._baseReverseDic[a]={};for(var c=0;c<a.length;c++)LZString._baseReverseDic[a][a.charAt(c)]=c}return LZString._baseReverseDic[a][b]},_compress:function(a,b,c){if(null==a)return"";var d,e,f,g={},h={},i="",j="",k="",l=2,m=3,n=2,o=[],p=0,q=0;for(f=0;f<a.length;f+=1)if(i=a.charAt(f),Object.prototype.hasOwnProperty.call(g,i)||(g[i]=m++,h[i]=!0),j=k+i,Object.prototype.hasOwnProperty.call(g,j))k=j;else{if(Object.prototype.hasOwnProperty.call(h,k)){if(k.charCodeAt(0)<256){for(d=0;d<n;d++)p<<=1,q==b-1?(q=0,o.push(c(p)),p=0):q++;for(e=k.charCodeAt(0),d=0;d<8;d++)p=p<<1|1&e,q==b-1?(q=0,o.push(c(p)),p=0):q++,e>>=1}else{for(e=1,d=0;d<n;d++)p=p<<1|e,q==b-1?(q=0,o.push(c(p)),p=0):q++,e=0;for(e=k.charCodeAt(0),d=0;d<16;d++)p=p<<1|1&e,q==b-1?(q=0,o.push(c(p)),p=0):q++,e>>=1}l--,0==l&&(l=Math.pow(2,n),n++),delete h[k]}else for(e=g[k],d=0;d<n;d++)p=p<<1|1&e,q==b-1?(q=0,o.push(c(p)),p=0):q++,e>>=1;l--,0==l&&(l=Math.pow(2,n),n++),g[j]=m++,k=String(i)}if(""!==k){if(Object.prototype.hasOwnProperty.call(h,k)){if(k.charCodeAt(0)<256){for(d=0;d<n;d++)p<<=1,q==b-1?(q=0,o.push(c(p)),p=0):q++;for(e=k.charCodeAt(0),d=0;d<8;d++)p=p<<1|1&e,q==b-1?(q=0,o.push(c(p)),p=0):q++,e>>=1}else{for(e=1,d=0;d<n;d++)p=p<<1|e,q==b-1?(q=0,o.push(c(p)),p=0):q++,e=0;for(e=k.charCodeAt(0),d=0;d<16;d++)p=p<<1|1&e,q==b-1?(q=0,o.push(c(p)),p=0):q++,e>>=1}l--,0==l&&(l=Math.pow(2,n),n++),delete h[k]}else for(e=g[k],d=0;d<n;d++)p=p<<1|1&e,q==b-1?(q=0,o.push(c(p)),p=0):q++,e>>=1;l--,0==l&&(l=Math.pow(2,n),n++)}for(e=2,d=0;d<n;d++)p=p<<1|1&e,q==b-1?(q=0,o.push(c(p)),p=0):q++,e>>=1;for(;;){if(p<<=1,q==b-1){o.push(c(p));break}q++}return o.join("")},_decompress:function(a,b,c){var d,e,f,g,h,i,j,k=[],l=4,m=4,n=3,o="",p=[],q={val:c(0),position:b,index:1};for(d=0;d<3;d+=1)k[d]=d;for(f=0,h=Math.pow(2,2),i=1;i!=h;)g=q.val&q.position,q.position>>=1,0==q.position&&(q.position=b,q.val=c(q.index++)),f|=(g>0?1:0)*i,i<<=1;switch(f){case 0:for(f=0,h=Math.pow(2,8),i=1;i!=h;)g=q.val&q.position,q.position>>=1,0==q.position&&(q.position=b,q.val=c(q.index++)),f|=(g>0?1:0)*i,i<<=1;j=String.fromCharCode(f);break;case 1:for(f=0,h=Math.pow(2,16),i=1;i!=h;)g=q.val&q.position,q.position>>=1,0==q.position&&(q.position=b,q.val=c(q.index++)),f|=(g>0?1:0)*i,i<<=1;j=String.fromCharCode(f);break;case 2:return""}for(k[3]=j,e=j,p.push(j);;){if(q.index>a)return"";for(f=0,h=Math.pow(2,n),i=1;i!=h;)g=q.val&q.position,q.position>>=1,0==q.position&&(q.position=b,q.val=c(q.index++)),f|=(g>0?1:0)*i,i<<=1;switch(j=f){case 0:for(f=0,h=Math.pow(2,8),i=1;i!=h;)g=q.val&q.position,q.position>>=1,0==q.position&&(q.position=b,q.val=c(q.index++)),f|=(g>0?1:0)*i,i<<=1;k[m++]=String.fromCharCode(f),j=m-1,l--;break;case 1:for(f=0,h=Math.pow(2,16),i=1;i!=h;)g=q.val&q.position,q.position>>=1,0==q.position&&(q.position=b,q.val=c(q.index++)),f|=(g>0?1:0)*i,i<<=1;k[m++]=String.fromCharCode(f),j=m-1,l--;break;case 2:return p.join("")}if(0==l&&(l=Math.pow(2,n),n++),k[j])o=k[j];else{if(j!==m)return null;o=e+e.charAt(0)}p.push(o),k[m++]=e+o.charAt(0),l--,e=o,0==l&&(l=Math.pow(2,n),n++)}}};
+
         /* --- config object for game logic variables --- */
         const CONFIG = {
             storageKey: 'RubberSoul_v26.03', 
@@ -475,7 +492,7 @@
         let STATE = {
             players: {}, names: { we1: "", we2: "", they1: "", they2: "" }, allNames: [],
             rubberNum: 1, hands: [], ledger: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } },
-            archive: [], history: [], bid: { side: null, level: null, suit: null, multiplier: 'n', honors: 0 },
+            archive: [], history: [], vault: [], bid: { side: null, level: null, suit: null, multiplier: 'n', honors: 0 },
             isBig: false, screen: 'entry',
             settings: { fourColor: false, highContrast: false, showHonors: true, keepAwake: true }
         };
@@ -582,7 +599,7 @@
                 const btn = UI.get('big-btn');
                 if (STATE.isBig) {
                     document.body.classList.add('big-mode');
-                    if (btn) btn.innerText = "small"; // This changes the button text
+                    if (btn) btn.innerText = "small"; 
                 } else {
                     document.body.classList.remove('big-mode');
                     if (btn) btn.innerHTML = "<u>b</u>ig"; 
@@ -632,14 +649,14 @@
                     box.classList.add('expanded');
                     UI.show('live-contract'); 
                     UI.show('chooser_master');
-                    UI.show('close-bid-btn'); // Show X
+                    UI.show('close-bid-btn'); 
                     UI.renderGrid();
                 } else {
                     box.classList.remove('expanded');
                     box.classList.add('collapsed');
                     UI.hide('chooser_master'); 
                     UI.hide('live-contract');
-                    UI.hide('close-bid-btn'); // Hide X
+                    UI.hide('close-bid-btn'); 
                 }
                 UI.updateDisplay();
             },
@@ -752,6 +769,77 @@
                     con.prepend(div);
                 });
             },
+
+            // History Vault specific UI renderers
+            showHistory: () => {
+                if (!UI.get("historypopup").hidden) { UI.hide("historypopup"); UI.restoreScreen(); return; }
+                UI.hideAllPopups(); UI.hide("bidgrid");
+                UI.renderVaultList();
+                UI.show("historypopup");
+            },
+            closeHistory: () => { UI.hide("historypopup"); UI.restoreScreen(); },
+            
+            renderVaultList: () => {
+                const list = UI.get('vault-list');
+                if (!STATE.vault || STATE.vault.length === 0) { 
+                    list.innerHTML = `<div style="text-align:center; padding: 20px;">No past sessions found.</div>`; 
+                    return; 
+                }
+                let html = '';
+                STATE.vault.forEach((v, i) => {
+                    const playersList = Object.keys(v.players).join(', ');
+                    const displayTitle = v.name ? `${v.name}<br><span style="font-size:12px; font-weight:normal; color:#666;">(${v.date})</span>` : v.date;
+                    
+                    html += `<div style="padding: 12px; border: 1px solid #ccc; margin-bottom: 10px; border-radius: 5px; cursor: pointer; background: #fff; text-align: left; box-shadow: 1px 1px 4px rgba(0,0,0,0.1);" data-action="viewVaultItem" data-index="${i}">
+                        <div style="font-family: var(--frutiger); font-weight: normal; color: var(--green); margin-bottom: 5px; font-size: 18px;">${displayTitle}</div>
+                        <div style="font-size: 14px; color: #555; font-family: sans-serif;">${playersList}</div>
+                    </div>`;
+                });
+                list.innerHTML = html;
+            },
+
+            viewVaultItem: (index) => {
+                UI.hide("historypopup");
+                const session = STATE.vault[index];
+                
+                UI.get("vaultdetailpopup").dataset.index = index; 
+                UI.get("vault-detail-title").innerHTML = session.name || session.date;
+                
+                let summaryHTML = `<div style="font-family: sans-serif; font-size: 14px;">`;
+                for (let p in session.players) {
+                    const s = session.players[p];
+                    summaryHTML += `<div style="display:flex; justify-content:space-between; max-width: 220px; margin: 0 auto 4px auto; border-bottom: 1px dashed #eee; padding-bottom: 2px;"><span>${p}</span> <b><span style="color: ${s>0?'#0a0':s<0?'#c00':'#333'}">${s>0?'+':''}${s}</span></b></div>`;
+                }
+                summaryHTML += `<div style="margin-top: 12px; font-size: 13px; color: #666;">Rubbers Played: <b>${session.archive.length}</b></div></div>`;
+                
+                UI.get("vault-detail-summary").innerHTML = summaryHTML;
+                UI.show("vaultdetailpopup");
+            },
+
+            viewFullscreen: (index) => {
+                const session = STATE.vault[index];
+                const contentDiv = UI.get("fullscreen-content");
+                const titleDiv = UI.get("fullscreen-title");
+                
+                const titleText = session.name ? `${session.name} <span style="font-size:14px; font-weight:normal; color:var(--gold);">(${session.date})</span>` : session.date;
+                titleDiv.innerHTML = titleText;
+                
+                let html = '';
+                session.archive.forEach(r => {
+                    html += `<div class="rubberwindow" style="margin-bottom: 30px; width: var(--card-width); max-width: 100%;">`;
+                    html += UI.getScorecardHTML(r.rubberNum, r.names, r.hands, true);
+                    html += `</div>`;
+                });
+                
+                contentDiv.innerHTML = html;
+                UI.show("fullscreen-viewer");
+            },
+
+            closeFullscreen: () => {
+                UI.hide("fullscreen-viewer");
+            },
+            
+            closeVaultDetail: () => { UI.hide("vaultdetailpopup"); UI.show("historypopup"); },
             
             updateTally: () => {
                 let parts = []; for (let p in STATE.players) parts.push(`<span class="player-name">${p}</span>&nbsp;<span style="color:inherit">${STATE.players[p]}</span>`);
@@ -783,7 +871,9 @@
                 else if (STATE.screen === 'game') UI.show("bidgrid");
             },
             hideAllPopups: () => {
-                UI.hide("playerpopup"); UI.hide("startuppopup"); UI.hide("sharepopup"); UI.hide("aboutpopup"); UI.hide("settingspopup");
+                UI.hide("playerpopup"); UI.hide("startuppopup"); UI.hide("sharepopup"); 
+                UI.hide("aboutpopup"); UI.hide("settingspopup"); 
+                UI.hide("historypopup"); UI.hide("vaultdetailpopup");
             },
             showSettings: () => {
                 const popup = UI.get("settingspopup");
@@ -822,37 +912,23 @@
             fromBase64: (str) => decodeURIComponent(escape(window.atob(str))),
 
             save: (nuclear = false) => {
-                try {
-                    localStorage.setItem(CONFIG.storageKey, JSON.stringify(STATE));
-                } catch (e) {
-                    console.warn('Storage full/blocked', e);
-                }
+                try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(STATE)); } catch (e) {}
                 UI.updateTally(); UI.updateUndoBtn();
             },
             
-            // updated to use Native Web Share when available
             share: () => {
-                const popup = UI.get("sharepopup");
-                if (!popup.hidden) { UI.closeShare(); return; }
                 const namesArr = [STATE.names.we1, STATE.names.we2, STATE.names.they1, STATE.names.they2];
                 const cleanArchive = STATE.archive.map(rub => ({ n: [rub.names.we1, rub.names.we2, rub.names.they1, rub.names.they2], l: Compressor.packLog(rub.hands) }));
                 const packedActive = Compressor.packLog(STATE.hands);
-                const minified = [4, namesArr, cleanArchive, packedActive]; 
                 
-                const url = window.location.href.split('#')[0] + '#' + Storage.toBase64(JSON.stringify(minified));
+                // v5 Logic (LZ Compressed)
+                const minified = [5, namesArr, cleanArchive, packedActive]; 
+                const payload = LZString.compressToEncodedURIComponent(JSON.stringify(minified));
+                const url = window.location.href.split('#')[0] + '#' + payload;
                 
                 if (navigator.share) {
-                    navigator.share({
-                        title: 'Rubber Soul',
-                        text: 'Share this link to continue session on another device',
-                        url: url
-                    }).catch((e) => {
-                        // if user cancelled, don't show popup. If it failed for other reasons, show popup.
-                        if (e.name !== 'AbortError') UI.showShare(url);
-                    });
-                } else {
-                    UI.showShare(url);
-                }
+                    navigator.share({ title: 'Rubber Soul', url: url }).catch(e => { if (e.name !== 'AbortError') UI.showShare(url); });
+                } else { UI.showShare(url); }
             },
             
             load: () => {
@@ -863,26 +939,25 @@
                 if (localData) {
                     const savedSettings = localData.settings || {};
                     STATE = { ...STATE, ...localData };
-                    // Added keepAwake default to true
+                    if (!STATE.vault) STATE.vault = [];
                     STATE.settings = { ...{ fourColor: false, highContrast: false, showHonors: true, keepAwake: true }, ...savedSettings };
                 }
 
-                let loadedFromHash = false;
                 if (window.location.hash && window.location.hash.length > 1) {
                     const hasLocalGame = (STATE.archive && STATE.archive.length > 0) || (STATE.hands && STATE.hands.length > 0) || (STATE.names && STATE.names.we1);
-                    let proceed = true;
-                    if (hasLocalGame) {
-                        proceed = confirm("Loading this shared link will overwrite your current active session. Are you sure you want to proceed?");
-                    }
-                    if (proceed) {
+                    if (!hasLocalGame || confirm("Loading this link will overwrite your session. Proceed?")) {
                         try {
                             const hashStr = window.location.hash.substring(1);
-                            const decoded = JSON.parse(Storage.fromBase64(hashStr));
+                            let decoded;
+                            try {
+                                decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(hashStr));
+                            } catch(e) {
+                                decoded = JSON.parse(Storage.fromBase64(hashStr));
+                            }
                             
-                            if (Array.isArray(decoded) && decoded[0] === 4) {
+                            if (decoded && (decoded[0] === 4 || decoded[0] === 5)) {
                                 let tally = {};
                                 const initPlayers = (nArr) => { nArr.forEach(n => { if(n && !tally[n]) tally[n] = 0; }); };
-                                
                                 const archiveData = decoded[2].map(a => {
                                     const logs = Compressor.unpackLog(a.l);
                                     initPlayers(a.n);
@@ -891,21 +966,9 @@
                                     else { tally[a.n[0]] -= totals.diff; tally[a.n[1]] -= totals.diff; tally[a.n[2]] += totals.diff; tally[a.n[3]] += totals.diff; }
                                     return { rubberNum: 0, names: { we1: a.n[0], we2: a.n[1], they1: a.n[2], they2: a.n[3] }, hands: logs };
                                 });
-                                
                                 initPlayers(decoded[1]);
-                                STATE = {
-                                    ...STATE,
-                                    names: { we1: decoded[1][0], we2: decoded[1][1], they1: decoded[1][2], they2: decoded[1][3] },
-                                    players: tally, archive: archiveData, hands: Compressor.unpackLog(decoded[3]), history: [],
-                                    ledger: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } }, rubberNum: decoded[2].length + 1, isBig: STATE.isBig
-                                };
+                                STATE = { ...STATE, names: { we1: decoded[1][0], we2: decoded[1][1], they1: decoded[1][2], they2: decoded[1][3] }, players: tally, archive: archiveData, hands: Compressor.unpackLog(decoded[3]), history: [], ledger: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } }, rubberNum: decoded[2].length + 1 };
                                 STATE.ledger = Compressor.recalcMath(STATE.hands);
-                                
-                                let gW=0, gT=0;
-                                STATE.hands.forEach(l => {
-                                    if(l.t === 'made') { l.r = gW+gT; if(l.g) { if(l.s === 'we') gW++; else gT++; } }
-                                });
-                                loadedFromHash = true;
                                 window.history.replaceState(null, '', window.location.pathname + window.location.search);
                                 Storage.save(); 
                             }
@@ -913,26 +976,11 @@
                     }
                 }
 
-                if (!STATE.hands) STATE.hands = []; 
-                if (!STATE.ledger) STATE.ledger = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
-                
                 STATE.archive.forEach((rub, i) => rub.rubberNum = i + 1);
                 STATE.rubberNum = STATE.archive.length + 1;
-
-                UI.applyBigMode(); 
-                UI.applySettings(); 
-                UI.renderArchive(); UI.drawActive(); UI.show('thisrubber'); UI.updateTally(); UI.updateUndoBtn();
-                
-                if (!loadedFromHash && (STATE.archive.length > 0 || STATE.hands.length > 0 || STATE.names.we1)) {
-                    Game.showStartupMenu();
-                } else if (!STATE.names.we1 && !STATE.names.we2) {
-                    let lastNames = null;
-                    if (STATE.archive.length > 0) lastNames = STATE.archive[STATE.archive.length - 1].names;
-                    Game.showEntry(loadedFromHash, loadedFromHash ? `<div class="title" style="font-size: 24px; margin-bottom: 12px;">Session loaded.</div>` : "", lastNames);
-                } else {
-                    STATE.screen = 'game';
-                    UI.renderBiddingBox();
-                }
+                UI.applyBigMode(); UI.applySettings(); UI.renderArchive(); UI.drawActive(); UI.show('thisrubber'); UI.updateTally(); UI.updateUndoBtn();
+                if (STATE.archive.length > 0 || STATE.hands.length > 0 || STATE.names.we1) Game.showStartupMenu();
+                else Game.showEntry();
             }
         };
 
@@ -982,8 +1030,66 @@
                 }
             },
             
+            archiveSessionToVault: () => {
+                // Auto-close active rubber if there is progress
+                if (STATE.hands.length > 0 || STATE.ledger.we.games > 0 || STATE.ledger.they.games > 0) {
+                    const weGames = STATE.ledger.we.games;
+                    const theyGames = STATE.ledger.they.games;
+                    const wePart = STATE.ledger.we.partial;
+                    const theyPart = STATE.ledger.they.partial;
+                    
+                    let weBonus = 0; let theyBonus = 0;
+                    if (weGames === 1 && theyGames === 0) weBonus += 300;
+                    else if (theyGames === 1 && weGames === 0) theyBonus += 300;
+                    
+                    if (wePart > 0 && theyPart === 0) weBonus += 100;
+                    else if (theyPart > 0 && wePart === 0) theyBonus += 100;
+                    
+                    if (weBonus > 0) STATE.hands.push({ s: 'we', t: 'rub', sc: weBonus });
+                    if (theyBonus > 0) STATE.hands.push({ s: 'they', t: 'rub', sc: theyBonus });
+
+                    const { we, they, diff } = Game.getTotals(STATE.hands);
+                    const { we1, we2, they1, they2 } = STATE.names;
+                    
+                    if (we > they) {
+                        STATE.players[we1] = (STATE.players[we1]||0) + diff; STATE.players[we2] = (STATE.players[we2]||0) + diff;
+                        STATE.players[they1] = (STATE.players[they1]||0) - diff; STATE.players[they2] = (STATE.players[they2]||0) - diff;
+                    } else {
+                        STATE.players[we1] = (STATE.players[we1]||0) - diff; STATE.players[we2] = (STATE.players[we2]||0) - diff;
+                        STATE.players[they1] = (STATE.players[they1]||0) + diff; STATE.players[they2] = (STATE.players[they2]||0) + diff;
+                    }
+                    STATE.archive.push(JSON.parse(JSON.stringify({ rubberNum: STATE.rubberNum, names: STATE.names, hands: STATE.hands })));
+                } else if (STATE.names.we1) {
+                    // Save stub scorecard if names exist but no hands played
+                    STATE.archive.push(JSON.parse(JSON.stringify({ rubberNum: STATE.rubberNum, names: STATE.names, hands: [] })));
+                }
+
+                if (STATE.archive.length > 0) {
+                    if(!STATE.vault) STATE.vault = [];
+                    STATE.vault.unshift({
+                        id: new Date().getTime(),
+                        date: new Date().toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                        name: null,
+                        players: JSON.parse(JSON.stringify(STATE.players)),
+                        archive: JSON.parse(JSON.stringify(STATE.archive))
+                    });
+                }
+
+                // Reset Active Session while preserving vault/settings
+                STATE.players = {}; STATE.names = { we1: "", we2: "", they1: "", they2: "" }; STATE.allNames = [];
+                STATE.rubberNum = 1; STATE.hands = []; STATE.ledger = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
+                STATE.archive = []; STATE.history = []; STATE.bid = { side: null, level: null, suit: null, multiplier: 'n', honors: 0 };
+                STATE.screen = 'entry';
+                window.location.hash = "";
+                Storage.save(true);
+                UI.resetBiddingUI(true); UI.drawActive(); UI.renderArchive();
+                Game.showEntry(false, "");
+            },
+
             resetFromStartup: () => {
-                if (confirm("Erase entire session?")) { window.location.hash = ""; localStorage.clear(); location.reload(); }
+                if (confirm("Archive current session and start a new one?")) {
+                    Game.archiveSessionToVault();
+                }
             },
             
             showEntry: (isNewRubber = false, resultMsg = "", defaultNames = null) => {
@@ -1134,8 +1240,7 @@
                 const wePart = STATE.ledger.we.partial;
                 const theyPart = STATE.ledger.they.partial;
                 
-                let weBonus = 0;
-                let theyBonus = 0;
+                let weBonus = 0; let theyBonus = 0;
 
                 // Rule 1: Only one game completed (300 pts)
                 if (weGames === 1 && theyGames === 0) weBonus += 300;
@@ -1166,7 +1271,9 @@
             },
             
             confirmReset: () => { 
-                if (confirm("Erase entire session?")) { window.location.hash = ""; localStorage.clear(); location.reload(); } 
+                if (confirm("Archive current session and start a new one?")) {
+                    Game.archiveSessionToVault();
+                } 
             }
         };
 
@@ -1192,6 +1299,151 @@
                 case 'showSettings': UI.showSettings(); break;
                 case 'closeSettings': UI.closeSettings(); break;
                 case 'closeBid': UI.resetBiddingUI(); break;
+                case 'showHistory': UI.showHistory(); break;
+                case 'closeHistory': UI.closeHistory(); break;
+                
+                case 'resumeVault':
+                    if(confirm("This will save your current session to History and resume this one. Proceed?")) {
+                        const rIdx = UI.get("vaultdetailpopup").dataset.index;
+                        const targetSession = STATE.vault[rIdx];
+
+                        // 1. Stash current session into Vault
+                        if (STATE.hands.length > 0 || STATE.archive.length > 0 || STATE.names.we1) {
+                            let stArchive = JSON.parse(JSON.stringify(STATE.archive));
+                            let stPlayers = JSON.parse(JSON.stringify(STATE.players));
+                            
+                            if (STATE.hands.length > 0) {
+                                let h = JSON.parse(JSON.stringify(STATE.hands));
+                                const weGames = STATE.ledger.we.games;
+                                const theyGames = STATE.ledger.they.games;
+                                const wePart = STATE.ledger.we.partial;
+                                const theyPart = STATE.ledger.they.partial;
+                                
+                                let weBonus = 0; let theyBonus = 0;
+                                if (weGames === 1 && theyGames === 0) weBonus += 300;
+                                else if (theyGames === 1 && weGames === 0) theyBonus += 300;
+                                if (wePart > 0 && theyPart === 0) weBonus += 100;
+                                else if (theyPart > 0 && wePart === 0) theyBonus += 100;
+                                
+                                if (weBonus > 0) h.push({ s: 'we', t: 'rub', sc: weBonus });
+                                if (theyBonus > 0) h.push({ s: 'they', t: 'rub', sc: theyBonus });
+
+                                const { we, they, diff } = Game.getTotals(h);
+                                const { we1, we2, they1, they2 } = STATE.names;
+                                
+                                if (we > they) {
+                                    stPlayers[we1] = (stPlayers[we1]||0) + diff; stPlayers[we2] = (stPlayers[we2]||0) + diff;
+                                    stPlayers[they1] = (stPlayers[they1]||0) - diff; stPlayers[they2] = (stPlayers[they2]||0) - diff;
+                                } else {
+                                    stPlayers[we1] = (stPlayers[we1]||0) - diff; stPlayers[we2] = (stPlayers[we2]||0) - diff;
+                                    stPlayers[they1] = (stPlayers[they1]||0) + diff; stPlayers[they2] = (stPlayers[they2]||0) + diff;
+                                }
+                                stArchive.push({ rubberNum: STATE.rubberNum, names: STATE.names, hands: h });
+                            } else if (STATE.names.we1) {
+                                // Save stub scorecard if names exist but no hands played
+                                stArchive.push({ rubberNum: STATE.rubberNum, names: STATE.names, hands: [] });
+                            }
+                            
+                            if (stArchive.length > 0) {
+                                STATE.vault.unshift({
+                                    id: new Date().getTime(),
+                                    date: new Date().toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                                    name: null,
+                                    players: stPlayers,
+                                    archive: stArchive
+                                });
+                            }
+                        }
+
+                        // 2. Remove resumed session from vault
+                        STATE.vault = STATE.vault.filter(v => v !== targetSession);
+
+                        // 3. Load targetSession into Active State
+                        STATE.archive = JSON.parse(JSON.stringify(targetSession.archive));
+                        STATE.players = JSON.parse(JSON.stringify(targetSession.players));
+                        STATE.hands = [];
+                        STATE.ledger = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
+                        STATE.history = [];
+                        
+                        STATE.archive.forEach((rub, i) => rub.rubberNum = i + 1);
+                        STATE.rubberNum = STATE.archive.length + 1;
+                        
+                        if (STATE.archive.length > 0) {
+                            STATE.names = JSON.parse(JSON.stringify(STATE.archive[STATE.archive.length - 1].names));
+                        } else {
+                            STATE.names = { we1: "", we2: "", they1: "", they2: "" };
+                        }
+
+                        // 4. Update UI
+                        Storage.save(true);
+                        UI.hide("vaultdetailpopup");
+                        UI.resetBiddingUI(true);
+                        UI.drawActive();
+                        UI.renderArchive();
+                        UI.updateTally();
+                        
+                        if (STATE.names.we1) {
+                            STATE.screen = 'game';
+                            UI.renderBiddingBox();
+                            UI.show("thisrubber");
+                            UI.restoreScreen(); 
+                        } else {
+                            Game.showEntry(false, "");
+                        }
+                    }
+                    break;
+
+                case 'viewVaultItem': 
+                    const vIndex = trigger.closest('[data-index]').dataset.index;
+                    UI.viewVaultItem(vIndex);
+                    break;
+                    
+                case 'closeVaultDetail': UI.closeVaultDetail(); break;
+                
+                case 'renameVault':
+                    const renIdx = UI.get("vaultdetailpopup").dataset.index;
+                    const rSession = STATE.vault[renIdx];
+                    const newName = prompt("Enter a name for this session (or clear to remove):", rSession.name || "");
+                    if (newName !== null) {
+                        rSession.name = newName.trim();
+                        Storage.save();
+                        UI.renderVaultList();
+                        UI.get("vault-detail-title").innerHTML = rSession.name || rSession.date;
+                    }
+                    break;
+
+                case 'shareVaultLink':
+                    const sIdx = UI.get("vaultdetailpopup").dataset.index;
+                    const session = STATE.vault[sIdx];
+                    const cleanArch = session.archive.map(rub => ({ n: [rub.names.we1, rub.names.we2, rub.names.they1, rub.names.they2], l: Compressor.packLog(rub.hands) }));
+                    const minified = [5, ["", "", "", ""], cleanArch, []]; 
+                    const url = window.location.href.split('#')[0] + '#' + LZString.compressToEncodedURIComponent(JSON.stringify(minified));
+                    
+                    if (navigator.share) {
+                        navigator.share({ title: `Rubber Soul Session - ${session.date}`, url: url }).catch(e => { if (e.name !== 'AbortError') UI.showShare(url); });
+                    } else {
+                        UI.showShare(url);
+                    }
+                    break;
+
+                case 'deleteVaultItem':
+                    if(confirm("Permanently delete this session from history?")) {
+                        const dIdx = UI.get("vaultdetailpopup").dataset.index;
+                        STATE.vault.splice(dIdx, 1);
+                        Storage.save();
+                        UI.closeVaultDetail();
+                    }
+                    break;
+                    
+                case 'viewFullscreen':
+                    const fsIndex = UI.get("vaultdetailpopup").dataset.index;
+                    UI.viewFullscreen(fsIndex);
+                    break;
+                    
+                case 'closeFullscreen':
+                    UI.closeFullscreen();
+                    break;
+                    
                 case 'toggleSetting':
                     const key = trigger.dataset.key;
                     STATE.settings[key] = trigger.checked;
