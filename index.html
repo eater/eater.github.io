@@ -2,12 +2,13 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="Rubber Soul">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-        <link rel="manifest" href="./manifest.json">
-        <meta name="theme-color" content="#1b5e20">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#1b5e20">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Rubber Soul">
 
     <script>
         window.goatcounter = {
@@ -32,7 +33,6 @@
             --anno-font: 15px; 
             --lh: 22px; /* strict pixel height to prevent alignment drift */
             --card-width: 28em;
-            
             --frutiger: "Frutiger", "Frutiger Linotype", "Segoe UI", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
         }
         
@@ -109,18 +109,44 @@
         #about-btn { color: #0047AB; border-color: #0047AB; }
         #reset-btn { color: #cc0000; border-color: #cc0000; }
 
-        /* typography, suits & colors */
+/* typography, suits & colors */
         .player-name { color: var(--green); font-weight: normal; font-family: sans-serif; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; }
         .anno-text { color: var(--green); white-space: nowrap; margin-right: 0.5em; }
         .vulnerable { text-decoration: underline; text-decoration-color: red; text-decoration-thickness: 1px; text-underline-offset: 3px; }
-        
-        .live-contract { font-size: 28px; height: 32px; line-height: 32px; margin-bottom: 5px; text-align: center; overflow: hidden; font-family: sans-serif; font-weight: bold; flex-shrink: 0; }
         
         .suit-hearts, .suit-diamonds { color: red !important; font-weight: bold; }
         .suit-spades, .suit-clubs { color: black !important; font-weight: bold; }
 
         body.four-color .suit-diamonds { color: #1E90FF !important; } 
-        body.four-color .suit-clubs { color: #008000 !important; } 
+        body.four-color .suit-clubs { color: #008000 !important; }
+        
+.live-contract { 
+            font-size: 28px; 
+            height: 36px; 
+            line-height: 36px; 
+            margin-top: 10px; 
+            margin-bottom: 12px; 
+            padding-bottom: 8px; /* Breathing room above the line */
+            text-align: center; 
+            overflow: hidden; 
+            font-family: sans-serif; 
+            font-weight: bold; 
+            flex-shrink: 0;
+            color: #000;
+            border-bottom: 2px solid #eaeaea; /* Subtle, elegant separator line */
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* Make standard black suits white on the dark background */
+        <!-- .live-contract .suit-spades, -->
+        <!-- body:not(.four-color) .live-contract .suit-clubs { -->
+        <!--     color: #ffffff !important; -->
+        <!-- } -->
+        
+        /* Brighten 4-color green and blue slightly so they pop on dark grey */
+        body.four-color .live-contract .suit-clubs { color: #4ade80 !important; }
+        body.four-color .live-contract .suit-diamonds { color: #60a5fa !important; }
 
         /* high contrast mode */
         body.high-contrast {
@@ -139,12 +165,43 @@
             border: 2px solid #000 !important; color: #000 !important; font-weight: bold;
         }
 
-        .main-container { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 50px; width: 100%; box-sizing: border-box; }
+        /* --- SMART LAYOUT: Side-by-Side & Wrap --- */
+        .main-container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; /* Keeps both columns centered as a block */
+            align-items: flex-start; /* Required for sticky to work */
+            gap: 40px; 
+            width: 100%; 
+            max-width: 1200px; 
+            box-sizing: border-box; 
+            padding: 0 10px;
+        }
         
-        /* layout & popups */
-        .bid-spacer { width: 320px; display: flex; flex-direction: column; align-items: center; min-height: 220px; margin-bottom: 20px; }
-        .bidgrid { background-color: #fff; border: 3px solid black; border-radius: 16px; padding: 1em; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); position: relative; text-align: center; color: black; display: flex; flex-direction: column; overflow: hidden; }
-        .bidgrid.collapsed { width: 180px; min-height: 0; padding: 15px; }
+        /* Sticky Bidding Box Container */
+        .bid-spacer { 
+            width: 350px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            position: sticky; 
+            top: 20px; 
+            margin-bottom: 20px; 
+            z-index: 100;
+        }
+
+        /* Scorecard Column */
+        .allrubbers {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 0 1 auto; /* Allows it to sit closely next to the bidding box in the center */
+            min-width: var(--card-width); 
+            max-width: 100%;
+        }
+        
+        .bidgrid { background-color: #fff; border: 3px solid black; border-radius: 16px; padding: 1em; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); position: relative; text-align: center; color: black; display: flex; flex-direction: column; overflow: hidden; width: 100%; box-sizing: border-box; }
+        .bidgrid.collapsed { width: 180px; min-height: 0; padding: 15px; margin: 0 auto; }
         .bidgrid.expanded { width: 100%; min-height: 220px; }
         
         /* Close Button Styling */
@@ -156,10 +213,10 @@
         #close-bid-btn:active { color: #000; }
 
         .rubberwindow { background-color: #fff; border: 3px solid black; border-radius: 16px; padding: 1em; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); margin-bottom: 20px; width: var(--card-width); border-collapse: collapse; box-sizing: border-box; }
-        .wethey { display: flex; justify-content: center; align-items: center; gap: 10px; min-height: 50px; margin-top: auto; margin-bottom: auto; padding: 5px 0; }
+        .wethey { display: flex; justify-content: center; align-items: center; gap: 10px; }
 
         .popupvis { position: fixed; top: 20%; left: 50%; transform: translateX(-50%); z-index: 3000; border: 3px solid var(--green); background-color: #fff; border-radius: 16px; text-align: center; width: 24em; padding: 2em 1.5em; box-shadow: 0 0 25px rgba(0,0,0,0.5); }
-        .bid-spacer .popupvis.bid-area { position: relative; top: auto; left: auto; transform: none; width: 100%; max-width: 320px; z-index: 1000; box-sizing: border-box; margin-bottom: 20px; }
+        .bid-spacer .popupvis.bid-area { position: relative; top: auto; left: auto; transform: none; width: 100%; max-width: 350px; z-index: 1000; box-sizing: border-box; margin-bottom: 20px; }
         
         .popupvis .title { margin-top: 0 !important; margin-bottom: 5px; color: var(--green); font-family: var(--frutiger); font-size: 24px; }
         .popupvis .subtitle { color: red; font-size: 14px; font-weight: normal; margin-bottom: 15px; font-family: var(--frutiger); }
@@ -192,75 +249,129 @@
         .sc-cell { padding: 0 0.25em; color: #000; font-weight: normal; border-right: 1px solid black; width: 22.5%; line-height: var(--lh); }
         .wabove, .tabove { vertical-align: bottom; height: 10ex; border-bottom: 4px solid black; text-align: right; }
         .wbelow, .tbelow { vertical-align: top; height: 3em; text-align: right; }
-        tr.gamewon-row td.wbelow, tr.gamewon-row td.tbelow { border-bottom: 1px solid black !important; height: auto !important; }
+        
+        /* Game Winning Arrowhead CSS */
+        tr.gamewon-row td.wbelow, tr.gamewon-row td.tbelow { 
+            border-bottom: 2px solid black !important; /* Thickened slightly to support arrow */
+            height: auto !important; 
+            position: relative;
+        }
+        
+        tr.gamewon-we td.wbelow::after {
+            content: '';
+            position: absolute;
+            left: 0px;
+            bottom: -5px; /* Aligns center of arrow to the 2px border */
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            border-right: 8px solid black;
+        }
+        
+        tr.gamewon-they td.tbelow::after {
+            content: '';
+            position: absolute;
+            right: 0px;
+            bottom: -5px; /* Aligns center of arrow to the 2px border */
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            border-left: 8px solid black;
+        }
+
         .tabove, .tbelow { text-align: left; border-right: none; }
         td.anno { vertical-align: top; width: 28.5%; padding: 0 0.25em; font-size: var(--anno-font); line-height: var(--lh); }
         td.anno.left { text-align: right; } td.anno.right { text-align: left; } td.anno.btm { vertical-align: bottom; }
 
-        /* standard ui buttons */
-        .std-btn { display: inline-block; padding: 2px 8px; margin: 2px; cursor: pointer; min-width: 3em; font-size: 16px; color: black; box-sizing: border-box; text-align: center; border-radius: 3px; }
-        .raised { background-color: #eee; border: 1px solid #999; }
-        .depressed { background-color: #ccc; border: 1px solid #666; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3); filter: brightness(0.95); }
+        /* standard ui buttons (WE, THEY, Doubled, Honors) */
+        .std-btn { display: inline-block; padding: 6px 12px; margin: 4px; cursor: pointer; min-width: 3em; font-size: 16px; color: black; box-sizing: border-box; text-align: center; border-radius: 4px; }
+        .raised { background-color: #f5f5f5; border: 1px solid #ccc; }
+        .depressed { background-color: #d4d4d4; border: 1px solid #999; box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2); }
 
-        button#scorebtn { font-weight: bold; font-size: 20px; padding: 5px 15px; background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00; margin-left: 10px; cursor: pointer; font-family: var(--serif); border-radius: 3px; }
+        button#scorebtn { font-weight: bold; font-size: 20px; padding: 6px 18px; background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00; margin-left: 10px; cursor: pointer; font-family: var(--serif); border-radius: 4px; }
         button#scorebtn:active { background-color: #c8e6c9; box-shadow: inset 2px 2px 5px rgba(0,50,0,0.3); }
         button#scorebtn:disabled { opacity: 0.6; cursor: default; box-shadow: none; }
-        #btn-we, #btn-they { font-weight: normal; color: black; margin: 0; }
-        #res { font-size: 16px !important; padding: 3px; }
+        #btn-we, #btn-they { font-weight: normal; font-family: "Times New Roman", serif; color: black; margin: 0; font-size: 18px; padding: 4px 12px; }
+        #res { font-size: 16px !important; padding: 4px; }
 
-        table.chooser { border-collapse: separate; border-spacing: 2px; margin: 0 auto; }
-        table.chooser td .contract { display: block; padding: 4px 8px; border: 1px solid #bbb; cursor: pointer; font-size: 18px; font-weight: normal; color: black; text-align: center; border-radius: 3px; width: 100%; box-sizing: border-box; }
-        table.chooser td.notgame .contract { background-color: #e3f2fd; } 
-        table.chooser td.game .contract { background-color: #ffebee; }
-        table.chooser td .contract.depressed { border: 1px solid #666; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2); filter: brightness(0.92); }
+        /* --- REFINED BIDDING BUTTONS (Matching Screenshot) --- */
+        table.chooser { border-collapse: separate; border-spacing: 4px; margin: 0 auto; width: 100%; }
+        table.chooser td .contract { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            height: 40px; 
+            padding: 0; 
+            border: 1px solid; 
+            border-radius: 4px;
+            cursor: pointer; 
+            font-size: 18px; 
+            color: black; 
+            width: 100%; 
+            box-sizing: border-box; 
+        }
+        table.chooser td.notgame .contract { background-color: #f4f9ff; border-color: #bbdefb; } 
+        table.chooser td.game .contract { background-color: #fff5f5; border-color: #ffcdd2; }
+        table.chooser td .contract.depressed { 
+            background-color: #e0e0e0; 
+            border-color: #999; 
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2); 
+        }
 
-        /* --- Enhanced Mobile Readability --- */
+        /* --- Laptop Height Fix: Compress vertical spacing on short screens --- */
+        @media (max-height: 850px) and (min-width: 801px) {
+            .bidgrid { padding: 12px; }
+            table.chooser { border-spacing: 3px; }
+            table.chooser td .contract { height: 36px; font-size: 18px; } 
+.live-contract { font-size: 24px; height: 32px; line-height: 32px; margin-bottom: 10px; margin-top: 8px; padding-bottom: 6px; }
+            #chooser_master > div { margin: 8px 0 !important; }
+            #honors-container { margin: 6px 0 !important; }
+            button#scorebtn { padding: 4px 12px; font-size: 18px; }
+        }
+
+        /* --- Enhanced Mobile & Big Mode Readability --- */
+        body.big-mode table.chooser td .contract {
+            height: 48px;
+            font-size: 22px;
+        }
+
         @media (max-width: 800px) {
             #big-btn { display: none !important; }
             :root {
-                /* NEW 'Small' Mode (was 16px/12px) */
+                /* NEW 'Small' Mode */
                 --score-font: 22px; 
                 --player-font: 16px;
                 --anno-font: 15px; 
                 --lh: 24px;
             }
             body.big-mode {
-                /* NEW 'Big' Mode (was 24px/14px) */
+                /* NEW 'Big' Mode */
                 --score-font: 34px; 
                 --player-font: 20px;
                 --anno-font: 22px; 
                 --lh: 38px;
             }
 
-            /* Make bid buttons wider, larger, and fix NT alignment using vmin */
-            table.chooser { width: 100%; border-spacing: 4px; }
+            /* Disable Sticky & Shrink Container on Mobile */
+            .main-container { flex-direction: column; align-items: center; padding: 0 10px; gap: 20px; }
+            .bid-spacer { width: 95vw; position: relative; top: auto; min-height: auto; }
+            .bidgrid.expanded, .rubberwindow { width: 95vw; max-width: 95vw; }
+            .allrubbers { min-width: 95vw; }
+            body > .popupvis { top: 5%; max-height: 90vh; overflow-y: auto; }
+
+            /* Even bigger buttons for phones using vmin */
+            table.chooser { border-spacing: 4px; }
             table.chooser td .contract { 
-                padding: 0; 
                 font-size: 6vmin; 
-                display: flex; 
-                justify-content: center; 
-                align-items: center; 
-                height: 10vmin; 
-                min-height: 40px; 
+                height: 12vmin; 
+                min-height: 44px; 
             }
             
-            /* Enlarge the auxiliary bidding box controls for mobile */
-            .bidgrid .std-btn {
-                font-size: 18px;
-                padding: 8px 16px; 
-                margin: 4px;
-            }
-            #live-contract { font-size: 36px; height: 40px; line-height: 40px; margin-bottom: 15px; }
+            .bidgrid .std-btn { font-size: 18px; padding: 8px 16px; margin: 4px; }
+#live-contract { font-size: 32px; height: 44px; line-height: 44px; margin-top: 15px; margin-bottom: 15px; padding-bottom: 10px; }
             #menu { font-size: 18px; }
             #res { font-size: 18px !important; padding: 6px; }
             button#scorebtn { font-size: 24px; padding: 10px 24px; margin-top: 10px; }
-
-            /* ... rest of your mobile CSS remains the same ... */
-            .main-container { flex-direction: column; align-items: center; padding-right: 0; gap: 20px; }
-            .bid-spacer { width: 90vw; min-height: auto; }
-            .bidgrid.expanded, .rubberwindow { width: 90vw; max-width: 90vw; }
-            body > .popupvis { top: 5%; max-height: 90vh; overflow-y: auto; }
-            .nav-left { flex: 0 0 auto; position: relative; } /* Added relative positioning for dropdown */
+            
+            .nav-left { flex: 0 0 auto; position: relative; } 
             .nav-right { font-size: 13px; max-width: none; } 
             
             /* Mobile Dropdown Menu Magic */
@@ -270,7 +381,7 @@
                 display: none; 
                 flex-direction: column; 
                 position: absolute; 
-                top: 100%; /* Opens directly below the menu button */
+                top: 100%;
                 left: 0; 
                 margin-top: 5px;
                 background: #fff; 
@@ -278,7 +389,7 @@
                 border-radius: 8px; 
                 box-shadow: 0 8px 16px rgba(0,0,0,0.5); 
                 z-index: 5000; 
-                gap: 0; /* Remove gap so items touch */
+                gap: 0; 
                 min-width: 150px;
                 overflow: hidden;
             }
@@ -286,10 +397,10 @@
             #menu-buttons.show { display: flex; }
             
             #menu-buttons .tool-link {
-                border: none; /* Remove individual borders */
-                border-bottom: 1px solid #ddd; /* Add separator lines */
+                border: none; 
+                border-bottom: 1px solid #ddd; 
                 border-radius: 0; 
-                padding: 14px 20px; /* Massive touch target for thumbs */
+                padding: 14px 20px; 
                 font-size: 16px; 
                 text-align: left;
                 width: 100%;
@@ -298,7 +409,6 @@
             
             #menu-buttons .tool-link:last-child { border-bottom: none; }
             
-            /* High Contrast Mobile Dropdown override */
             body.high-contrast #menu-buttons { border-width: 3px; }
             body.high-contrast #menu-buttons .tool-link { border-bottom: 2px solid #000 !important; }
             body.high-contrast #menu-buttons .tool-link:last-child { border-bottom: none !important; }
@@ -334,6 +444,20 @@
             <div id="startuppopup" class="popupvis bid-area" hidden></div>
             <div id="playerpopup" class="popupvis bid-area" hidden></div>
             
+            <div id="iosinstallpopup" class="popupvis bid-area" hidden>
+                <div class="title">Install on iPad/iPhone</div>
+                <div class="popup-msg" style="font-size: 16px; line-height: 1.6; text-align: left;">
+                    Apple does not allow automatic installations. To add Rubber Soul to your home screen:
+                    <ol style="margin-left: -10px;">
+                        <li style="margin-bottom: 10px;">Tap the <b>Share</b> icon <svg viewBox="0 0 50 50" width="18" height="18" style="vertical-align: middle;"><path d="M25 4v26M15 14l10-10 10 10" stroke="#0047AB" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 24v16h30V24" stroke="#0047AB" stroke-width="4" fill="none" stroke-linecap="round"/></svg> at the top or bottom of Safari.</li>
+                        <li>Scroll down and select <b>Add to Home Screen</b> <span style="font-size: 18px;">➕</span>.</li>
+                    </ol>
+                </div>
+                <div style="margin-top:20px;">
+                    <button type="button" data-action="closeIosInstall">Got it</button>
+                </div>
+            </div>
+
             <div id="sharepopup" class="popupvis bid-area" hidden>
                 <div class="title">Share Session</div>
                 <div class="popup-msg" style="font-size: 16px; margin: 15px 0;">Share this link to continue this session on another device.</div>
@@ -424,12 +548,12 @@
             <div id="bidgrid" class="bidgrid collapsed" hidden>
                 <button type="button" id="close-bid-btn" data-action="closeBid" hidden>&times;</button>
                 
-                <div id="live-contract" class="live-contract" hidden></div>
-                
                 <div class="wethey">
                     <button type="button" id="btn-we" class="std-btn raised" data-action="setSide" data-side="we">WE</button> 
                     <button type="button" id="btn-they" class="std-btn raised" data-action="setSide" data-side="they">THEY</button>
                 </div>
+
+                <div id="live-contract" class="live-contract" hidden></div>
                 
                 <div id="chooser_master" hidden>
                     <div id="chooser"></div>
@@ -500,9 +624,16 @@
             settings: { fourColor: false, highContrast: false, showHonors: true, keepAwake: true }
         };
 
-        // PWA Variables
+        // PWA Variables & Apple Detection
         let deferredPrompt;
         let wakeLock = null;
+
+        const isAppleDevice = () => {
+            const userAgent = window.navigator.userAgent.toLowerCase();
+            return /iphone|ipad|ipod/.test(userAgent) || (userAgent.includes("mac") && "ontouchend" in document);
+        };
+
+        const isStandalone = () => ('standalone' in window.navigator) && (window.navigator.standalone);
 
         // Screen Wake Lock API handler
         const updateWakeLock = async () => {
@@ -515,12 +646,21 @@
         };
         document.addEventListener('visibilitychange', updateWakeLock);
 
-        // PWA Install Prompt Interceptor
+        // Android/Chrome Install Prompt Interceptor
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
             const installBtn = document.getElementById('install-app-btn');
             if (installBtn) installBtn.style.display = 'inline-block';
+        });
+
+        // Show the install button for Apple users if they aren't already in the app
+        window.addEventListener('DOMContentLoaded', () => {
+            const installBtn = document.getElementById('install-app-btn');
+            if (installBtn && isAppleDevice() && !isStandalone()) {
+                installBtn.style.display = 'inline-block';
+                installBtn.innerText = "Install on Device";
+            }
         });
 
         // basic xss protection for player names, escaping quotes to protect element attributes
@@ -654,6 +794,13 @@
                     UI.show('chooser_master');
                     UI.show('close-bid-btn'); 
                     UI.renderGrid();
+                    
+                    // Trigger menu render immediately if a level is already selected (e.g. from an Undo action)
+                    if (STATE.bid.level) {
+                        UI.renderMenu(STATE.bid.level);
+                    } else {
+                        UI.get('menu').innerHTML = "";
+                    }
                 } else {
                     box.classList.remove('expanded');
                     box.classList.add('collapsed');
@@ -737,8 +884,13 @@
                     } else {
                         let r = entry.row || 0; if (r>2) r=2;
                         if (entry.isLine) {
-                            rowClasses[r] = "gamewon-row";
-                            if(entry.side === 'we') weGames++; else theyGames++;
+                            if (entry.side === 'we') {
+                                rowClasses[r] = "gamewon-row gamewon-we";
+                                weGames++;
+                            } else {
+                                rowClasses[r] = "gamewon-row gamewon-they";
+                                theyGames++;
+                            }
                         }
                         b.below[r] += (b.below[r] ? '<br>' : '') + entry.html;
                         a.below[r] += (a.below[r] ? '<br>' : '') + (entry.anno || '&nbsp;');
@@ -875,7 +1027,7 @@
             },
             hideAllPopups: () => {
                 UI.hide("playerpopup"); UI.hide("startuppopup"); UI.hide("sharepopup"); 
-                UI.hide("aboutpopup"); UI.hide("settingspopup"); 
+                UI.hide("aboutpopup"); UI.hide("settingspopup"); UI.hide("iosinstallpopup");
                 UI.hide("historypopup"); UI.hide("vaultdetailpopup");
             },
             showSettings: () => {
@@ -1463,9 +1615,12 @@
                 case 'startMatch': 
                     if (!trigger.disabled) Game.startMatch(); 
                     break;
-                // Trigger the browser's install prompt
                 case 'installApp': 
-                    if (deferredPrompt) {
+                    if (isAppleDevice() && !isStandalone()) {
+                        // Show our custom instructional popup for Apple users
+                        UI.hide("aboutpopup");
+                        UI.show("iosinstallpopup");
+                    } else if (deferredPrompt) {
                         deferredPrompt.prompt();
                         deferredPrompt.userChoice.then((choiceResult) => {
                             if (choiceResult.outcome === 'accepted') {
@@ -1474,6 +1629,10 @@
                             deferredPrompt = null;
                         });
                     }
+                    break;
+                case 'closeIosInstall':
+                    UI.hide("iosinstallpopup");
+                    UI.restoreScreen();
                     break;
                 case 'emailAuthor': 
                     if (trigger.getAttribute('href') === '#') {
