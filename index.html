@@ -33,6 +33,7 @@
             --anno-font: 15px; 
             --lh: 22px; /* strict pixel height to prevent alignment drift */
             --card-width: 28em;
+            
             --frutiger: "Frutiger", "Frutiger Linotype", "Segoe UI", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
         }
         
@@ -109,7 +110,7 @@
         #about-btn { color: #0047AB; border-color: #0047AB; }
         #reset-btn { color: #cc0000; border-color: #cc0000; }
 
-/* typography, suits & colors */
+        /* typography, suits & colors */
         .player-name { color: var(--green); font-weight: normal; font-family: sans-serif; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; }
         .anno-text { color: var(--green); white-space: nowrap; margin-right: 0.5em; }
         .vulnerable { text-decoration: underline; text-decoration-color: red; text-decoration-thickness: 1px; text-underline-offset: 3px; }
@@ -118,9 +119,9 @@
         .suit-spades, .suit-clubs { color: black !important; font-weight: bold; }
 
         body.four-color .suit-diamonds { color: #1E90FF !important; } 
-        body.four-color .suit-clubs { color: #008000 !important; }
-        
-.live-contract { 
+        body.four-color .suit-clubs { color: #008000 !important; } 
+
+        .live-contract { 
             font-size: 28px; 
             height: 36px; 
             line-height: 36px; 
@@ -137,16 +138,6 @@
             width: 100%;
             box-sizing: border-box;
         }
-        
-        /* Make standard black suits white on the dark background */
-        <!-- .live-contract .suit-spades, -->
-        <!-- body:not(.four-color) .live-contract .suit-clubs { -->
-        <!--     color: #ffffff !important; -->
-        <!-- } -->
-        
-        /* Brighten 4-color green and blue slightly so they pop on dark grey */
-        body.four-color .live-contract .suit-clubs { color: #4ade80 !important; }
-        body.four-color .live-contract .suit-diamonds { color: #60a5fa !important; }
 
         /* high contrast mode */
         body.high-contrast {
@@ -164,6 +155,7 @@
         body.high-contrast .tool-link, body.high-contrast #menu-toggle {
             border: 2px solid #000 !important; color: #000 !important; font-weight: bold;
         }
+        body.high-contrast .live-contract { border-bottom-color: #000; }
 
         /* --- SMART LAYOUT: Side-by-Side & Wrap --- */
         .main-container { 
@@ -201,19 +193,40 @@
         }
         
         .bidgrid { background-color: #fff; border: 3px solid black; border-radius: 16px; padding: 1em; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); position: relative; text-align: center; color: black; display: flex; flex-direction: column; overflow: hidden; width: 100%; box-sizing: border-box; }
-        .bidgrid.collapsed { width: 180px; min-height: 0; padding: 15px; margin: 0 auto; }
+        .bidgrid.collapsed { width: 190px; min-height: 0; padding: 15px; margin: 0 auto; }
         .bidgrid.expanded { width: 100%; min-height: 220px; }
         
         /* Close Button Styling */
         #close-bid-btn {
-            position: absolute; top: 10px; right: 15px;
+            position: absolute; top: 5px; right: 15px;
             font-size: 32px; font-family: sans-serif; color: #999; 
             cursor: pointer; line-height: 1; padding: 5px; z-index: 10;
         }
         #close-bid-btn:active { color: #000; }
 
         .rubberwindow { background-color: #fff; border: 3px solid black; border-radius: 16px; padding: 1em; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); margin-bottom: 20px; width: var(--card-width); border-collapse: collapse; box-sizing: border-box; }
-        .wethey { display: flex; justify-content: center; align-items: center; gap: 10px; }
+        
+        /* WE/THEY or Player Button Container */
+        .wethey { display: flex; justify-content: center; align-items: stretch; gap: 10px; width: 100%; box-sizing: border-box; }
+        .bidgrid.expanded .wethey { margin-top: 30px; } /* Pushes down from the 'X' button */
+        .wethey-col { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+        .wethey .std-btn { margin: 0; box-sizing: border-box; }
+        
+        /* Classic 2-button layout */
+        .wethey.classic .std-btn { width: auto; min-width: 80px; padding: 6px 12px; font-size: 18px; font-weight: normal; font-family: "Times New Roman", serif; }
+        /* 4-button player tracking layout with height limit and truncation */
+        .wethey.players .std-btn { 
+            width: 100%; 
+            font-size: 15px; 
+            padding: 6px 4px; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap; 
+            font-family: sans-serif; 
+            height: 32px; 
+            line-height: 20px; 
+            display: block; 
+        }
 
         .popupvis { position: fixed; top: 20%; left: 50%; transform: translateX(-50%); z-index: 3000; border: 3px solid var(--green); background-color: #fff; border-radius: 16px; text-align: center; width: 24em; padding: 2em 1.5em; box-shadow: 0 0 25px rgba(0,0,0,0.5); }
         .bid-spacer .popupvis.bid-area { position: relative; top: auto; left: auto; transform: none; width: 100%; max-width: 350px; z-index: 1000; box-sizing: border-box; margin-bottom: 20px; }
@@ -252,7 +265,7 @@
         
         /* Game Winning Arrowhead CSS */
         tr.gamewon-row td.wbelow, tr.gamewon-row td.tbelow { 
-            border-bottom: 2px solid black !important; /* Thickened slightly to support arrow */
+            border-bottom: 2px solid black !important; 
             height: auto !important; 
             position: relative;
         }
@@ -261,7 +274,7 @@
             content: '';
             position: absolute;
             left: 0px;
-            bottom: -5px; /* Aligns center of arrow to the 2px border */
+            bottom: -5px; 
             border-top: 4px solid transparent;
             border-bottom: 4px solid transparent;
             border-right: 8px solid black;
@@ -271,17 +284,26 @@
             content: '';
             position: absolute;
             right: 0px;
-            bottom: -5px; /* Aligns center of arrow to the 2px border */
+            bottom: -5px; 
             border-top: 4px solid transparent;
             border-bottom: 4px solid transparent;
             border-left: 8px solid black;
         }
 
         .tabove, .tbelow { text-align: left; border-right: none; }
-        td.anno { vertical-align: top; width: 28.5%; padding: 0 0.25em; font-size: var(--anno-font); line-height: var(--lh); }
+        
+        /* Scorecard Annos & Truncation Bubbles */
+        td.anno { vertical-align: top; width: 28.5%; max-width: 28.5%; padding: 0 0.25em; font-size: var(--anno-font); line-height: var(--lh); overflow: hidden; }
         td.anno.left { text-align: right; } td.anno.right { text-align: left; } td.anno.btm { vertical-align: bottom; }
+        
+        .anno-wrapper { display: flex; align-items: baseline; width: 100%; max-width: 100%; overflow: hidden; }
+        td.anno.left .anno-wrapper { justify-content: flex-end; }
+        td.anno.right .anno-wrapper { justify-content: flex-start; }
+        
+        .anno-bid { flex-shrink: 0; white-space: nowrap; color: var(--green); }
+        .anno-name { flex-shrink: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.85em; opacity: 0.8; margin-left: 4px; color: var(--green); }
 
-        /* standard ui buttons (WE, THEY, Doubled, Honors) */
+        /* standard ui buttons */
         .std-btn { display: inline-block; padding: 6px 12px; margin: 4px; cursor: pointer; min-width: 3em; font-size: 16px; color: black; box-sizing: border-box; text-align: center; border-radius: 4px; }
         .raised { background-color: #f5f5f5; border: 1px solid #ccc; }
         .depressed { background-color: #d4d4d4; border: 1px solid #999; box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2); }
@@ -289,10 +311,9 @@
         button#scorebtn { font-weight: bold; font-size: 20px; padding: 6px 18px; background-color: #e8f5e9; border: 1px solid #0a0; color: #004d00; margin-left: 10px; cursor: pointer; font-family: var(--serif); border-radius: 4px; }
         button#scorebtn:active { background-color: #c8e6c9; box-shadow: inset 2px 2px 5px rgba(0,50,0,0.3); }
         button#scorebtn:disabled { opacity: 0.6; cursor: default; box-shadow: none; }
-        #btn-we, #btn-they { font-weight: normal; font-family: "Times New Roman", serif; color: black; margin: 0; font-size: 18px; padding: 4px 12px; }
         #res { font-size: 16px !important; padding: 4px; }
 
-        /* --- REFINED BIDDING BUTTONS (Matching Screenshot) --- */
+        /* --- REFINED BIDDING BUTTONS --- */
         table.chooser { border-collapse: separate; border-spacing: 4px; margin: 0 auto; width: 100%; }
         table.chooser td .contract { 
             display: flex; 
@@ -316,12 +337,12 @@
             box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2); 
         }
 
-        /* --- Laptop Height Fix: Compress vertical spacing on short screens --- */
+        /* --- Laptop Height Fix --- */
         @media (max-height: 850px) and (min-width: 801px) {
             .bidgrid { padding: 12px; }
             table.chooser { border-spacing: 3px; }
-            table.chooser td .contract { height: 36px; font-size: 18px; } 
-.live-contract { font-size: 24px; height: 32px; line-height: 32px; margin-bottom: 10px; margin-top: 8px; padding-bottom: 6px; }
+            table.chooser td .contract { height: 36px; font-size: 16px; } 
+            .live-contract { font-size: 24px; height: 32px; line-height: 32px; margin-bottom: 10px; margin-top: 8px; padding-bottom: 6px; }
             #chooser_master > div { margin: 8px 0 !important; }
             #honors-container { margin: 6px 0 !important; }
             button#scorebtn { padding: 4px 12px; font-size: 18px; }
@@ -366,7 +387,7 @@
             }
             
             .bidgrid .std-btn { font-size: 18px; padding: 8px 16px; margin: 4px; }
-#live-contract { font-size: 32px; height: 44px; line-height: 44px; margin-top: 15px; margin-bottom: 15px; padding-bottom: 10px; }
+            #live-contract { font-size: 32px; height: 44px; line-height: 44px; margin-top: 15px; margin-bottom: 15px; padding-bottom: 10px; }
             #menu { font-size: 18px; }
             #res { font-size: 18px !important; padding: 6px; }
             button#scorebtn { font-size: 24px; padding: 10px 24px; margin-top: 10px; }
@@ -502,6 +523,14 @@
                             <span class="slider"></span>
                         </div>
                     </label>
+
+                    <label class="setting-row">
+                        <span>Track Individual Declarer</span>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="setting-trackDeclarer" data-action="toggleSetting" data-key="trackDeclarer">
+                            <span class="slider"></span>
+                        </div>
+                    </label>
                     
                     <label class="setting-row">
                         <span>High Contrast Mode</span>
@@ -548,10 +577,7 @@
             <div id="bidgrid" class="bidgrid collapsed" hidden>
                 <button type="button" id="close-bid-btn" data-action="closeBid" hidden>&times;</button>
                 
-                <div class="wethey">
-                    <button type="button" id="btn-we" class="std-btn raised" data-action="setSide" data-side="we">WE</button> 
-                    <button type="button" id="btn-they" class="std-btn raised" data-action="setSide" data-side="they">THEY</button>
-                </div>
+                <div id="wethey-container" class="wethey classic"></div>
 
                 <div id="live-contract" class="live-contract" hidden></div>
                 
@@ -619,9 +645,9 @@
         let STATE = {
             players: {}, names: { we1: "", we2: "", they1: "", they2: "" }, allNames: [],
             rubberNum: 1, hands: [], ledger: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } },
-            archive: [], history: [], vault: [], bid: { side: null, level: null, suit: null, multiplier: 'n', honors: 0 },
+            archive: [], history: [], vault: [], bid: { side: null, level: null, suit: null, multiplier: 'n', honors: 0, declarer: null },
             isBig: false, screen: 'entry',
-            settings: { fourColor: false, highContrast: false, showHonors: true, keepAwake: true }
+            settings: { fourColor: false, highContrast: false, showHonors: true, keepAwake: true, trackDeclarer: false }
         };
 
         // PWA Variables & Apple Detection
@@ -674,18 +700,26 @@
 
             packLog: (log) => log.map(item => {
                 let arr = [Compressor.sideMap[item.s], Compressor.typeMap[item.t], item.sc];
-                if (item.t === 'made') arr.push(item.b, Compressor.multMap[item.m] || 0, item.g ? 1 : 0);
-                else if (item.t === 'down') arr.push(item.b, Compressor.multMap[item.m] || 0, item.lbl);
-                else if (item.t === 'ot') arr.push(item.cnt);
+                if (item.t === 'made') {
+                    arr.push(item.b, Compressor.multMap[item.m] || 0, item.g ? 1 : 0);
+                    if (item.dec !== undefined) arr.push(item.dec);
+                } else if (item.t === 'down') {
+                    arr.push(item.b, Compressor.multMap[item.m] || 0, item.lbl);
+                    if (item.dec !== undefined) arr.push(item.dec);
+                } else if (item.t === 'ot') arr.push(item.cnt);
                 else if (item.t === 'slam') arr.push(item.lvl);
                 return arr;
             }),
             
             unpackLog: (packedLog) => packedLog.map(arr => {
                 let obj = { s: Compressor.revSide[arr[0]], t: Compressor.revType[arr[1]], sc: arr[2] };
-                if (obj.t === 'made') { obj.b = arr[3]; obj.m = Compressor.revMult[arr[4]]; obj.g = (arr[5] === 1); } 
-                else if (obj.t === 'down') { obj.b = arr[3]; obj.m = Compressor.revMult[arr[4]]; obj.lbl = arr[5]; } 
-                else if (obj.t === 'ot') obj.cnt = arr[3];
+                if (obj.t === 'made') { 
+                    obj.b = arr[3]; obj.m = Compressor.revMult[arr[4]]; obj.g = (arr[5] === 1); 
+                    if (arr.length > 6) obj.dec = arr[6];
+                } else if (obj.t === 'down') { 
+                    obj.b = arr[3]; obj.m = Compressor.revMult[arr[4]]; obj.lbl = arr[5]; 
+                    if (arr.length > 6) obj.dec = arr[6];
+                } else if (obj.t === 'ot') obj.cnt = arr[3];
                 else if (obj.t === 'slam') obj.lvl = arr[3];
                 return obj;
             }),
@@ -726,6 +760,9 @@
                 UI.get('setting-highContrast').checked = STATE.settings.highContrast;
                 UI.get('setting-showHonors').checked = STATE.settings.showHonors;
                 UI.get('setting-keepAwake').checked = STATE.settings.keepAwake;
+                
+                const trackToggle = UI.get('setting-trackDeclarer');
+                if (trackToggle) trackToggle.checked = STATE.settings.trackDeclarer;
                 
                 updateWakeLock();
             },
@@ -777,8 +814,26 @@
             renderBiddingBox: () => {
                 UI.show('bidgrid'); 
                 
-                UI.get('btn-we').className = STATE.bid.side === 'we' ? 'std-btn depressed' : 'std-btn raised';
-                UI.get('btn-they').className = STATE.bid.side === 'they' ? 'std-btn depressed' : 'std-btn raised';
+                const wtContainer = UI.get('wethey-container');
+                if (STATE.settings.trackDeclarer && STATE.names.we1) {
+                    wtContainer.className = "wethey players";
+                    wtContainer.innerHTML = `
+                        <div class="wethey-col">
+                            <button type="button" class="std-btn ${STATE.bid.declarer===0 ? 'depressed' : 'raised'}" data-action="setDeclarer" data-dec="0">${STATE.names.we1}</button>
+                            <button type="button" class="std-btn ${STATE.bid.declarer===1 ? 'depressed' : 'raised'}" data-action="setDeclarer" data-dec="1">${STATE.names.we2}</button>
+                        </div>
+                        <div class="wethey-col">
+                            <button type="button" class="std-btn ${STATE.bid.declarer===2 ? 'depressed' : 'raised'}" data-action="setDeclarer" data-dec="2">${STATE.names.they1}</button>
+                            <button type="button" class="std-btn ${STATE.bid.declarer===3 ? 'depressed' : 'raised'}" data-action="setDeclarer" data-dec="3">${STATE.names.they2}</button>
+                        </div>
+                    `;
+                } else {
+                    wtContainer.className = "wethey classic";
+                    wtContainer.innerHTML = `
+                        <button type="button" id="btn-we" class="std-btn ${STATE.bid.side === 'we' ? 'depressed' : 'raised'}" data-action="setSide" data-side="we">WE</button> 
+                        <button type="button" id="btn-they" class="std-btn ${STATE.bid.side === 'they' ? 'depressed' : 'raised'}" data-action="setSide" data-side="they">THEY</button>
+                    `;
+                }
                 
                 UI.get('btn-x').className = STATE.bid.multiplier === 'x' ? 'std-btn depressed' : 'std-btn raised';
                 UI.get('btn-xx').className = STATE.bid.multiplier === 'xx' ? 'std-btn depressed' : 'std-btn raised';
@@ -812,7 +867,7 @@
             },
 
             resetBiddingUI: (nuclear = false) => {
-                STATE.bid = { side: null, level: null, suit: null, multiplier: 'n', honors: 0 };
+                STATE.bid = { side: null, level: null, suit: null, multiplier: 'n', honors: 0, declarer: null };
                 UI.get('chooser').innerHTML = ""; 
                 UI.get('menu').innerHTML = "";
                 UI.renderBiddingBox();
@@ -853,18 +908,39 @@
                 UI.get('menu').innerHTML = menu + `</select> <button type="button" id="scorebtn" data-action="scoreHand">Score</button>`;
             },
             
-            renderEntry: (data) => {
+            renderEntry: (data, namesContext) => {
                 let html = "", anno = "", section = "above", row = 0;
-                let bidStr = "";
-                if (data.b) bidStr = UI.colorBid(data.b + (data.m === 'x' ? 'x' : (data.m === 'xx' ? 'xx' : '')));
+                
+                if (data.b) {
+                    let bidStr = UI.colorBid(data.b + (data.m === 'x' ? 'x' : (data.m === 'xx' ? 'xx' : '')));
+                    let nameStr = "";
+                    if (STATE.settings.trackDeclarer && data.dec !== undefined && data.dec !== null && namesContext) {
+                        const decName = [namesContext.we1, namesContext.we2, namesContext.they1, namesContext.they2][data.dec];
+                        if (decName) nameStr = `(${decName})`;
+                    }
 
-                if (data.t === 'down') { html = data.sc; anno = `<span class="anno-text">${bidStr} ${data.lbl || ''}</span>`; section = "above"; } 
-                else if (data.t === 'made') { html = data.g ? `<span style="color:red">${data.sc}</span>` : data.sc; anno = `<span class="anno-text">${bidStr}</span>`; section = "below"; row = data.r || 0; }
-                else if (data.t === 'ot') { html = data.sc; anno = `<span class="anno-text">${data.cnt} overtrick${data.cnt>1?'s':''}</span>`; section = "above"; }
-                else if (data.t === 'hon') { html = data.sc; anno = `<span class="anno-text">${data.sc} honors</span>`; section = "above"; }
-                else if (data.t === 'ins') { html = data.sc; anno = `<span class="anno-text">insult</span>`; section = "above"; }
-                else if (data.t === 'slam') { html = data.sc; anno = `<span class="anno-text">${data.lvl===6?'small':'grand'} slam</span>`; section = "above"; }
-                else if (data.t === 'rub') { html = data.sc; anno = `<span class="anno-text">rubber bonus</span>`; section = "above"; }
+                    if (data.t === 'down') { 
+                        html = data.sc; 
+                        let lblStr = (data.lbl || '');
+                        if (nameStr) lblStr += " " + nameStr;
+                        // Scorecard Truncation Bubble for the above-line text
+                        anno = `<div class="anno-wrapper"><span class="anno-bid">${bidStr}</span><span class="anno-name" style="opacity:1; font-size:1em; margin-left:4px;">${lblStr}</span></div>`;
+                        section = "above"; 
+                    } 
+                    else if (data.t === 'made') { 
+                        html = data.g ? `<span style="color:red">${data.sc}</span>` : data.sc; 
+                        // Scorecard Truncation Bubble for the below-line text
+                        anno = `<div class="anno-wrapper"><span class="anno-bid">${bidStr}</span>` + (nameStr ? `<span class="anno-name">${nameStr}</span>` : '') + `</div>`;
+                        section = "below"; 
+                        row = data.r || 0; 
+                    }
+                } else {
+                    if (data.t === 'ot') { html = data.sc; anno = `<span class="anno-text">${data.cnt} overtrick${data.cnt>1?'s':''}</span>`; section = "above"; }
+                    else if (data.t === 'hon') { html = data.sc; anno = `<span class="anno-text">${data.sc} honors</span>`; section = "above"; }
+                    else if (data.t === 'ins') { html = data.sc; anno = `<span class="anno-text">insult</span>`; section = "above"; }
+                    else if (data.t === 'slam') { html = data.sc; anno = `<span class="anno-text">${data.lvl===6?'small':'grand'} slam</span>`; section = "above"; }
+                    else if (data.t === 'rub') { html = data.sc; anno = `<span class="anno-text">rubber bonus</span>`; section = "above"; }
+                }
                 
                 return { html, anno, section, row, side: data.s, isLine: data.g };
             },
@@ -876,7 +952,7 @@
                 let weGames = 0, theyGames = 0;
                 
                 logs.forEach(rawItem => {
-                    const entry = UI.renderEntry(rawItem);
+                    const entry = UI.renderEntry(rawItem, names);
                     const b = buffers[entry.side]; const a = buffers.anno[entry.side];
                     if (entry.section === 'above') {
                         b.above = entry.html + (b.above ? '<br>' + b.above : '');
@@ -946,8 +1022,8 @@
                     const displayTitle = v.name ? `${v.name}<br><span style="font-size:12px; font-weight:normal; color:#666;">(${v.date})</span>` : v.date;
                     
                     html += `<div style="padding: 12px; border: 1px solid #ccc; margin-bottom: 10px; border-radius: 5px; cursor: pointer; background: #fff; text-align: left; box-shadow: 1px 1px 4px rgba(0,0,0,0.1);" data-action="viewVaultItem" data-index="${i}">
-                        <div style="font-family: var(--frutiger); font-weight: normal; color: var(--green); margin-bottom: 5px; font-size: 18px;">${displayTitle}</div>
-                        <div style="font-size: 14px; color: #555; font-family: sans-serif;">${playersList}</div>
+                        <div style="font-family: var(--frutiger); font-weight: normal; color: var(--green); margin-bottom: 5px; font-size: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${displayTitle}</div>
+                        <div style="font-size: 14px; color: #555; font-family: sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${playersList}</div>
                     </div>`;
                 });
                 list.innerHTML = html;
@@ -1023,7 +1099,7 @@
             restoreScreen: () => {
                 if (STATE.screen === 'startup') UI.show("startuppopup");
                 else if (STATE.screen === 'entry') UI.show("playerpopup");
-                else if (STATE.screen === 'game') UI.show("bidgrid");
+                else if (STATE.screen === 'game') UI.renderBiddingBox();
             },
             hideAllPopups: () => {
                 UI.hide("playerpopup"); UI.hide("startuppopup"); UI.hide("sharepopup"); 
@@ -1095,7 +1171,7 @@
                     const savedSettings = localData.settings || {};
                     STATE = { ...STATE, ...localData };
                     if (!STATE.vault) STATE.vault = [];
-                    STATE.settings = { ...{ fourColor: false, highContrast: false, showHonors: true, keepAwake: true }, ...savedSettings };
+                    STATE.settings = { ...{ fourColor: false, highContrast: false, showHonors: true, keepAwake: true, trackDeclarer: false }, ...savedSettings };
                 }
 
                 if (window.location.hash && window.location.hash.length > 1) {
@@ -1233,7 +1309,7 @@
                 // Reset Active Session while preserving vault/settings
                 STATE.players = {}; STATE.names = { we1: "", we2: "", they1: "", they2: "" }; STATE.allNames = [];
                 STATE.rubberNum = 1; STATE.hands = []; STATE.ledger = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
-                STATE.archive = []; STATE.history = []; STATE.bid = { side: null, level: null, suit: null, multiplier: 'n', honors: 0 };
+                STATE.archive = []; STATE.history = []; STATE.bid = { side: null, level: null, suit: null, multiplier: 'n', honors: 0, declarer: null };
                 STATE.screen = 'entry';
                 window.location.hash = "";
                 Storage.save(true);
@@ -1288,7 +1364,7 @@
                 UI.show("tallydiv"); UI.renderBiddingBox(); UI.show("thisrubber"); UI.drawActive(); Storage.save();
             },
 
-            calculateScore: (side, level, suit, multiplier, honors, resLabel) => {
+            calculateScore: (side, level, suit, multiplier, honors, resLabel, declarerIndex) => {
                 const isVul = (STATE.ledger[side].games > 0);
                 const bidStr = `${level}${suit}`;
                 let newLogs = [];
@@ -1299,13 +1375,19 @@
                     let pts = 0;
                     if (multiplier === 'n') pts = downCount * (isVul ? CONFIG.penalties.vul[0] : CONFIG.penalties.notVul[0]);
                     else { const table = isVul ? CONFIG.penalties.vulX : CONFIG.penalties.notVulX; pts = table[downCount - 1] * (multiplier === 'xx' ? 2 : 1); }
-                    newLogs.push({ s: oppSide, t: 'down', sc: pts, b: bidStr, m: multiplier, lbl: resLabel });
+                    
+                    let logObj = { s: oppSide, t: 'down', sc: pts, b: bidStr, m: multiplier, lbl: resLabel };
+                    if (declarerIndex !== null && declarerIndex !== undefined) logObj.dec = declarerIndex;
+                    newLogs.push(logObj);
+                    
                 } else {
                     let trickPoints = Game.calcTrickBase(suit, level);
                     if (multiplier === 'x') trickPoints *= 2; if (multiplier === 'xx') trickPoints *= 4;
                     const isGameWon = (STATE.ledger[side].partial + trickPoints >= CONFIG.points.game);
                     
-                    newLogs.push({ s: side, t: 'made', sc: trickPoints, b: bidStr, m: multiplier, g: isGameWon });
+                    let logObj = { s: side, t: 'made', sc: trickPoints, b: bidStr, m: multiplier, g: isGameWon };
+                    if (declarerIndex !== null && declarerIndex !== undefined) logObj.dec = declarerIndex;
+                    newLogs.push(logObj);
 
                     if (resLabel.includes("over")) {
                          const ot = parseInt(resLabel.match(/\d+/)[0]);
@@ -1327,12 +1409,12 @@
             },
 
             scoreHand: () => {
-                const { side, level, suit, multiplier, honors } = STATE.bid;
+                const { side, level, suit, multiplier, honors, declarer } = STATE.bid;
                 if (!side) return alert("Select side!");
                 STATE.history.push(JSON.stringify(STATE)); 
                 const resLabel = UI.get("res").value;
                 
-                const newLogs = Game.calculateScore(side, level, suit, multiplier, honors, resLabel);
+                const newLogs = Game.calculateScore(side, level, suit, multiplier, honors, resLabel, declarer);
                 
                 newLogs.forEach(log => {
                     if (log.t === 'made') {
@@ -1603,6 +1685,8 @@
                     const key = trigger.dataset.key;
                     STATE.settings[key] = trigger.checked;
                     UI.applySettings();
+                    UI.drawActive();
+                    UI.renderArchive();
                     Storage.save();
                     break;
                 case 'showAbout': UI.showAbout(); break;
@@ -1642,6 +1726,13 @@
                     break;
                 case 'setSide': 
                     STATE.bid.side = trigger.dataset.side; 
+                    STATE.bid.declarer = null; // Clear individual if they switch to side midway
+                    UI.renderBiddingBox(); 
+                    break;
+                case 'setDeclarer': 
+                    const dec = parseInt(trigger.dataset.dec);
+                    STATE.bid.declarer = dec;
+                    STATE.bid.side = (dec === 0 || dec === 1) ? 'we' : 'they';
                     UI.renderBiddingBox(); 
                     break;
                 case 'setMult': 
