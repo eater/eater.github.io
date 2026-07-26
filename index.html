@@ -101,6 +101,7 @@
         /* semantic menu button colors */
         #menu-toggle { color: #000; border-color: #999; }
         #undo-btn { color: #996600; border-color: #996600; }
+        #rename-btn { color: #e65100; border-color: #ff9800; }
         #big-btn { color: #6B21A8; border-color: #6B21A8; }
         #force-btn { color: #008000; border-color: #008000; }
         #settings-btn { color: #4B5563; border-color: #4B5563; }
@@ -155,7 +156,18 @@
         }
         body.high-contrast .live-contract { border-bottom-color: #000; }
 
-        .main-container { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 50px; width: 100%; box-sizing: border-box; }
+        /* --- SMART LAYOUT: Side-by-Side & Wrap --- */
+        .main-container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; /* Keeps both columns centered as a block */
+            align-items: flex-start; /* Required for sticky to work */
+            gap: 40px; 
+            width: 100%; 
+            max-width: 1200px; 
+            box-sizing: border-box; 
+            padding: 0 10px;
+        }
         
         /* Sticky Bidding Box Container */
         .bid-spacer { 
@@ -286,7 +298,6 @@
         .anno-name { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.85em; color: #777; font-variant: small-caps; letter-spacing: 0.5px; }
 
         .row-item { display: flex; align-items: baseline; justify-content: space-between; height: var(--lh); line-height: var(--lh); box-sizing: border-box; overflow: hidden; white-space: nowrap; width: 100%; }
-
         .score-item { height: var(--lh); line-height: var(--lh); box-sizing: border-box; overflow: hidden; white-space: nowrap; width: 100%; }
         
         .anno-text { flex-shrink: 0; white-space: nowrap; color: var(--green); }
@@ -312,7 +323,7 @@
             border: 1px solid; 
             border-radius: 4px;
             cursor: pointer; 
-            font-size: 18px; 
+            font-size: 20px; 
             color: black; 
             width: 100%; 
             box-sizing: border-box; 
@@ -329,7 +340,7 @@
         @media (max-height: 850px) and (min-width: 801px) {
             .bidgrid { padding: 12px; }
             table.chooser { border-spacing: 3px; }
-            table.chooser td .contract { height: 36px; font-size: 16px; } 
+            table.chooser td .contract { height: 36px; font-size: 18px; } 
             .live-contract { font-size: 24px; height: 32px; line-height: 32px; margin-bottom: 10px; margin-top: 8px; padding-bottom: 6px; }
             #chooser_master > div { margin: 8px 0 !important; }
             #honors-container { margin: 6px 0 !important; }
@@ -339,32 +350,29 @@
         /* --- Enhanced Mobile & Big Mode Readability --- */
         body.big-mode table.chooser td .contract {
             height: 48px;
-            font-size: 22px;
+            font-size: 26px;
         }
 
         /* --- Enhanced Mobile Readability --- */
         @media (max-width: 800px) {
             #big-btn { display: none !important; }
             :root {
-                /* NEW 'Small' Mode (was 16px/12px) */
                 --score-font: 22px; 
                 --player-font: 16px;
                 --anno-font: 15px; 
                 --lh: 24px;
             }
             body.big-mode {
-                /* NEW 'Big' Mode (was 24px/14px) */
                 --score-font: 34px; 
                 --player-font: 20px;
                 --anno-font: 22px; 
                 --lh: 38px;
             }
 
-            /* Make bid buttons wider, larger, and fix NT alignment using vmin */
             table.chooser { width: 100%; border-spacing: 4px; }
             table.chooser td .contract { 
                 padding: 0; 
-                font-size: 6vmin; 
+                font-size: 8vmin; 
                 display: flex; 
                 justify-content: center; 
                 align-items: center; 
@@ -378,22 +386,20 @@
             #res { font-size: 18px !important; padding: 6px; }
             button#scorebtn { font-size: 24px; padding: 10px 24px; margin-top: 10px; }
 
-            /* ... rest of your mobile CSS remains the same ... */
             .main-container { flex-direction: column; align-items: center; padding-right: 0; gap: 20px; }
             .bid-spacer { width: 90vw; min-height: auto; }
             .bidgrid.expanded, .rubberwindow { width: 90vw; max-width: 90vw; }
             body > .popupvis { top: 5%; max-height: 90vh; overflow-y: auto; }
-            .nav-left { flex: 0 0 auto; position: relative; } /* Added relative positioning for dropdown */
+            .nav-left { flex: 0 0 auto; position: relative; } 
             .nav-right { font-size: 13px; max-width: none; } 
             
-            /* Mobile Dropdown Menu Magic */
             #menu-toggle { font-size: 16px; padding: 8px 14px; font-weight: bold; border-color: #000; }
             
             #menu-buttons {
                 display: none; 
                 flex-direction: column; 
                 position: absolute; 
-                top: 100%; /* Opens directly below the menu button */
+                top: 100%; 
                 left: 0; 
                 margin-top: 5px;
                 background: #fff; 
@@ -401,7 +407,7 @@
                 border-radius: 8px; 
                 box-shadow: 0 8px 16px rgba(0,0,0,0.5); 
                 z-index: 5000; 
-                gap: 0; /* Remove gap so items touch */
+                gap: 0; 
                 min-width: 150px;
                 overflow: hidden;
             }
@@ -409,22 +415,18 @@
             #menu-buttons.show { display: flex; }
             
             #menu-buttons .tool-link {
-                border: none; /* Remove individual borders */
-                border-bottom: 1px solid #ddd; /* Add separator lines */
+                border: none; 
+                border-bottom: 1px solid #ddd; 
                 border-radius: 0; 
-                padding: 14px 20px; /* Massive touch target for thumbs */
+                padding: 14px 20px; 
                 font-size: 16px; 
                 text-align: left;
                 width: 100%;
                 box-sizing: border-box;
             }
             
-            #menu-buttons .tool-link:last-child { border-bottom: none; }
-            
-            /* High Contrast Mobile Dropdown override */
             body.high-contrast #menu-buttons { border-width: 3px; }
             body.high-contrast #menu-buttons .tool-link { border-bottom: 2px solid #000 !important; }
-            body.high-contrast #menu-buttons .tool-link:last-child { border-bottom: none !important; }
         }
     </style>
 </head>
@@ -435,6 +437,7 @@
             <button type="button" id="menu-toggle" data-action="toggleMenu">menu</button>
             <div id="menu-buttons">
                 <button type="button" id="undo-btn" class="tool-link" data-action="undo" hidden>undo</button>
+                <button type="button" id="rename-btn" class="tool-link" data-action="renameActive" hidden>rename</button>
                 <button type="button" id="big-btn" class="tool-link" data-action="toggleBig"><u>b</u>ig</button>
                 <button type="button" id="force-btn" class="tool-link" data-action="forceNew" hidden>new</button>
                 <button type="button" id="settings-btn" class="tool-link" data-action="showSettings">settings</button>
@@ -636,10 +639,16 @@
         /* --- application state --- */
         let STATE = {
             players: {}, names: { we1: "", we2: "", they1: "", they2: "" }, allNames: [],
+            sessionName: "",
             rubberNum: 1, hands: [], ledger: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } },
             archive: [], history: [], vault: [], bid: { side: null, level: null, suit: null, multiplier: 'n', honors: 0, declarer: null },
             isBig: false, screen: 'entry',
             settings: { fourColor: false, highContrast: false, showHonors: true, keepAwake: true, trackDeclarer: false }
+        };
+
+        // Global Date formatting helper
+        const getTimestamp = () => {
+            return new Date().toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
         };
 
         // PWA Variables
@@ -936,7 +945,7 @@
                 let rowClasses = ["", "", ""];
                 let weGames = 0, theyGames = 0;
                 
-            logs.forEach(rawItem => {
+                logs.forEach(rawItem => {
                     const entry = UI.renderEntry(rawItem, names);
                     const b = buffers[entry.side]; const a = buffers.anno[entry.side];
                     if (entry.section === 'above') {
@@ -960,10 +969,11 @@
                 
                 const weClass = (weGames > 0 && !isFinal) ? "vulnerable" : "";
                 const theyClass = (theyGames > 0 && !isFinal) ? "vulnerable" : "";
+                const headerText = STATE.sessionName ? `${sanitize(STATE.sessionName)} | Rubber #${rubberNum}` : `Rubber #${rubberNum}`;
                 
                 return `
                 <table class="scorecard">
-                    <tr><td colspan="4" align="center" class="rubber-header">Rubber #${rubberNum}</td></tr>
+                    <tr><td colspan="4" align="center" class="rubber-header">${headerText}</td></tr>
                     <tr><td class="anno"></td>
                         <td class="weheader"><span class="${weClass}">WE</span><br><div class="player-name">${we1}<br>${we2}</div></td>
                         <td class="theyheader"><span class="${theyClass}">THEY</span><br><div class="player-name">${they1}<br>${they2}</div></td>
@@ -1072,10 +1082,12 @@
                 UI.get('undo-btn').hidden = !hasHistory;
                 UI.get('share-btn').hidden = !hasData;
                 UI.get('force-btn').hidden = !hasActiveRubber;
+                UI.get('rename-btn').hidden = isBlankSlate;
                 UI.get('reset-btn').hidden = isBlankSlate;
                 
+                // Always expose the menu so users can access History, Settings, and About at any time
                 const navLeft = document.querySelector('.nav-left');
-                if (navLeft) navLeft.hidden = isBlankSlate;
+                if (navLeft) navLeft.hidden = false;
                 
                 if (!isBlankSlate) UI.show('tallydiv');
                 else UI.hide('tallydiv');
@@ -1137,8 +1149,9 @@
                 const cleanArchive = STATE.archive.map(rub => ({ n: [rub.names.we1, rub.names.we2, rub.names.they1, rub.names.they2], l: Compressor.packLog(rub.hands) }));
                 const packedActive = Compressor.packLog(STATE.hands);
                 
-                // v5 Logic (LZ Compressed)
-                const minified = [5, namesArr, cleanArchive, packedActive]; 
+                // v5 Logic (LZ Compressed) - Appending Name and Timestamp for backwards compatibility
+                const sessionDate = new Date().getTime();
+                const minified = [5, namesArr, cleanArchive, packedActive, STATE.sessionName || "", sessionDate]; 
                 const payload = LZString.compressToEncodedURIComponent(JSON.stringify(minified));
                 const url = window.location.href.split('#')[0] + '#' + payload;
                 
@@ -1161,35 +1174,63 @@
 
                 if (window.location.hash && window.location.hash.length > 1) {
                     const hasLocalGame = (STATE.archive && STATE.archive.length > 0) || (STATE.hands && STATE.hands.length > 0) || (STATE.names && STATE.names.we1);
-                    if (!hasLocalGame || confirm("Loading this link will overwrite your session. Proceed?")) {
+                    let archiveName = "";
+
+                    try {
+                        const hashStr = window.location.hash.substring(1);
+                        let decoded;
                         try {
-                            const hashStr = window.location.hash.substring(1);
-                            let decoded;
-                            try {
-                                decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(hashStr));
-                            } catch(e) {
-                                decoded = JSON.parse(Storage.fromBase64(hashStr));
+                            decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(hashStr));
+                        } catch(e) {
+                            decoded = JSON.parse(Storage.fromBase64(hashStr));
+                        }
+                        
+                        if (decoded && (decoded[0] === 4 || decoded[0] === 5)) {
+                            // Automatically stash the current session without asking
+                            if (hasLocalGame) {
+                                archiveName = STATE.sessionName || getTimestamp();
+                                Game.archiveSessionToVault();
                             }
+
+                            let tally = {};
+                            const initPlayers = (nArr) => { nArr.forEach(n => { if(n && !tally[n]) tally[n] = 0; }); };
+                            const archiveData = decoded[2].map(a => {
+                                const logs = Compressor.unpackLog(a.l);
+                                initPlayers(a.n);
+                                const totals = Game.getTotals(logs);
+                                if (totals.we > totals.they) { tally[a.n[0]] += totals.diff; tally[a.n[1]] += totals.diff; tally[a.n[2]] -= totals.diff; tally[a.n[3]] -= totals.diff; } 
+                                else { tally[a.n[0]] -= totals.diff; tally[a.n[1]] -= totals.diff; tally[a.n[2]] += totals.diff; tally[a.n[3]] += totals.diff; }
+                                return { rubberNum: 0, names: { we1: a.n[0], we2: a.n[1], they1: a.n[2], they2: a.n[3] }, hands: logs };
+                            });
+                            initPlayers(decoded[1]);
                             
-                            if (decoded && (decoded[0] === 4 || decoded[0] === 5)) {
-                                let tally = {};
-                                const initPlayers = (nArr) => { nArr.forEach(n => { if(n && !tally[n]) tally[n] = 0; }); };
-                                const archiveData = decoded[2].map(a => {
-                                    const logs = Compressor.unpackLog(a.l);
-                                    initPlayers(a.n);
-                                    const totals = Game.getTotals(logs);
-                                    if (totals.we > totals.they) { tally[a.n[0]] += totals.diff; tally[a.n[1]] += totals.diff; tally[a.n[2]] -= totals.diff; tally[a.n[3]] -= totals.diff; } 
-                                    else { tally[a.n[0]] -= totals.diff; tally[a.n[1]] -= totals.diff; tally[a.n[2]] += totals.diff; tally[a.n[3]] += totals.diff; }
-                                    return { rubberNum: 0, names: { we1: a.n[0], we2: a.n[1], they1: a.n[2], they2: a.n[3] }, hands: logs };
-                                });
-                                initPlayers(decoded[1]);
-                                STATE = { ...STATE, names: { we1: decoded[1][0], we2: decoded[1][1], they1: decoded[1][2], they2: decoded[1][3] }, players: tally, archive: archiveData, hands: Compressor.unpackLog(decoded[3]), history: [], ledger: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } }, rubberNum: decoded[2].length + 1 };
-                                STATE.ledger = Compressor.recalcMath(STATE.hands);
-                                window.history.replaceState(null, '', window.location.pathname + window.location.search);
-                                Storage.save(); 
+                            // Safely extract the optional name if it was included in the link
+                            let loadedName = "";
+                            if (decoded.length > 4) loadedName = decoded[4] || "";
+
+                            STATE = { 
+                                ...STATE, 
+                                names: { we1: decoded[1][0], we2: decoded[1][1], they1: decoded[1][2], they2: decoded[1][3] }, 
+                                players: tally, 
+                                archive: archiveData, 
+                                hands: Compressor.unpackLog(decoded[3]), 
+                                history: [], 
+                                ledger: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } }, 
+                                rubberNum: decoded[2].length + 1,
+                                sessionName: loadedName 
+                            };
+                            STATE.ledger = Compressor.recalcMath(STATE.hands);
+                            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                            Storage.save(); 
+                            
+                            // Trigger the friendly notification!
+                            if (hasLocalGame) {
+                                setTimeout(() => {
+                                    alert(`Your previous session has been safely archived as "${archiveName}". Open your History to resume it at any time.`);
+                                }, 100);
                             }
-                        } catch(e) { console.error("Hash load error", e); }
-                    }
+                        }
+                    } catch(e) { console.error("Hash load error", e); }
                 }
 
                 STATE.archive.forEach((rub, i) => rub.rubberNum = i + 1);
@@ -1284,8 +1325,8 @@
                     if(!STATE.vault) STATE.vault = [];
                     STATE.vault.unshift({
                         id: new Date().getTime(),
-                        date: new Date().toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-                        name: null,
+                        date: getTimestamp(),
+                        name: STATE.sessionName || null,
                         players: JSON.parse(JSON.stringify(STATE.players)),
                         archive: JSON.parse(JSON.stringify(STATE.archive))
                     });
@@ -1293,6 +1334,7 @@
 
                 // Reset Active Session while preserving vault/settings
                 STATE.players = {}; STATE.names = { we1: "", we2: "", they1: "", they2: "" }; STATE.allNames = [];
+                STATE.sessionName = "";
                 STATE.rubberNum = 1; STATE.hands = []; STATE.ledger = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
                 STATE.archive = []; STATE.history = []; STATE.bid = { side: null, level: null, suit: null, multiplier: 'n', honors: 0, declarer: null };
                 STATE.screen = 'entry';
@@ -1316,9 +1358,17 @@
                 let headerHTML = "";
                 if (!isNewRubber) headerHTML = `<div class="title">Rubber Soul</div><div class="subtitle">The Rubber Bridge Scorer</div>`;
                 
+                let sessionNameHTML = isNewRubber ? "" : `
+                    <div style="margin-bottom:15px; border-bottom: 1px solid #ccc; padding-bottom: 15px;">
+                        <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Name this session? <span style="font-weight:normal; font-size:14px; color:#666;">(Optional)</span></div>
+                        <input type="text" id="session-name" value="${STATE.sessionName || ''}" placeholder="e.g. Saturday Night Bridge" style="width: 100%; box-sizing: border-box; text-align: center;">
+                    </div>
+                `;
+
                 UI.get("playerpopup").innerHTML = `
                     ${headerHTML}
-                    <div class="popup-msg">${msgBody}</div>
+                    ${sessionNameHTML}
+                    <div class="popup-msg" style="margin-top:0;">${msgBody}</div>
                     <table class="popgrid">
                         <tr><th>WE</th><th>THEY</th></tr>
                         <tr>
@@ -1342,6 +1392,10 @@
                 const [p1,p2,p3,p4] = ['p1','p2','p3','p4'].map(id => sanitize(UI.get(id).value.trim())); 
                 if (!p1 || !p2 || !p3 || !p4) return alert("Please enter all four names!");
                 if (new Set([p1, p2, p3, p4]).size < 4) return alert("Unique names required!");
+                
+                const nameInput = UI.get('session-name');
+                if (nameInput) STATE.sessionName = sanitize(nameInput.value.trim());
+
                 STATE.names = { we1: p1, we2: p2, they1: p3, they2: p4 };
                 [p1, p2, p3, p4].forEach(p => { if (STATE.players[p] === undefined) STATE.players[p] = 0; if (!STATE.allNames.includes(p)) STATE.allNames.push(p); });
                 STATE.screen = 'game';
@@ -1524,6 +1578,16 @@
                 case 'showHistory': UI.showHistory(); break;
                 case 'closeHistory': UI.closeHistory(); break;
                 
+                case 'renameActive':
+                    const newActiveName = prompt("Enter a name for this session (or clear to remove):", STATE.sessionName || "");
+                    if (newActiveName !== null) {
+                        STATE.sessionName = sanitize(newActiveName.trim());
+                        Storage.save();
+                        UI.drawActive();
+                        UI.renderArchive();
+                    }
+                    break;
+
                 case 'resumeVault':
                     if(confirm("This will save your current session to History and resume this one. Proceed?")) {
                         const rIdx = UI.get("vaultdetailpopup").dataset.index;
@@ -1569,8 +1633,8 @@
                             if (stArchive.length > 0) {
                                 STATE.vault.unshift({
                                     id: new Date().getTime(),
-                                    date: new Date().toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-                                    name: null,
+                                    date: getTimestamp(),
+                                    name: STATE.sessionName || null,
                                     players: stPlayers,
                                     archive: stArchive
                                 });
@@ -1583,6 +1647,7 @@
                         // 3. Load targetSession into Active State
                         STATE.archive = JSON.parse(JSON.stringify(targetSession.archive));
                         STATE.players = JSON.parse(JSON.stringify(targetSession.players));
+                        STATE.sessionName = targetSession.name || "";
                         STATE.hands = [];
                         STATE.ledger = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
                         STATE.history = [];
@@ -1638,7 +1703,8 @@
                     const sIdx = UI.get("vaultdetailpopup").dataset.index;
                     const session = STATE.vault[sIdx];
                     const cleanArch = session.archive.map(rub => ({ n: [rub.names.we1, rub.names.we2, rub.names.they1, rub.names.they2], l: Compressor.packLog(rub.hands) }));
-                    const minified = [5, ["", "", "", ""], cleanArch, []]; 
+                    // Bundle the vault session's specific name and original timestamp
+                    const minified = [5, ["", "", "", ""], cleanArch, [], session.name || "", session.id || new Date().getTime()]; 
                     const url = window.location.href.split('#')[0] + '#' + LZString.compressToEncodedURIComponent(JSON.stringify(minified));
                     
                     if (navigator.share) {
