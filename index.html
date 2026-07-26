@@ -292,14 +292,11 @@
 
         .tabove, .tbelow { text-align: left; border-right: none; }
         
-        /* Scorecard Annos & Truncation Bubbles */
-        td.anno { vertical-align: top; width: 28.5%; max-width: 28.5%; padding: 0 0.25em; font-size: var(--anno-font); line-height: var(--lh); overflow: hidden; }
+/* Scorecard Annos & Truncation Bubbles */
+        td.anno { vertical-align: top; width: 28.5%; max-width: 28.5%; padding: 0 0.25em; font-size: var(--anno-font); line-height: var(--lh); overflow: hidden; white-space: nowrap; }
         td.anno.left { text-align: right; } td.anno.right { text-align: left; } td.anno.btm { vertical-align: bottom; }
         
-        .anno-wrapper { display: inline-flex; align-items: baseline; max-width: 100%; overflow: hidden; vertical-align: bottom; }
-        
-        .anno-bid { flex-shrink: 0; white-space: nowrap; color: var(--green); }
-        .anno-name { flex-shrink: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.85em; opacity: 0.8; margin-left: 4px; color: var(--green); }
+        .anno-name { display: inline-block; max-width: 6em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.85em; opacity: 0.8; vertical-align: baseline; color: var(--green); line-height: inherit; }
 
         /* standard ui buttons */
         .std-btn { display: inline-block; padding: 6px 12px; margin: 4px; cursor: pointer; min-width: 3em; font-size: 16px; color: black; box-sizing: border-box; text-align: center; border-radius: 4px; }
@@ -906,29 +903,28 @@
                 UI.get('menu').innerHTML = menu + `</select> <button type="button" id="scorebtn" data-action="scoreHand">Score</button>`;
             },
             
-            renderEntry: (data, namesContext) => {
+renderEntry: (data, namesContext) => {
                 let html = "", anno = "", section = "above", row = 0;
                 
                 if (data.b) {
                     let bidStr = UI.colorBid(data.b + (data.m === 'x' ? 'x' : (data.m === 'xx' ? 'xx' : '')));
                     let nameStr = "";
+                    
                     if (STATE.settings.trackDeclarer && data.dec !== undefined && data.dec !== null && namesContext) {
                         const decName = [namesContext.we1, namesContext.we2, namesContext.they1, namesContext.they2][data.dec];
-                        if (decName) nameStr = `(${decName})`;
+                        if (decName) nameStr = `<span class="anno-name">(${decName})</span>`;
                     }
 
                     if (data.t === 'down') { 
                         html = data.sc; 
                         let lblStr = (data.lbl || '');
-                        if (nameStr) lblStr += " " + nameStr;
-                        // Scorecard Truncation Bubble for the above-line text
-                        anno = `<span class="anno-wrapper"><span class="anno-bid">${bidStr}</span><span class="anno-name" style="opacity:1; font-size:1em; margin-left:4px;">${lblStr}</span></span>`;
+                        // Inject as standard inline text
+                        anno = `<span class="anno-text">${bidStr} ${lblStr}</span>${nameStr}`;
                         section = "above"; 
                     } 
                     else if (data.t === 'made') { 
                         html = data.g ? `<span style="color:red">${data.sc}</span>` : data.sc; 
-                        // Scorecard Truncation Bubble for the below-line text
-                        anno = `<span class="anno-wrapper"><span class="anno-bid">${bidStr}</span>` + (nameStr ? `<span class="anno-name">${nameStr}</span>` : '') + `</span>`;
+                        anno = `<span class="anno-text">${bidStr}</span>${nameStr}`;
                         section = "below"; 
                         row = data.r || 0; 
                     }
