@@ -19,7 +19,8 @@
             if (oldData && oldData.length > 50) {
                 // We have data! Compress it so it fits in the URL safely
                 const payload = LZString.compressToEncodedURIComponent(oldData);
-                window.location.href = targetURL + "#migrate=" + payload;
+// Adds a unique timestamp to trick the browser into fetching fresh code!
+            window.location.href = targetURL + "?nocache=" + new Date().getTime() + "#migrate=" + payload;
             } else {
                 // No user data found, just redirect them normally
                 window.location.href = targetURL;
