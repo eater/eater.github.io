@@ -458,6 +458,7 @@
         <div class="bid-spacer">
             
             <div id="startuppopup" class="popupvis bid-area" hidden></div>
+            <div id="resultspopup" class="popupvis bid-area" hidden></div>
             <div id="playerpopup" class="popupvis bid-area" hidden></div>
             
             <div id="iosinstallpopup" class="popupvis bid-area" hidden>
@@ -639,7 +640,7 @@
         /* --- application state --- */
         let STATE = {
             players: {}, names: { we1: "", we2: "", they1: "", they2: "" }, allNames: [],
-            sessionName: "",
+            sessionName: "", lastNames: null,
             rubberNum: 1, hands: [], ledger: { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } },
             archive: [], history: [], vault: [], bid: { side: null, level: null, suit: null, multiplier: 'n', honors: 0, declarer: null },
             isBig: false, screen: 'entry',
@@ -687,10 +688,10 @@
                 let arr = [Compressor.sideMap[item.s], Compressor.typeMap[item.t], item.sc];
                 if (item.t === 'made') {
                     arr.push(item.b, Compressor.multMap[item.m] || 0, item.g ? 1 : 0);
-                    if (item.dec !== undefined) arr.push(item.dec);
+                    if (item.dec !== undefined && item.dec !== null) arr.push(item.dec);
                 } else if (item.t === 'down') {
                     arr.push(item.b, Compressor.multMap[item.m] || 0, item.lbl);
-                    if (item.dec !== undefined) arr.push(item.dec);
+                    if (item.dec !== undefined && item.dec !== null) arr.push(item.dec);
                 } else if (item.t === 'ot') arr.push(item.cnt);
                 else if (item.t === 'slam') arr.push(item.lvl);
                 return arr;
@@ -700,10 +701,10 @@
                 let obj = { s: Compressor.revSide[arr[0]], t: Compressor.revType[arr[1]], sc: arr[2] };
                 if (obj.t === 'made') { 
                     obj.b = arr[3]; obj.m = Compressor.revMult[arr[4]]; obj.g = (arr[5] === 1); 
-                    if (arr.length > 6) obj.dec = arr[6];
+                    if (arr.length > 6 && arr[6] !== null) obj.dec = arr[6];
                 } else if (obj.t === 'down') { 
                     obj.b = arr[3]; obj.m = Compressor.revMult[arr[4]]; obj.lbl = arr[5]; 
-                    if (arr.length > 6) obj.dec = arr[6];
+                    if (arr.length > 6 && arr[6] !== null) obj.dec = arr[6];
                 } else if (obj.t === 'ot') obj.cnt = arr[3];
                 else if (obj.t === 'slam') obj.lvl = arr[3];
                 return obj;
@@ -1013,12 +1014,38 @@
                 }
                 let html = '';
                 STATE.vault.forEach((v, i) => {
-                    const playersList = Object.keys(v.players).join(', ');
-                    const displayTitle = v.name ? `${v.name}<br><span style="font-size:12px; font-weight:normal; color:#666;">(${v.date})</span>` : v.date;
                     
-                    html += `<div style="padding: 12px; border: 1px solid #ccc; margin-bottom: 10px; border-radius: 5px; cursor: pointer; background: #fff; text-align: left; box-shadow: 1px 1px 4px rgba(0,0,0,0.1);" data-action="viewVaultItem" data-index="${i}">
-                        <div style="font-family: var(--frutiger); font-weight: normal; color: var(--green); margin-bottom: 5px; font-size: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${displayTitle}</div>
-                        <div style="font-size: 14px; color: #555; font-family: sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${playersList}</div>
+                    // 1. Cleanly separate the title and the date so neither gets cut off
+                    let titleSection = '';
+                    if (v.name) {
+                        titleSection = `
+                            <div style="font-family: var(--frutiger); font-weight: bold; color: var(--green); font-size: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${sanitize(v.name)}</div>
+                            <div style="font-family: sans-serif; font-size: 13px; color: #666; margin-bottom: 8px;">${v.date}</div>
+                        `;
+                    } else {
+                        titleSection = `
+                            <div style="font-family: var(--frutiger); font-weight: bold; color: var(--green); font-size: 18px; margin-bottom: 8px;">${v.date}</div>
+                        `;
+                    }
+
+                    // 2. Generate the sleek, tabular score grid (matching the mobile APK)
+                    let scoresHtml = `<div style="border-top: 1px solid #eee; padding-top: 8px; margin-top: 4px;">`;
+                    for (let p in v.players) {
+                        const s = v.players[p];
+                        const color = s > 0 ? '#1b5e20' : s < 0 ? '#d32f2f' : '#333';
+                        scoresHtml += `
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-family: sans-serif; font-size: 15px;">
+                                <span style="font-weight: bold; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%;">${sanitize(p)}</span>
+                                <span style="font-weight: bold; color: ${color};">${s > 0 ? '+' : ''}${s}</span>
+                            </div>
+                        `;
+                    }
+                    scoresHtml += `</div>`;
+
+                    // 3. Render the final card
+                    html += `<div style="padding: 15px; border: 1px solid #ccc; margin-bottom: 12px; border-radius: 8px; cursor: pointer; background: #fff; text-align: left; box-shadow: 0 2px 5px rgba(0,0,0,0.05);" data-action="viewVaultItem" data-index="${i}">
+                        ${titleSection}
+                        ${scoresHtml}
                     </div>`;
                 });
                 list.innerHTML = html;
@@ -1097,11 +1124,12 @@
                 if (STATE.screen === 'startup') UI.show("startuppopup");
                 else if (STATE.screen === 'entry') UI.show("playerpopup");
                 else if (STATE.screen === 'game') UI.renderBiddingBox();
+                else if (STATE.screen === 'results') UI.show("resultspopup");
             },
             hideAllPopups: () => {
                 UI.hide("playerpopup"); UI.hide("startuppopup"); UI.hide("sharepopup"); 
                 UI.hide("aboutpopup"); UI.hide("settingspopup"); UI.hide("iosinstallpopup");
-                UI.hide("historypopup"); UI.hide("vaultdetailpopup");
+                UI.hide("historypopup"); UI.hide("vaultdetailpopup"); UI.hide("resultspopup");
             },
             showSettings: () => {
                 const popup = UI.get("settingspopup");
@@ -1273,20 +1301,7 @@
                 else UI.hide("thisrubber");
                 UI.show("startuppopup");
             },
-            
-            continueSession: () => {
-                UI.hide("startuppopup");
-                if (!STATE.names.we1 || !STATE.names.we2) {
-                    let lastNames = null;
-                    if (STATE.archive.length > 0) lastNames = STATE.archive[STATE.archive.length - 1].names;
-                    Game.showEntry(true, `<div class="title" style="font-size: 24px; margin-bottom: 12px;">New Rubber</div>`, lastNames);
-                } else {
-                    STATE.screen = 'game';
-                    UI.renderBiddingBox();
-                    UI.show("thisrubber");
-                }
-            },
-            
+
             archiveSessionToVault: () => {
                 // Auto-close active rubber if there is progress
                 if (STATE.hands.length > 0 || STATE.ledger.we.games > 0 || STATE.ledger.they.games > 0) {
@@ -1341,7 +1356,7 @@
                 window.location.hash = "";
                 Storage.save(true);
                 UI.resetBiddingUI(true); UI.drawActive(); UI.renderArchive();
-                Game.showEntry(false, "");
+                Game.showEntry(false);
             },
 
             resetFromStartup: () => {
@@ -1350,11 +1365,37 @@
                 }
             },
             
-            showEntry: (isNewRubber = false, resultMsg = "", defaultNames = null) => {
+            showRubberResults: (winMsg) => {
+                STATE.screen = 'results';
+                UI.get("resultspopup").innerHTML = `
+                    ${winMsg}
+                    <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px; align-items:center;">
+                        <button type="button" style="width:100%;" data-action="promptNextRubber">Start Next Rubber</button>
+                        <button type="button" style="width:100%; border-color:#d32f2f; color:#d32f2f; background-color:#ffebee;" data-action="endSession">End Session</button>
+                    </div>
+                `;
+                UI.hideAllPopups(); UI.hide("bidgrid"); UI.hide("thisrubber"); 
+                UI.show("resultspopup");
+            },
+
+            continueSession: () => {
+                UI.hide("startuppopup");
+                if (!STATE.names.we1 || !STATE.names.we2) {
+                    let lastNames = null;
+                    if (STATE.archive.length > 0) lastNames = STATE.archive[STATE.archive.length - 1].names;
+                    Game.showEntry(true, lastNames);
+                } else {
+                    STATE.screen = 'game';
+                    UI.renderBiddingBox();
+                    UI.show("thisrubber");
+                }
+            },
+
+            showEntry: (isNewRubber = false, defaultNames = null) => {
                 STATE.screen = 'entry';
                 const { we1, we2, they1, they2 } = defaultNames || STATE.names;
                 const listAttr = `list="namelist" autocomplete="off"`; 
-                const msgBody = isNewRubber ? `${resultMsg}<br><br>Who's playing the next rubber?` : "Who's playing the first rubber?";
+                const msgBody = isNewRubber ? `Who's playing the next rubber?` : "Who's playing the first rubber?";
                 let headerHTML = "";
                 if (!isNewRubber) headerHTML = `<div class="title">Rubber Soul</div><div class="subtitle">The Rubber Bridge Scorer</div>`;
                 
@@ -1500,7 +1541,9 @@
                 STATE.ledger = { we: { games: 0, partial: 0 }, they: { games: 0, partial: 0 } };
                 STATE.history = []; STATE.rubberNum++;
                 UI.resetBiddingUI(true); UI.drawActive(); UI.renderArchive();
-                Game.showEntry(true, winMsg, namesForPopup);
+                
+                STATE.lastNames = namesForPopup;
+                Game.showRubberResults(winMsg);
             },
             
             finalizeMatch: (winnerSide) => {
@@ -1577,6 +1620,9 @@
                 case 'closeBid': UI.resetBiddingUI(); break;
                 case 'showHistory': UI.showHistory(); break;
                 case 'closeHistory': UI.closeHistory(); break;
+                
+                case 'promptNextRubber': Game.showEntry(true, STATE.lastNames); break;
+                case 'endSession': Game.archiveSessionToVault(); break;
                 
                 case 'renameActive':
                     const newActiveName = prompt("Enter a name for this session (or clear to remove):", STATE.sessionName || "");
@@ -1675,7 +1721,7 @@
                             UI.show("thisrubber");
                             UI.restoreScreen(); 
                         } else {
-                            Game.showEntry(false, "");
+                            Game.showEntry(false, null);
                         }
                     }
                     break;
